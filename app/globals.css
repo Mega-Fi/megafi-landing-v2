@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* MegaFi Brand Colors - Light Mode */
+    /* Background: Full Moon (#DFD9D9) */
+    /* Text: Night Sky (#19191A) */
+    /* Accent: Mega Orange (#FF3A1E) - unchanged */
+    
+    --background: 0 4% 87%;
+    --foreground: 240 2% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 2% 10%;
+    --popover: 0 4% 87%;
+    --popover-foreground: 240 2% 10%;
+    --primary: 240 2% 10%;
+    --primary-foreground: 0 4% 87%;
+    --secondary: 0 4% 87%;
+    --secondary-foreground: 240 2% 10%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 240 2% 40%;
+    --accent: 240 2% 10%;
+    --accent-foreground: 0 4% 87%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 4% 87%;
+    --border: 240 2% 20%;
+    --input: 240 2% 20%;
+    --ring: 240 2% 10%;
+    --radius: 0.5rem;
+    --chart-1: 240 2% 10%;
+    --chart-2: 0 4% 87%;
+    --chart-3: 0 0% 50%;
+    --chart-4: 0 0% 70%;
+    --chart-5: 0 0% 30%;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 4% 87%;
+    --card: 240 2% 10%;
+    --card-foreground: 0 4% 87%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 4% 87%;
+    --primary: 0 4% 87%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 240 2% 10%;
+    --secondary-foreground: 0 4% 87%;
+    --muted: 240 2% 10%;
+    --muted-foreground: 0 4% 60%;
+    --accent: 0 4% 87%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 4% 87%;
+    --border: 240 2% 10%;
+    --input: 240 2% 10%;
+    --ring: 0 4% 87%;
+    --chart-1: 0 4% 87%;
+    --chart-2: 240 2% 10%;
+    --chart-3: 0 0% 20%;
+    --chart-4: 0 0% 40%;
+    --chart-5: 0 0% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Scroll Snap Utilities */
+.snap-container {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100vh;
+}
+
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  height: 100vh;
+}
+
