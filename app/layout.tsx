@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
-import { League_Spartan, Jost } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/lib/theme-provider";
 
-const leagueSpartan = League_Spartan({ subsets: ["latin"] });
-const jost = Jost({ 
-  subsets: ["latin"],
-  weight: ["700"],
-  variable: "--font-jost"
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "MegaFi Landing - Next.js with Tubelight Navbar",
-  description: "A beautiful Next.js landing page with an animated tubelight navbar",
+  title: "MegaFi | MegaETH Super App",
+  description: "Swap, earn, hedge, tokenize, and automate on the fastest chain on Earth",
+  icons: {
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/megafi-logo.png', sizes: '500x500', type: 'image/png' },
+    ],
+    apple: '/megafi-logo.png',
+  },
 };
 
 export default function RootLayout({
@@ -22,11 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${leagueSpartan.className} ${jost.variable}`}>
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
