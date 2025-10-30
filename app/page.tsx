@@ -17,7 +17,7 @@ export default function Home() {
       startVh={40}
       spaceVh={40}
       debug={false}
-      taglineHTML={`The fastest app on the fastest chain.<br /><div style="margin-top: 1rem;"><img src="/megaeth-logo.png" alt="MegaETH" /></div>`}
+      taglineHTML={`The fastest app on the fastest chain.<br /><div style="margin-top: 1rem;"><img src="/megaeth-logo.svg" alt="MegaETH" /></div>`}
     />
   );
 }
