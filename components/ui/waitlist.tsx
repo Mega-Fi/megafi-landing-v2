@@ -91,7 +91,7 @@ export function Waitlist() {
             </svg>
           </a>
           <a
-            href="https://discord.gg/dafqYYwM"
+            href="https://discord.gg/YDUx3J3F7y"
             target="_blank"
             rel="noopener noreferrer"
             className="social-link"

@@ -11,7 +11,7 @@ export default function Home() {
       logoAlt="MegaFi Logo"
       links={{
         twitter: 'https://x.com/megafi_app',
-        discord: 'https://discord.gg/dafqYYwM',
+        discord: 'https://discord.gg/YDUx3J3F7y',
         docs: 'https://docs.megafi.app/',
       }}
       startVh={40}
