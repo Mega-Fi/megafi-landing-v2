@@ -1,0 +1,144 @@
+---
+description: General guideline to keep in mind whenever you need to make changes to the code.
+globs: 
+alwaysApply: true
+---
+
+## General Implementation Guidelines
+
+0. **Think hard before making changes**: Before adding new code, think hard about the problem, take things and implement meticulously.
+
+1. **Understand Existing Patterns**: Before adding new code, study the existing implementation patterns throughout the codebase to maintain consistency.
+
+2. **Component Composition**:
+   - Break UI into small, focused components
+   - Isolate state management and business logic in custom hooks
+   - Follow the existing design system patterns
+
+3. **Error Handling**:
+   - Implement consistent error handling throughout
+   - Include appropriate HTTP status codes
+   - Log errors with sufficient context
+   - Handle edge cases explicitly
+
+4. **Testing Strategy**:
+   - Write tests for critical paths
+   - Test webhook handlers thoroughly when applicable
+   - Verify state transitions in complex features
+
+5. **Security Considerations**:
+   - Secure endpoints with proper authentication
+   - Validate all user input
+   - Ensure RLS policies are correctly implemented for database tables
+
+6. **Incremental Implementation**:
+   - Implement complex features in stages to reduce risk
+   - Start with database schema changes, then backend logic, then frontend
+   - Test each component thoroughly before integration
+
+7. **Database Modifications**:
+    - Use transaction blocks for multi-step operations
+    - Create idempotent migrations that can be run multiple times without side effects
+    - Add proper constraints and indexes to new tables
+    - Follow the workspace-centric architecture for all data models
+    - Always create a migration file inside /backend/supabase/migrations whenever a change in db is required
+    - Before you create a new migration file to make changes to the Supabase db, make sure that you understand the current db structure so that you can create the relevant table and column names, and have the correct RLS policies. DB migration files can be found inside backend/supabase/migrations
+
+8. **Documentation**:
+    - Document all new API endpoints
+    - Add comments for complex business logic
+    - Update README files as needed
+
+9. **Express.js Route Mounting Best Practices**:
+    - **Use Specific Path Prefixes**: Always mount routers at specific paths (e.g., `/api/v1/keywords`) rather than broad paths (e.g., `/api/v1`)
+    - **Avoid Route Interception**: Broad path mounting can intercept unintended routes due to Express.js first-match-wins behavior
+    - **Order Matters**: Express checks routes in mounting order, so more specific routes should be mounted before broader ones
+    - **Middleware Scope**: Be careful with global middleware on routers - it applies to ALL routes handled by that router
+    - **Authentication-Free Endpoints**: Webhooks and other system-to-system endpoints should not require user authentication
+    - **Example Problem**: Mounting `app.use('/api/v1', someRouter)` will intercept ALL `/api/v1/*` requests, preventing other routers from handling their specific paths
+    - **Solution**: Use specific mounting like `app.use('/api/v1/specific-resource', someRouter)`
+
+10. **New Features Guidelines**:
+    - **ENV VARIABLE PATTERN**: Since the app runs on production, any new feature that gets added needs to be able to be disabled using temporary environment flag variables so that the new features can rolled out gradually and can be turned if things break.
+
+## SQL Guidelines
+
+1. **Idempotent Migrations**: 
+   - Always use `IF NOT EXISTS` or `IF EXISTS` clauses in DDL statements
+   - Design migrations to be safely re-runnable
+
+2. **Transaction Safety**: 
+   - Wrap multi-step operations in transaction blocks
+   - Use proper error handling in functions and procedures
+
+3. **Naming Conventions**:
+   - Use consistent naming patterns for tables, columns, and functions
+   - Follow existing naming patterns in the codebase
+
+4. **Constraints**: 
+   - Include appropriate constraints (CHECK, UNIQUE, NOT NULL)
+   - Use foreign keys with appropriate ON DELETE behavior
+
+5. **RLS Policies - CRITICAL SAFETY REQUIREMENTS**:
+   - Enable Row Level Security on all user-related tables
+   - **NEVER create circular dependencies** in RLS policies
+   - **Test for infinite recursion** when policies reference other tables with RLS
+   - **Avoid workspace_members references in other table policies** (can cause recursion)
+   - Create simple, direct policies: `user_id = auth.uid()` when possible
+   - Test RLS policies thoroughly before deployment
+   - **Migration Pattern for RLS Fixes**: Drop problematic policies first, then create safe alternatives
+
+## Frontend Guidelines
+
+1. **State Management**:
+   - Use React context for global state
+   - Create custom hooks for feature-specific state
+   - Follow existing patterns for data fetching and caching
+
+2. **Component Design**:
+   - Create reusable components with clear prop interfaces
+   - Implement appropriate loading and error states
+   - Follow the existing UI component library patterns
+
+3. **Form Handling**:
+   - Validate inputs both client-side and server-side
+   - Provide clear feedback for validation errors
+   - Handle form submission state appropriately
+
+4. **API Integration**:
+   - Use the established API client pattern
+   - Handle loading, error, and success states consistently
+   - Transform API responses to match UI requirements
+
+5. **Authentication**:
+   - Use the authentication context for user state
+   - Handle unauthenticated states appropriately
+   - Redirect users to login when sessions expire
+
+6. **SSR Compatibility - CRITICAL REQUIREMENTS**:
+   - **Always guard document access**: `typeof document !== 'undefined'` before using `document`
+   - **Guard window access**: `typeof window !== 'undefined'` before using `window`
+   - **Safe useRef initialization**: Provide fallback values for SSR
+   - **Conditional event listeners**: Check environment before adding DOM listeners
+   - **LocalStorage guards**: Check availability before accessing `localStorage`
+   - **Pattern for safe document access**:
+     ```typescript
+     useEffect(() => {
+       if (typeof document === 'undefined') return;
+       // Document-dependent code here
+     }, []);
+     ```
+
+7. **Route Configuration - CRITICAL PATTERNS**:
+   - **Use exact matching for root paths** in route helper functions
+   - **Never hardcode route checks** - always use centralized helpers
+   - **Test route logic thoroughly** to prevent security bypasses
+   - **Pattern for safe route checking**:
+     ```typescript
+     export function isRouteType(pathname: string): boolean {
+       return ROUTE_ARRAY.some(route => {
+         if (route === '/') return pathname === '/'; // Exact match for root
+         return pathname.startsWith(route);
+       });
+     }
+     ```
