@@ -20,6 +20,8 @@ import {
   StepperTrigger,
 } from '@/components/ui/stepper';
 import { EligibilityCard } from '@/components/ui/eligibility-card';
+import { analytics, MIXPANEL_EVENTS } from '@/lib/mixpanel';
+import { toast, Toaster } from 'sonner';
 
 // X (Twitter) Logo Component
 const XLogo = ({ size = 20, className = "", style }: { size?: number; className?: string; style?: React.CSSProperties }) => (
@@ -60,6 +62,11 @@ export default function ClaimOGNFT() {
     hash,
   });
 
+  // Track page view on mount
+  useEffect(() => {
+    analytics.track(MIXPANEL_EVENTS.PAGE_VIEW_NFT_CLAIM);
+  }, []);
+
   // Check auth status on mount and handle OAuth callback
   useEffect(() => {
     const checkUser = async () => {
@@ -70,6 +77,10 @@ export default function ClaimOGNFT() {
         if (sessionError) {
           console.error('Session error:', sessionError);
           setError('Authentication error. Please try again.');
+          analytics.track(MIXPANEL_EVENTS.TWITTER_AUTH_FAILED, {
+            error: sessionError.message,
+            error_code: sessionError.code,
+          });
           setLoading(false);
           return;
         }
@@ -84,10 +95,22 @@ export default function ClaimOGNFT() {
           // Skip start step if already authenticated
           setCurrentStep('twitter');
           console.log('User authenticated:', { handle, metadata: session.user.user_metadata });
+          
+          // Track successful auth
+          analytics.track(MIXPANEL_EVENTS.TWITTER_AUTH_SUCCESS, {
+            twitter_handle: handle,
+          });
+          analytics.identify(session.user.id, {
+            twitter_handle: handle,
+            twitter_id: session.user.id,
+          });
         }
       } catch (err) {
         console.error('Error checking user:', err);
         setError('Failed to check authentication status');
+        analytics.track(MIXPANEL_EVENTS.TWITTER_AUTH_FAILED, {
+          error: String(err),
+        });
       } finally {
         setLoading(false);
       }
@@ -106,10 +129,20 @@ export default function ClaimOGNFT() {
                        session.user.user_metadata?.name;
         setTwitterHandle(handle);
         setCurrentStep('twitter');
+        
+        // Track auth success
+        analytics.track(MIXPANEL_EVENTS.TWITTER_AUTH_SUCCESS, {
+          twitter_handle: handle,
+        });
+        analytics.identify(session.user.id, {
+          twitter_handle: handle,
+          twitter_id: session.user.id,
+        });
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setTwitterHandle(null);
         setCurrentStep('start');
+        analytics.reset();
       }
     });
 
@@ -131,6 +164,21 @@ export default function ClaimOGNFT() {
     }
   }, [eligibility, currentStep]);
 
+  // Track wallet connection
+  useEffect(() => {
+    if (isConnected && address && currentStep === 'wallet') {
+      analytics.track(MIXPANEL_EVENTS.WALLET_CONNECT_SUCCESS, {
+        wallet_address: address,
+        twitter_handle: twitterHandle,
+        network: currentNetwork.name,
+      });
+      analytics.setUserProperties({
+        wallet_address: address,
+        network: currentNetwork.name,
+      });
+    }
+  }, [isConnected, address, currentStep, twitterHandle]);
+
   // Handle mint success
   useEffect(() => {
     if (isConfirmed && hash) {
@@ -138,9 +186,56 @@ export default function ClaimOGNFT() {
     }
   }, [isConfirmed, hash]);
 
+  // Track mint errors and cancellations
+  useEffect(() => {
+    if (isMintError && mintError) {
+      const errorMessage = mintError.message || String(mintError);
+      const isCancelled = errorMessage.toLowerCase().includes('user rejected') || 
+                         errorMessage.toLowerCase().includes('user denied') ||
+                         errorMessage.toLowerCase().includes('cancelled');
+      
+      if (isCancelled) {
+        // Track cancellation
+        analytics.track(MIXPANEL_EVENTS.NFT_MINT_CANCELLED, {
+          twitter_handle: twitterHandle,
+          wallet_address: address,
+          network: currentNetwork.name,
+        });
+        
+        // Show toast notification for cancellation
+        toast.error('Transaction Cancelled', {
+          description: 'You cancelled the minting transaction. You can try again whenever you\'re ready.',
+          duration: 5000,
+        });
+        
+        // Reset to wallet step so user can try again
+        setCurrentStep('wallet');
+        setError(null);
+      } else {
+        analytics.track(MIXPANEL_EVENTS.NFT_MINT_FAILED, {
+          twitter_handle: twitterHandle,
+          wallet_address: address,
+          error: errorMessage,
+          network: currentNetwork.name,
+        });
+      }
+    }
+  }, [isMintError, mintError, twitterHandle, address]);
+
+  // Track when claim process actually starts (user moves past start screen)
+  useEffect(() => {
+    if (currentStep === 'twitter' && !user) {
+      analytics.track(MIXPANEL_EVENTS.NFT_CLAIM_STARTED);
+    }
+  }, [currentStep, user]);
+
   const signInWithTwitter = async () => {
     try {
       setError(null);
+      
+      // Track auth initiation
+      analytics.track(MIXPANEL_EVENTS.TWITTER_AUTH_INITIATED);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
         options: {
@@ -151,10 +246,17 @@ export default function ClaimOGNFT() {
       if (error) {
         setError('Failed to connect with Twitter: ' + error.message);
         console.error('Twitter OAuth error:', error);
+        analytics.track(MIXPANEL_EVENTS.TWITTER_AUTH_FAILED, {
+          error: error.message,
+          error_code: error.code,
+        });
       }
     } catch (err: any) {
       setError('Failed to connect with Twitter: ' + err.message);
       console.error('Twitter OAuth error:', err);
+      analytics.track(MIXPANEL_EVENTS.TWITTER_AUTH_FAILED, {
+        error: err.message,
+      });
     }
   };
 
@@ -170,18 +272,35 @@ export default function ClaimOGNFT() {
     setError(null);
     setCurrentStep('eligibility');
     
+    // Track eligibility check start
+    analytics.track(MIXPANEL_EVENTS.ELIGIBILITY_CHECK_STARTED, {
+      twitter_handle: handle,
+    });
+    
     try {
       const response = await fetch(`/api/claim/check-eligibility?twitter_handle=${encodeURIComponent(handle)}`);
       const data = await response.json();
       
       setEligibility(data);
       
-      if (!data.eligible) {
+      if (data.eligible) {
+        analytics.track(MIXPANEL_EVENTS.ELIGIBILITY_CHECK_ELIGIBLE, {
+          twitter_handle: handle,
+        });
+      } else {
+        analytics.track(MIXPANEL_EVENTS.ELIGIBILITY_CHECK_NOT_ELIGIBLE, {
+          twitter_handle: handle,
+          reason: data.reason,
+        });
         setError(data.reason || 'Not eligible');
       }
     } catch (err) {
       setError('Failed to check eligibility');
       setEligibility({ eligible: false, reason: 'Failed to check eligibility' });
+      analytics.track(MIXPANEL_EVENTS.ELIGIBILITY_CHECK_FAILED, {
+        twitter_handle: handle,
+        error: String(err),
+      });
     } finally {
       setIsCheckingEligibility(false);
     }
@@ -196,6 +315,14 @@ export default function ClaimOGNFT() {
     setError(null);
     setCurrentStep('mint');
 
+    // Track mint initiation
+    analytics.track(MIXPANEL_EVENTS.NFT_MINT_INITIATED, {
+      twitter_handle: twitterHandle,
+      wallet_address: address,
+      network: currentNetwork.name,
+      contract_address: NFT_CONTRACT_ADDRESS,
+    });
+
     try {
       // Call the mint function on the contract
       // Note: The95Pass contract mint() takes no parameters - it mints to msg.sender
@@ -208,11 +335,25 @@ export default function ClaimOGNFT() {
     } catch (err: any) {
       setError(err.message || 'Failed to mint NFT');
       console.error('Mint error:', err);
+      analytics.track(MIXPANEL_EVENTS.NFT_MINT_FAILED, {
+        twitter_handle: twitterHandle,
+        wallet_address: address,
+        error: err.message,
+        error_code: err.code,
+      });
     }
   };
 
   const recordClaim = async (txHash: `0x${string}`) => {
     if (!user || !twitterHandle) return;
+
+    // Track successful mint
+    analytics.track(MIXPANEL_EVENTS.NFT_MINT_SUCCESS, {
+      twitter_handle: twitterHandle,
+      wallet_address: address,
+      transaction_hash: txHash,
+      network: currentNetwork.name,
+    });
 
     try {
       const response = await fetch('/api/claim/record-claim', {
@@ -232,11 +373,29 @@ export default function ClaimOGNFT() {
       if (response.ok) {
         setCurrentStep('success');
         setMintedTokenId(data.claim?.token_id || 'N/A');
+        
+        // Track claim recording success
+        analytics.track(MIXPANEL_EVENTS.CLAIM_RECORD_SUCCESS, {
+          twitter_handle: twitterHandle,
+          wallet_address: address,
+          transaction_hash: txHash,
+          token_id: data.claim?.token_id,
+        });
       } else {
         setError(data.error || 'Failed to record claim');
+        analytics.track(MIXPANEL_EVENTS.CLAIM_RECORD_FAILED, {
+          twitter_handle: twitterHandle,
+          wallet_address: address,
+          error: data.error,
+        });
       }
     } catch (err) {
       console.error('Failed to record claim:', err);
+      analytics.track(MIXPANEL_EVENTS.CLAIM_RECORD_FAILED, {
+        twitter_handle: twitterHandle,
+        wallet_address: address,
+        error: String(err),
+      });
       // Still show success even if recording fails
       setCurrentStep('success');
     }
@@ -274,11 +433,23 @@ export default function ClaimOGNFT() {
   }
 
   return (
-    <div className="relative min-h-screen text-white overflow-hidden bg-black">
-      <div className="fixed inset-0 z-0">
-        <FuturisticAlienBackground />
-      </div>
-      <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+    <>
+      <Toaster 
+        position="top-center" 
+        theme="dark"
+        toastOptions={{
+          style: {
+            background: '#1a1a1a',
+            border: '1px solid rgba(255, 58, 30, 0.3)',
+            color: '#fff',
+          },
+        }}
+      />
+      <div className="relative min-h-screen text-white overflow-hidden bg-black">
+        <div className="fixed inset-0 z-0">
+          <FuturisticAlienBackground />
+        </div>
+        <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-6">
@@ -669,6 +840,7 @@ export default function ClaimOGNFT() {
           @apply w-full max-w-xs mx-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2;
         }
       `}</style>
-    </div>
+      </div>
+    </>
   );
 }

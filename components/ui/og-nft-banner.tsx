@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { Sparkles, ArrowRight } from 'lucide-react';
+import { analytics, MIXPANEL_EVENTS } from '@/lib/mixpanel';
 
 export type OGNFTBannerProps = {
   /** Accent color for the banner */
@@ -30,6 +31,13 @@ export const OGNFTBanner = ({
 
   if (!visible) return null;
 
+  const handleBannerClick = () => {
+    analytics.track(MIXPANEL_EVENTS.NFT_BANNER_CLICK, {
+      source: 'landing_page',
+      banner_color: color,
+    });
+  };
+
   return (
     <div className={`nft-banner-wrap ${className}`}>
       {/* SVG filters for animated effect */}
@@ -56,7 +64,7 @@ export const OGNFTBanner = ({
         </defs>
       </svg>
 
-      <Link href="/claim-og-megaeth-nft" className="banner-link">
+      <Link href="/claim-og-megaeth-nft" className="banner-link" onClick={handleBannerClick}>
         <div
           className="banner-container"
           style={
@@ -90,7 +98,7 @@ export const OGNFTBanner = ({
 
             {/* Main text */}
             <div className="banner-text">
-              <span className="banner-title">Claim Your OG MegaETH NFT</span>
+              <span className="banner-title">Claim Your 9.5% Pass MegaETH NFT</span>
               <span className="banner-subtitle">Top 279 Supporters • Exclusive 1.25x Multiplier</span>
             </div>
 

@@ -1,6 +1,15 @@
+'use client';
+
+import { useEffect } from 'react';
 import { WordHeroPage } from "@/components/ui/scroll-hero-section";
+import { analytics, MIXPANEL_EVENTS } from '@/lib/mixpanel';
 
 export default function Home() {
+  useEffect(() => {
+    // Track landing page view
+    analytics.track(MIXPANEL_EVENTS.PAGE_VIEW_LANDING);
+  }, []);
+
   return (
     <WordHeroPage
       items={['swap.', 'earn.', 'hedge.', 'tokenize.', 'automate.']}

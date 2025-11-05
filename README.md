@@ -9,8 +9,9 @@ A modern Next.js landing page featuring a stunning scroll hero section with anim
 - **Tailwind CSS** for styling
 - **Scroll Hero Section** with smooth animations
 - **Waitlist System** with countdown timer
-- **OG NFT Claim** for top 410 MegaETH supporters (NEW!)
+- **OG NFT Claim** for top 279 MegaETH supporters
 - **Supabase Auth** with Twitter OAuth
+- **Mixpanel Analytics** with full funnel tracking (NEW!)
 - **Responsive Design** optimized for all devices
 - **Light/Dark Mode** support
 
@@ -40,6 +41,7 @@ pnpm install
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 NEXT_PUBLIC_CONTRACT_ADDRESS=0xYourContractAddress  # For NFT claim
+NEXT_PUBLIC_MIXPANEL_TOKEN=your-mixpanel-token     # For analytics (optional)
 ```
 
 3. Run the development server:
@@ -197,6 +199,31 @@ npm start
 - [RainbowKit](https://www.rainbowkit.com/) - Wallet connection
 - [wagmi](https://wagmi.sh/) - Ethereum interactions
 - [viem](https://viem.sh/) - Ethereum utilities
+- [Mixpanel](https://mixpanel.com/) - Product analytics
+
+## Analytics
+
+This project includes comprehensive Mixpanel analytics to track user behavior and NFT claim funnel performance.
+
+### Quick Setup
+
+1. Get your Mixpanel token from [mixpanel.com](https://mixpanel.com/)
+2. Add to `.env.local`: `NEXT_PUBLIC_MIXPANEL_TOKEN=your-token`
+3. Events are tracked automatically
+
+### Tracked Events
+
+- Landing page views
+- NFT banner clicks
+- Complete NFT claim funnel (15+ events)
+- User authentication
+- Wallet connections
+- Minting success/failure/cancellation
+
+### Documentation
+
+- **Quick Start:** [`MIXPANEL_QUICKSTART.md`](MIXPANEL_QUICKSTART.md) - 5-minute setup guide
+- **Full Docs:** [`MIXPANEL_ANALYTICS.md`](MIXPANEL_ANALYTICS.md) - Complete event reference
 
 ## License
 
