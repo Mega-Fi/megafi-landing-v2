@@ -7,11 +7,26 @@ import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '@/lib/contract-abi';
 import { currentNetwork } from '@/lib/wagmi-config';
 import { createSupabaseClient } from '@/lib/supabase';
 import Image from 'next/image';
-import { Check, X, Loader2, ExternalLink, Twitter } from 'lucide-react';
+import { Check, X, Loader2, ExternalLink, Info, Sparkles } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { ParticleCanvas } from '@/components/ui/particle-canvas';
+import {
+  Stepper,
+  StepperIndicator,
+  StepperItem,
+  StepperSeparator,
+  StepperTitle,
+  StepperTrigger,
+} from '@/components/ui/stepper';
 
-type Step = 'twitter' | 'eligibility' | 'wallet' | 'mint' | 'success';
+// X (Twitter) Logo Component
+const XLogo = ({ size = 20, className = "", style }: { size?: number; className?: string; style?: React.CSSProperties }) => (
+  <svg width={size} height={size} viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="currentColor"/>
+  </svg>
+);
+
+type Step = 'start' | 'twitter' | 'eligibility' | 'wallet' | 'mint' | 'success';
 
 export default function ClaimOGNFT() {
   const supabase = createSupabaseClient();
@@ -20,7 +35,7 @@ export default function ClaimOGNFT() {
   const [user, setUser] = useState<User | null>(null);
   const [twitterHandle, setTwitterHandle] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentStep, setCurrentStep] = useState<Step>('twitter');
+  const [currentStep, setCurrentStep] = useState<Step>('start');
   const [eligibility, setEligibility] = useState<{ eligible: boolean; message?: string; reason?: string } | null>(null);
   const [isCheckingEligibility, setIsCheckingEligibility] = useState(false);
   const [mintedTokenId, setMintedTokenId] = useState<string | null>(null);
@@ -59,6 +74,8 @@ export default function ClaimOGNFT() {
                          session.user.user_metadata?.preferred_username ||
                          session.user.user_metadata?.name;
           setTwitterHandle(handle);
+          // Skip start step if already authenticated
+          setCurrentStep('twitter');
           console.log('User authenticated:', { handle, metadata: session.user.user_metadata });
         }
       } catch (err) {
@@ -81,10 +98,11 @@ export default function ClaimOGNFT() {
                        session.user.user_metadata?.preferred_username ||
                        session.user.user_metadata?.name;
         setTwitterHandle(handle);
+        setCurrentStep('twitter');
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setTwitterHandle(null);
-        setCurrentStep('twitter');
+        setCurrentStep('start');
       }
     });
 
@@ -134,7 +152,7 @@ export default function ClaimOGNFT() {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    setCurrentStep('twitter');
+    setCurrentStep('start');
     setEligibility(null);
     setError(null);
   };
@@ -217,7 +235,7 @@ export default function ClaimOGNFT() {
   };
 
   const getStepStatus = (step: Step): 'complete' | 'current' | 'upcoming' => {
-    const steps: Step[] = ['twitter', 'eligibility', 'wallet', 'mint', 'success'];
+    const steps: Step[] = ['start', 'twitter', 'eligibility', 'wallet', 'mint', 'success'];
     const currentIndex = steps.indexOf(currentStep);
     const stepIndex = steps.indexOf(step);
     
@@ -228,14 +246,22 @@ export default function ClaimOGNFT() {
 
   if (loading) {
     return (
-      <div className="relative min-h-screen text-white overflow-hidden">
-        <div className="fixed inset-0 z-0">
-          <ParticleCanvas pointerSize={6} pointerColor="#FF3A1E" />
-        </div>
+      <>
+        <div className="relative min-h-screen text-white overflow-hidden">
+          <div className="fixed inset-0 z-0">
+            <ParticleCanvas pointerSize={6} pointerColor="#FF3A1E" />
+          </div>
         <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <Loader2 className="animate-spin text-[#FF3A1E]" size={60} />
+          <Loader2 className="animate-spin text-[#FF3A1E]/50" size={60} style={{ filter: 'drop-shadow(0 0 12px rgba(255, 58, 30, 0.3))' }} />
         </div>
-      </div>
+        </div>
+        <style jsx global>{`
+          body {
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+              Helvetica Neue, Arial, Noto Sans, Apple Color Emoji, Segoe UI Emoji;
+          }
+        `}</style>
+      </>
     );
   }
 
@@ -253,88 +279,153 @@ export default function ClaimOGNFT() {
               alt="MegaFi"
               width={80}
               height={80}
-              className="rounded-full"
+              className="rounded-full opacity-80"
             />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Claim Your <span className="text-[#FF3A1E]">MegaETH OG NFT</span>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white/90">
+            MegaFi × MegaETH – <span className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent">The 9.5% Pass</span>
           </h1>
-          <p className="text-gray-400 text-lg">
-            Exclusive NFT for top 279 MegaETH community supporters
+          <p className="text-gray-400/70 text-lg">
+            Exclusive NFT for top 279 MegaETH community supporters{' '}
+            <a 
+              href="https://x.com/NamikMuduroglu/status/1986055902131315056" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent hover:from-[#FF6B3D]/50 hover:to-[#FF3A1E]/50 underline transition-all"
+            >
+              here
+            </a>
           </p>
         </div>
 
         {/* Progress Steps */}
         <div className="mb-12">
-          <div className="flex items-center justify-between relative">
-            {/* Progress Bar */}
-            <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-700 -z-10">
-              <div 
-                className="h-full bg-[#FF3A1E] transition-all duration-500"
-                style={{ 
-                  width: `${(['twitter', 'eligibility', 'wallet', 'mint', 'success'].indexOf(currentStep) / 4) * 100}%` 
-                }}
-              />
-            </div>
-
+          <Stepper 
+            value={['start', 'twitter', 'eligibility', 'wallet', 'mint', 'success'].indexOf(currentStep)}
+            className="w-full"
+          >
             {[
-              { key: 'twitter', label: 'Connect X', icon: Twitter },
-              { key: 'eligibility', label: 'Verify', icon: Check },
-              { key: 'wallet', label: 'Wallet', icon: Check },
-              { key: 'mint', label: 'Mint', icon: Check },
-              { key: 'success', label: 'Success', icon: Check },
-            ].map(({ key, label, icon: Icon }) => {
+              { key: 'start', label: 'Start', icon: Sparkles, step: 0 },
+              { key: 'twitter', label: 'Connect X', icon: XLogo, step: 1 },
+              { key: 'eligibility', label: 'Verify', icon: Check, step: 2 },
+              { key: 'wallet', label: 'Wallet', icon: Check, step: 3 },
+              { key: 'mint', label: 'Mint', icon: Check, step: 4 },
+              { key: 'success', label: 'Success', icon: Check, step: 5 },
+            ].map(({ key, label, icon: Icon, step }, index, array) => {
               const status = getStepStatus(key as Step);
+              const isLast = index === array.length - 1;
+              
               return (
-                <div key={key} className="flex flex-col items-center z-10">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all ${
-                      status === 'complete'
-                        ? 'bg-[#FF3A1E] text-white'
-                        : status === 'current'
-                        ? 'bg-[#FF3A1E] text-white ring-4 ring-[#FF3A1E]/20'
-                        : 'bg-gray-700 text-gray-500'
-                    }`}
-                  >
-                    <Icon size={20} />
-                  </div>
-                  <span className={`text-xs md:text-sm font-medium ${
-                    status === 'complete' || status === 'current' ? 'text-white' : 'text-gray-500'
-                  }`}>
-                    {label}
-                  </span>
-                </div>
+                <StepperItem 
+                  key={key} 
+                  step={step}
+                  completed={status === 'complete'}
+                  className={!isLast ? "flex-1" : ""}
+                >
+                  <StepperTrigger asChild>
+                    <div className="flex flex-col items-center cursor-default">
+                      <StepperIndicator 
+                        asChild
+                        className={`w-8 h-8 rounded-full flex items-center justify-center mb-1.5 transition-all backdrop-blur-sm ${
+                          status === 'complete'
+                            ? 'bg-white/90 text-gray-900'
+                            : status === 'current'
+                            ? 'bg-white/90 text-gray-900 ring-3 ring-white/20'
+                            : 'bg-gray-700/40 text-gray-400'
+                        }`}
+                      >
+                        <Icon size={15} />
+                      </StepperIndicator>
+                      <StepperTitle className={`text-[10px] md:text-xs font-medium ${
+                        status === 'complete' || status === 'current' ? 'text-white/80' : 'text-gray-500/60'
+                      }`}>
+                        {label}
+                      </StepperTitle>
+                    </div>
+                  </StepperTrigger>
+                  {!isLast && (
+                    <StepperSeparator 
+                      className={`h-0.5 mx-1 ${
+                        status === 'complete' 
+                          ? 'bg-white/60' 
+                          : 'bg-gray-700/30'
+                      }`}
+                    />
+                  )}
+                </StepperItem>
               );
             })}
-          </div>
+          </Stepper>
         </div>
 
         {/* Error Display */}
         {error && (
-          <div className="mb-6 p-4 bg-red-500/10 backdrop-blur-sm border border-red-500/20 rounded-lg flex items-start gap-3">
-            <X className="text-red-500 flex-shrink-0 mt-0.5" size={20} />
-            <p className="text-red-400">{error}</p>
+          <div className="mb-6 p-4 border-2 border-red-500/30 rounded-lg flex items-start gap-3">
+            <X className="text-red-500/80 flex-shrink-0 mt-0.5" size={20} />
+            <p className="text-red-400/80">{error}</p>
           </div>
         )}
 
         {/* Content Area */}
-        <div className="bg-gray-900/20 backdrop-blur-sm border border-gray-800/50 rounded-2xl p-8 md:p-12">
+        <div className="border border-gray-800/50 rounded-2xl p-8 md:p-12">
+          {/* Step 0: Start/Info */}
+          {currentStep === 'start' && (
+            <div className="text-center space-y-6">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
+                <Sparkles className="text-[#FF3A1E]/50" size={40} style={{ filter: 'drop-shadow(0 0 8px rgba(255, 58, 30, 0.25))' }} />
+              </div>
+              <h2 className="text-2xl font-bold text-white/80">The 9.5% Pass</h2>
+              <p className="text-gray-400/70 max-w-xl mx-auto">
+                An exclusive NFT for the top 279 MegaETH community supporters. Holders receive a 1.25x multiplier on points when MegaFi launches.
+              </p>
+              
+              <div className="space-y-4 text-left max-w-lg mx-auto">
+                <div className="p-4 rounded-lg bg-gradient-to-r from-[#FF3A1E]/10 to-[#FF6B3D]/10 border border-[#FF3A1E]/20">
+                  <h3 className="font-bold text-white/80 mb-2">✨ What You Get</h3>
+                  <ul className="text-sm text-gray-400/70 space-y-1">
+                    <li>• Exclusive OG supporter status</li>
+                    <li>• 1.25x points multiplier on MegaFi</li>
+                    <li>• Limited to 270 community members</li>
+                    <li>• ERC-721 NFT on Ethereum</li>
+                  </ul>
+                </div>
+                
+                <div className="p-4 rounded-lg bg-gray-800/30 border border-gray-700/30">
+                  <h3 className="font-bold text-white/80 mb-2">📋 Requirements</h3>
+                  <ul className="text-sm text-gray-400/70 space-y-1">
+                    <li>• X (Twitter) account verification</li>
+                    <li>• Must be on eligible supporters list</li>
+                    <li>• Ethereum wallet (MetaMask, etc.)</li>
+                    <li>• ETH for gas fees</li>
+                  </ul>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setCurrentStep('twitter')}
+                className="btn-primary"
+              >
+                Get Started
+              </button>
+            </div>
+          )}
+
           {/* Step 1: Twitter Authentication */}
           {currentStep === 'twitter' && (
             <div className="text-center space-y-6">
-              <div className="w-20 h-20 bg-[#FF3A1E]/10 rounded-full flex items-center justify-center mx-auto">
-                <Twitter className="text-[#FF3A1E]" size={40} />
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
+                <XLogo size={40} className="text-[#FF3A1E]/50" style={{ filter: 'drop-shadow(0 0 8px rgba(255, 58, 30, 0.25))' }} />
               </div>
-              <h2 className="text-2xl font-bold">Connect Your X Account</h2>
-              <p className="text-gray-400">
+              <h2 className="text-2xl font-bold text-white/80">Connect Your X Account</h2>
+              <p className="text-gray-400/70">
                 First, connect your X (Twitter) account to verify your eligibility
               </p>
               
               {user ? (
                 <div className="space-y-4">
-                  <div className="p-4 bg-gray-800/30 backdrop-blur-sm rounded-lg">
-                    <p className="text-sm text-gray-400 mb-1">Connected as</p>
-                    <p className="font-bold text-lg">@{twitterHandle}</p>
+                  <div className="p-4 rounded-lg">
+                    <p className="text-sm text-gray-400/70 mb-1">Connected as</p>
+                    <p className="font-bold text-lg text-white/80">@{twitterHandle}</p>
                   </div>
                   <button 
                     onClick={signOut}
@@ -348,8 +439,7 @@ export default function ClaimOGNFT() {
                   onClick={signInWithTwitter}
                   className="btn-primary"
                 >
-                  <Twitter size={20} />
-                  Connect with X
+                  Authenticate X
                 </button>
               )}
             </div>
@@ -360,29 +450,29 @@ export default function ClaimOGNFT() {
             <div className="text-center space-y-6">
               {isCheckingEligibility ? (
                 <>
-                  <Loader2 className="animate-spin text-[#FF3A1E] mx-auto" size={60} />
-                  <h2 className="text-2xl font-bold">Checking Eligibility...</h2>
-                  <p className="text-gray-400">
+                  <Loader2 className="animate-spin text-[#FF3A1E]/50 mx-auto" size={60} style={{ filter: 'drop-shadow(0 0 12px rgba(255, 58, 30, 0.3))' }} />
+                  <h2 className="text-2xl font-bold text-white/80">Checking Eligibility...</h2>
+                  <p className="text-gray-400/70">
                     Verifying @{twitterHandle} against the eligible list
                   </p>
                 </>
               ) : eligibility?.eligible ? (
                 <>
-                  <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto">
-                    <Check className="text-green-500" size={40} />
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
+                    <Check className="text-green-500/80" size={40} />
                   </div>
-                  <h2 className="text-2xl font-bold text-green-500">You're Eligible!</h2>
-                  <p className="text-gray-400">
+                  <h2 className="text-2xl font-bold text-green-500/80">You're Eligible!</h2>
+                  <p className="text-gray-400/70">
                     Congratulations! Your X handle is on the MegaETH OG supporter list
                   </p>
                 </>
               ) : (
                 <>
-                  <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto">
-                    <X className="text-red-500" size={40} />
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
+                    <X className="text-red-500/80" size={40} />
                   </div>
-                  <h2 className="text-2xl font-bold text-red-500">Not Eligible</h2>
-                  <p className="text-gray-400">{eligibility?.reason}</p>
+                  <h2 className="text-2xl font-bold text-red-500/80">Not Eligible</h2>
+                  <p className="text-gray-400/70">{eligibility?.reason}</p>
                   <button
                     onClick={() => {
                       signOut();
@@ -400,8 +490,8 @@ export default function ClaimOGNFT() {
           {/* Step 3: Wallet Connection */}
           {currentStep === 'wallet' && (
             <div className="text-center space-y-6">
-              <h2 className="text-2xl font-bold">Connect Your Wallet</h2>
-              <p className="text-gray-400">
+              <h2 className="text-2xl font-bold text-white/80">Connect Your Wallet</h2>
+              <p className="text-gray-400/70">
                 Connect your Ethereum wallet to mint your OG NFT
               </p>
               
@@ -411,9 +501,9 @@ export default function ClaimOGNFT() {
 
               {isConnected && address && (
                 <div className="space-y-4">
-                  <div className="p-4 bg-gray-800/30 backdrop-blur-sm rounded-lg">
-                    <p className="text-sm text-gray-400 mb-1">Wallet Connected</p>
-                    <p className="font-mono text-sm">{address.slice(0, 6)}...{address.slice(-4)}</p>
+                  <div className="p-4 rounded-lg">
+                    <p className="text-sm text-gray-400/70 mb-1">Wallet Connected</p>
+                    <p className="font-mono text-sm text-white/80">{address.slice(0, 6)}...{address.slice(-4)}</p>
                   </div>
                   <button
                     onClick={handleMint}
@@ -429,13 +519,13 @@ export default function ClaimOGNFT() {
           {/* Step 4: Minting */}
           {currentStep === 'mint' && (
             <div className="text-center space-y-6">
-              <Loader2 className="animate-spin text-[#FF3A1E] mx-auto" size={60} />
-              <h2 className="text-2xl font-bold">
+              <Loader2 className="animate-spin text-[#FF3A1E]/50 mx-auto" size={60} style={{ filter: 'drop-shadow(0 0 12px rgba(255, 58, 30, 0.3))' }} />
+              <h2 className="text-2xl font-bold text-white/80">
                 {isMintPending && 'Confirm Transaction...'}
                 {isConfirming && 'Minting Your NFT...'}
                 {isConfirmed && 'Recording Claim...'}
               </h2>
-              <p className="text-gray-400">
+              <p className="text-gray-400/70">
                 {isMintPending && 'Please confirm the transaction in your wallet'}
                 {isConfirming && 'Your transaction is being confirmed on the blockchain'}
                 {isConfirmed && 'Almost done! Recording your claim...'}
@@ -445,10 +535,10 @@ export default function ClaimOGNFT() {
                   href={`${currentNetwork.explorerUrl}/tx/${hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[#FF3A1E] hover:underline"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent hover:from-[#FF6B3D]/50 hover:to-[#FF3A1E]/50 underline transition-all"
                 >
                   View on {currentNetwork.isTestnet ? 'Arbiscan' : 'Etherscan'}
-                  <ExternalLink size={16} />
+                  <ExternalLink size={16} className="text-[#FF3A1E]/50" />
                 </a>
               )}
             </div>
@@ -457,43 +547,43 @@ export default function ClaimOGNFT() {
           {/* Step 5: Success */}
           {currentStep === 'success' && (
             <div className="text-center space-y-6">
-              <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto">
-                <Check className="text-green-500" size={40} />
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
+                <Check className="text-green-500/80" size={40} />
               </div>
-              <h2 className="text-3xl font-bold text-green-500">Success! 🎉</h2>
-              <p className="text-gray-400">
+              <h2 className="text-3xl font-bold text-green-500/80">Success! 🎉</h2>
+              <p className="text-gray-400/70">
                 You've successfully claimed your MegaETH OG NFT!
               </p>
 
-              <div className="space-y-3 text-left bg-gray-800/30 backdrop-blur-sm rounded-lg p-6">
+              <div className="space-y-3 text-left rounded-lg p-6">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Network:</span>
-                  <span className="font-medium">{currentNetwork.name}</span>
+                  <span className="text-gray-400/70">Network:</span>
+                  <span className="font-medium text-white/80">{currentNetwork.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Transaction:</span>
+                  <span className="text-gray-400/70">Transaction:</span>
                   <a
                     href={`${currentNetwork.explorerUrl}/tx/${hash}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#FF3A1E] hover:underline flex items-center gap-1"
+                    className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent hover:from-[#FF6B3D]/50 hover:to-[#FF3A1E]/50 hover:underline flex items-center gap-1 transition-all"
                   >
                     {hash?.slice(0, 10)}...{hash?.slice(-8)}
-                    <ExternalLink size={14} />
+                    <ExternalLink size={14} className="text-[#FF3A1E]/50" />
                   </a>
                 </div>
                 {mintedTokenId && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Token ID:</span>
-                    <span className="font-mono">{mintedTokenId}</span>
+                    <span className="text-gray-400/70">Token ID:</span>
+                    <span className="font-mono text-white/80">{mintedTokenId}</span>
                   </div>
                 )}
               </div>
 
-              <div className="p-6 bg-[#FF3A1E]/10 backdrop-blur-sm border border-[#FF3A1E]/20 rounded-lg">
-                <h3 className="font-bold text-lg mb-2">🎁 Your Benefits</h3>
-                <p className="text-gray-300">
-                  <span className="text-[#FF3A1E] font-bold">1.25x Multiplier</span> when MegaFi launches!
+              <div className="p-6 border-2 border-transparent bg-gradient-to-r from-[#FF3A1E]/10 to-[#FF6B3D]/10 rounded-lg" style={{ borderImage: 'linear-gradient(to right, rgba(255, 58, 30, 0.5), rgba(255, 107, 61, 0.5)) 1' }}>
+                <h3 className="font-bold text-lg mb-2 text-white/80">🎁 Your Benefits</h3>
+                <p className="text-gray-300/80">
+                  <span className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent font-bold">1.25x Multiplier</span> when MegaFi launches!
                 </p>
               </div>
 
@@ -508,20 +598,40 @@ export default function ClaimOGNFT() {
         </div>
 
         {/* Info Box */}
-        <div className="mt-8 p-6 bg-gray-900/10 backdrop-blur-sm border border-gray-800/50 rounded-lg">
-          <h3 className="font-bold mb-2">ℹ️ Important Information</h3>
-          <ul className="text-sm text-gray-400 space-y-2">
+        <div className="mt-8 p-6 rounded-lg max-w-2xl mx-auto opacity-60">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Info className="text-[#FF3A1E]" size={20} style={{ filter: 'drop-shadow(0 0 8px rgba(255, 58, 30, 0.5))' }} />
+            <h3 className="font-bold text-white/80 text-sm">Important Information</h3>
+          </div>
+          <ul className="text-xs text-gray-400/70 space-y-2 max-w-md mx-auto px-4 text-center">
+            <li>• NFT holders get 1.25x multiplier on points when MegaFi launches</li>
             <li>• Only the top 270 MegaETH community supporters are eligible</li>
             <li>• Each X handle can only claim one NFT</li>
             <li>• You'll need ETH in your wallet to pay for gas fees</li>
-            <li>• NFT holders get 1.25x multiplier benefits on MegaFi</li>
           </ul>
         </div>
       </div>
 
+      <style jsx global>{`
+        body {
+          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+            Helvetica Neue, Arial, Noto Sans, Apple Color Emoji, Segoe UI Emoji;
+        }
+      `}</style>
       <style jsx>{`
         .btn-primary {
-          @apply w-full max-w-xs mx-auto px-6 py-3 bg-[#FF3A1E] hover:bg-[#FF3A1E]/90 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+          @apply w-full max-w-xs mx-auto text-white font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+          padding: 16px 32px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(255, 58, 30, 0.8) 0%, rgba(255, 107, 61, 0.8) 100%);
+          box-shadow: 0 0 20px rgba(255, 58, 30, 0.4), 0 0 40px rgba(255, 58, 30, 0.2);
+          border: 2px solid rgba(255, 107, 61, 0.5);
+        }
+        .btn-primary:hover {
+          background: linear-gradient(135deg, rgba(255, 107, 61, 0.9) 0%, rgba(255, 58, 30, 0.9) 100%);
+          box-shadow: 0 0 30px rgba(255, 58, 30, 0.6), 0 0 60px rgba(255, 58, 30, 0.3);
+          border-color: rgba(255, 107, 61, 0.8);
+          transform: translateY(-1px);
         }
         .btn-secondary {
           @apply w-full max-w-xs mx-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2;

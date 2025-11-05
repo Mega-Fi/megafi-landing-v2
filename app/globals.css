@@ -58,3 +58,13 @@
   }
 }
 
+/* Custom stepper styles for NFT claim page */
+@layer components {
+  .stepper-orange {
+    --primary: 14 85% 57%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 0 0% 28%;
+    --muted-foreground: 0 0% 63%;
+  }
+}
+
