@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { Check, X, Loader2, ExternalLink, Info, Sparkles } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { ParticleCanvas } from '@/components/ui/particle-canvas';
+import { ElectricCard } from '@/components/ui/electric-card';
 import {
   Stepper,
   StepperIndicator,
@@ -270,7 +271,7 @@ export default function ClaimOGNFT() {
       <div className="fixed inset-0 z-0">
         <ParticleCanvas pointerSize={6} pointerColor="#FF3A1E" />
       </div>
-      <div className="relative z-10 container mx-auto px-4 py-12 max-w-4xl">
+      <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-6">
@@ -298,8 +299,8 @@ export default function ClaimOGNFT() {
           </p>
         </div>
 
-        {/* Progress Steps */}
-        <div className="mb-12">
+        {/* Progress Steps - Centered */}
+        <div className="mb-12 max-w-4xl mx-auto">
           <Stepper 
             value={['start', 'twitter', 'eligibility', 'wallet', 'mint', 'success'].indexOf(currentStep)}
             className="w-full"
@@ -358,7 +359,25 @@ export default function ClaimOGNFT() {
           </Stepper>
         </div>
 
-        {/* Error Display */}
+        {/* Two-column layout container */}
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+          
+          {/* Left column: NFT Card */}
+          <div className="order-1">
+            <ElectricCard
+              variant="swirl"
+              color="#FF3A1E"
+              badge="OG NFT"
+              title="The 9.5% Pass"
+              description="Exclusive for top 279 supporters"
+              width="22rem"
+              aspectRatio="7 / 10"
+            />
+          </div>
+          
+          {/* Right column: Claim form */}
+          <div className="w-full lg:w-auto lg:flex-1 max-w-2xl order-2">
+            {/* Error Display */}
         {error && (
           <div className="mb-6 p-4 border-2 border-red-500/30 rounded-lg flex items-start gap-3">
             <X className="text-red-500/80 flex-shrink-0 mt-0.5" size={20} />
@@ -595,6 +614,9 @@ export default function ClaimOGNFT() {
               </button>
             </div>
           )}
+        </div>
+          </div>
+          
         </div>
 
         {/* Info Box */}
