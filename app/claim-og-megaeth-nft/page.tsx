@@ -9,6 +9,7 @@ import { createSupabaseClient } from '@/lib/supabase';
 import Image from 'next/image';
 import { Check, X, Loader2, ExternalLink, Twitter } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
+import { ParticleCanvas } from '@/components/ui/particle-canvas';
 
 type Step = 'twitter' | 'eligibility' | 'wallet' | 'mint' | 'success';
 
@@ -171,11 +172,12 @@ export default function ClaimOGNFT() {
 
     try {
       // Call the mint function on the contract
+      // Note: The95Pass contract mint() takes no parameters - it mints to msg.sender
       writeContract({
         address: NFT_CONTRACT_ADDRESS,
         abi: NFT_CONTRACT_ABI,
         functionName: 'mint',
-        args: [address],
+        args: [], // No args needed - contract mints to msg.sender
       });
     } catch (err: any) {
       setError(err.message || 'Failed to mint NFT');
@@ -226,15 +228,23 @@ export default function ClaimOGNFT() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white flex items-center justify-center">
-        <Loader2 className="animate-spin text-[#FF3A1E]" size={60} />
+      <div className="relative min-h-screen text-white overflow-hidden">
+        <div className="fixed inset-0 z-0">
+          <ParticleCanvas pointerSize={6} pointerColor="#FF3A1E" />
+        </div>
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <Loader2 className="animate-spin text-[#FF3A1E]" size={60} />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="relative min-h-screen text-white overflow-hidden">
+      <div className="fixed inset-0 z-0">
+        <ParticleCanvas pointerSize={6} pointerColor="#FF3A1E" />
+      </div>
+      <div className="relative z-10 container mx-auto px-4 py-12 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-6">
@@ -301,14 +311,14 @@ export default function ClaimOGNFT() {
 
         {/* Error Display */}
         {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3">
+          <div className="mb-6 p-4 bg-red-500/10 backdrop-blur-sm border border-red-500/20 rounded-lg flex items-start gap-3">
             <X className="text-red-500 flex-shrink-0 mt-0.5" size={20} />
             <p className="text-red-400">{error}</p>
           </div>
         )}
 
         {/* Content Area */}
-        <div className="bg-gray-900/50 backdrop-blur border border-gray-800 rounded-2xl p-8 md:p-12">
+        <div className="bg-gray-900/20 backdrop-blur-sm border border-gray-800/50 rounded-2xl p-8 md:p-12">
           {/* Step 1: Twitter Authentication */}
           {currentStep === 'twitter' && (
             <div className="text-center space-y-6">
@@ -322,7 +332,7 @@ export default function ClaimOGNFT() {
               
               {user ? (
                 <div className="space-y-4">
-                  <div className="p-4 bg-gray-800 rounded-lg">
+                  <div className="p-4 bg-gray-800/30 backdrop-blur-sm rounded-lg">
                     <p className="text-sm text-gray-400 mb-1">Connected as</p>
                     <p className="font-bold text-lg">@{twitterHandle}</p>
                   </div>
@@ -401,7 +411,7 @@ export default function ClaimOGNFT() {
 
               {isConnected && address && (
                 <div className="space-y-4">
-                  <div className="p-4 bg-gray-800 rounded-lg">
+                  <div className="p-4 bg-gray-800/30 backdrop-blur-sm rounded-lg">
                     <p className="text-sm text-gray-400 mb-1">Wallet Connected</p>
                     <p className="font-mono text-sm">{address.slice(0, 6)}...{address.slice(-4)}</p>
                   </div>
@@ -455,7 +465,7 @@ export default function ClaimOGNFT() {
                 You've successfully claimed your MegaETH OG NFT!
               </p>
 
-              <div className="space-y-3 text-left bg-gray-800 rounded-lg p-6">
+              <div className="space-y-3 text-left bg-gray-800/30 backdrop-blur-sm rounded-lg p-6">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Network:</span>
                   <span className="font-medium">{currentNetwork.name}</span>
@@ -480,7 +490,7 @@ export default function ClaimOGNFT() {
                 )}
               </div>
 
-              <div className="p-6 bg-[#FF3A1E]/10 border border-[#FF3A1E]/20 rounded-lg">
+              <div className="p-6 bg-[#FF3A1E]/10 backdrop-blur-sm border border-[#FF3A1E]/20 rounded-lg">
                 <h3 className="font-bold text-lg mb-2">🎁 Your Benefits</h3>
                 <p className="text-gray-300">
                   <span className="text-[#FF3A1E] font-bold">1.25x Multiplier</span> when MegaFi launches!
@@ -498,7 +508,7 @@ export default function ClaimOGNFT() {
         </div>
 
         {/* Info Box */}
-        <div className="mt-8 p-6 bg-gray-900/30 border border-gray-800 rounded-lg">
+        <div className="mt-8 p-6 bg-gray-900/10 backdrop-blur-sm border border-gray-800/50 rounded-lg">
           <h3 className="font-bold mb-2">ℹ️ Important Information</h3>
           <ul className="text-sm text-gray-400 space-y-2">
             <li>• Only the top 270 MegaETH community supporters are eligible</li>
