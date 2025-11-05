@@ -1,0 +1,186 @@
+---
+alwaysApply: false
+---
+
+# OG NFT Eligibility Card Component
+
+## Overview
+Custom animated card component used in the MegaETH OG NFT claim flow to display eligibility verification status. Features a moving dot animation, shimmer border effects, and emerald green success colors that align with the futuristic dark theme.
+
+## Component Details
+
+### Location
+- **Component**: `components/ui/eligibility-card.tsx`
+- **Styles**: `app/globals.css` (lines 71-255)
+- **Usage**: `app/claim-og-megaeth-nft/page.tsx` (Step 3: Wallet Connection)
+
+### Features
+- ✨ **Animated moving dot** that travels along the card border
+- 🌟 **Shimmer border effects** with directional animations
+- 🎨 **Emerald green gradient** (#34d399 to #10b981) - Success/verified state
+- 💫 **Pulsing radial glow** background effect
+- 🎯 **Responsive design** with backdrop blur
+- ⚡ **Smooth hover transitions**
+
+### Component Code
+
+```tsx
+// components/ui/eligibility-card.tsx
+import React from 'react';
+import { Check } from 'lucide-react';
+
+interface EligibilityCardProps {
+  twitterHandle: string;
+}
+
+export function EligibilityCard({ twitterHandle }: EligibilityCardProps) {
+  return (
+    <div className="eligibility-card-outer">
+      <div className="eligibility-dot"></div>
+      <div className="eligibility-card">
+        <div className="eligibility-ray"></div>
+        
+        {/* Icon */}
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Check className="text-emerald-400" size={24} />
+          <h3 className="eligibility-title">Eligibility Verified</h3>
+        </div>
+        
+        {/* Message */}
+        <p className="eligibility-message">
+          Your X account <span className="text-emerald-400 font-semibold">@{twitterHandle}</span> is eligible to claim this NFT
+        </p>
+        
+        {/* Animated borders */}
+        <div className="eligibility-line eligibility-topl"></div>
+        <div className="eligibility-line eligibility-leftl"></div>
+        <div className="eligibility-line eligibility-bottoml"></div>
+        <div className="eligibility-line eligibility-rightl"></div>
+      </div>
+    </div>
+  );
+}
+```
+
+### Usage Example
+
+```tsx
+import { EligibilityCard } from '@/components/ui/eligibility-card';
+
+// In your component
+{eligibility?.eligible && twitterHandle && (
+  <EligibilityCard twitterHandle={twitterHandle} />
+)}
+```
+
+## Animation Details
+
+### 1. Moving Dot Animation
+- **Duration**: 4 seconds
+- **Timing**: ease-in-out infinite loop
+- **Path**: Travels clockwise around card corners
+- **Style**: Radial gradient with glow effect
+
+```css
+@keyframes moveDot {
+  0%, 100% { top: 10%; right: 10%; }
+  25% { top: 10%; right: calc(100% - 35px); }
+  50% { top: calc(100% - 30px); right: calc(100% - 35px); }
+  75% { top: calc(100% - 30px); right: 10%; }
+}
+```
+
+### 2. Shimmer Border Effects
+- **Top/Bottom**: Horizontal shimmer (2s linear)
+- **Left/Right**: Vertical shimmer (2s linear)
+- **Color**: Emerald gradient (#34d399)
+- **Opacity**: 0.6 for subtle effect
+
+### 3. Pulsing Glow
+- **Duration**: 3 seconds
+- **Effect**: Radial gradient breathing effect
+- **Colors**: Emerald green with transparency
+
+## Design System Integration
+
+### Colors Used
+- **Primary Emerald**: `#34d399` (Tailwind emerald-400 - Success state)
+- **Secondary Emerald**: `#10b981` (Tailwind emerald-500 - Gradient accent)
+- **Text**: `rgba(255, 255, 255, 0.7)` (body text)
+- **Glow**: `rgba(52, 211, 153, 0.15-0.8)` (various opacities)
+
+### Spacing
+- **Padding**: 2rem (32px)
+- **Border Radius**: 16px
+- **Max Width**: 500px
+- **Dot Size**: 25px
+
+### Effects
+- **Backdrop Filter**: `blur(10px)`
+- **Box Shadow**: Multiple layers with emerald glow
+- **Text Shadow**: Emerald glow on title
+- **Perspective**: 1000px (3D effect support)
+
+## CSS Classes Reference
+
+| Class | Purpose |
+|-------|---------|
+| `eligibility-card-outer` | Wrapper with perspective |
+| `eligibility-dot` | Animated moving dot |
+| `eligibility-card` | Main card container |
+| `eligibility-ray` | Pulsing radial glow background |
+| `eligibility-title` | "Eligibility Verified" heading |
+| `eligibility-message` | User handle message text |
+| `eligibility-line` | Border animation base |
+| `eligibility-topl` | Top border shimmer |
+| `eligibility-bottoml` | Bottom border shimmer |
+| `eligibility-leftl` | Left border shimmer |
+| `eligibility-rightl` | Right border shimmer |
+
+## Implementation Guidelines
+
+### When to Use
+- Display confirmed eligibility status
+- Show user-specific success state
+- Add visual interest to confirmation screens
+- Semantic green color indicates success/verification
+
+### Props
+- `twitterHandle` (string, required): X handle to display in message
+
+### Accessibility
+- Uses semantic HTML structure
+- Check icon provides visual confirmation
+- Clear text messaging
+- High contrast emerald green on dark background
+- Semantic green color reinforces success/verified state
+
+### Performance Considerations
+- CSS animations (GPU accelerated)
+- Single component instance
+- No JavaScript animations (pure CSS)
+- Minimal DOM nodes
+
+## Browser Compatibility
+- ✅ Modern browsers (Chrome, Firefox, Safari, Edge)
+- ✅ CSS animations supported
+- ✅ Backdrop filter with fallback
+- ✅ CSS gradients supported
+
+## Related Components
+- `ElectricCard` - Similar animated card for NFT preview
+- `FuturisticAlienBackground` - Background particle effects
+- `Stepper` - Progress indicator for claim flow
+
+## Future Enhancements
+- [ ] Add success sound effect option
+- [ ] Confetti animation on appear
+- [ ] Customizable color scheme
+- [ ] Dark/light mode variants
+- [ ] Mobile-optimized dot size
+
+---
+
+**Created**: November 5, 2025  
+**Status**: Production Ready  
+**Used In**: NFT Claim Flow (Step 3: Wallet Connection)

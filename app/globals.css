@@ -68,3 +68,189 @@
   }
 }
 
+/* Eligibility Card Animation Styles */
+@keyframes moveDot {
+  0%, 100% {
+    top: 10%;
+    right: 10%;
+  }
+  25% {
+    top: 10%;
+    right: calc(100% - 35px);
+  }
+  50% {
+    top: calc(100% - 30px);
+    right: calc(100% - 35px);
+  }
+  75% {
+    top: calc(100% - 30px);
+    right: 10%;
+  }
+}
+
+@keyframes rotateBorder {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(100%) translateY(0);
+  }
+  50% {
+    transform: translateX(100%) translateY(100%);
+  }
+  75% {
+    transform: translateX(0) translateY(100%);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+.eligibility-card-outer {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  perspective: 1000px;
+}
+
+.eligibility-dot {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background: radial-gradient(circle, #34d399 0%, #10b981 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 20px rgba(52, 211, 153, 0.8),
+    0 0 40px rgba(52, 211, 153, 0.4),
+    inset 0 0 10px rgba(16, 185, 129, 0.6);
+  z-index: 10;
+  animation: moveDot 4s ease-in-out infinite;
+}
+
+.eligibility-card {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(52, 211, 153, 0.05) 0%,
+    rgba(16, 185, 129, 0.1) 100%
+  );
+  border: 2px solid rgba(52, 211, 153, 0.3);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  box-shadow: 
+    0 8px 32px rgba(52, 211, 153, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.eligibility-card:hover {
+  border-color: rgba(52, 211, 153, 0.5);
+  box-shadow: 
+    0 12px 48px rgba(52, 211, 153, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.eligibility-ray {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(52, 211, 153, 0.15) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.eligibility-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #34d399;
+  text-shadow: 0 0 20px rgba(52, 211, 153, 0.5);
+}
+
+.eligibility-message {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+.eligibility-line {
+  position: absolute;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #34d399 50%,
+    transparent 100%
+  );
+  opacity: 0.6;
+}
+
+.eligibility-topl {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  animation: shimmer-horizontal 2s linear infinite;
+}
+
+.eligibility-bottoml {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  animation: shimmer-horizontal 2s linear infinite reverse;
+}
+
+.eligibility-leftl {
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  animation: shimmer-vertical 2s linear infinite;
+}
+
+.eligibility-rightl {
+  right: 0;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  animation: shimmer-vertical 2s linear infinite reverse;
+}
+
+@keyframes shimmer-horizontal {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes shimmer-vertical {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+

@@ -19,6 +19,7 @@ import {
   StepperTitle,
   StepperTrigger,
 } from '@/components/ui/stepper';
+import { EligibilityCard } from '@/components/ui/eligibility-card';
 
 // X (Twitter) Logo Component
 const XLogo = ({ size = 20, className = "", style }: { size?: number; className?: string; style?: React.CSSProperties }) => (
@@ -120,6 +121,7 @@ export default function ClaimOGNFT() {
     if (twitterHandle && currentStep === 'twitter') {
       checkEligibility(twitterHandle);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [twitterHandle, currentStep]);
 
   // Auto-advance to wallet step when eligible
@@ -392,7 +394,7 @@ export default function ClaimOGNFT() {
         )}
 
         {/* Content Area */}
-        <div className="border border-gray-800/50 rounded-2xl p-8 md:p-12">
+        <div className="rounded-2xl p-8 md:p-12">
           {/* Step 0: Start/Info */}
           {currentStep === 'start' && (
             <div className="text-center space-y-6">
@@ -452,12 +454,20 @@ export default function ClaimOGNFT() {
                     <p className="text-sm text-gray-400/70 mb-1">Connected as</p>
                     <p className="font-bold text-lg text-white/80">@{twitterHandle}</p>
                   </div>
-                  <button 
-                    onClick={signOut}
-                    className="btn-secondary"
-                  >
-                    Disconnect
-                  </button>
+                  <div className="flex flex-col gap-4 items-center">
+                    <button 
+                      onClick={() => twitterHandle && checkEligibility(twitterHandle)}
+                      className="btn-primary"
+                    >
+                      Continue
+                    </button>
+                    <button 
+                      onClick={signOut}
+                      className="btn-secondary"
+                    >
+                      Disconnect
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button
@@ -515,10 +525,18 @@ export default function ClaimOGNFT() {
           {/* Step 3: Wallet Connection */}
           {currentStep === 'wallet' && (
             <div className="text-center space-y-6">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
+                <Wallet className="text-[#FF3A1E]/50" size={40} style={{ filter: 'drop-shadow(0 0 8px rgba(255, 58, 30, 0.25))' }} />
+              </div>
               <h2 className="text-2xl font-bold text-white/80">Connect Your Wallet</h2>
               <p className="text-gray-400/70">
                 Connect your Ethereum wallet to mint your OG NFT
               </p>
+
+              {/* Eligibility Confirmation */}
+              {eligibility?.eligible && twitterHandle && (
+                <EligibilityCard twitterHandle={twitterHandle} />
+              )}
               
               <div className="flex justify-center">
                 <ConnectButton />
@@ -573,7 +591,7 @@ export default function ClaimOGNFT() {
           {currentStep === 'success' && (
             <div className="text-center space-y-6">
               <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
-                <Check className="text-green-500/80" size={40} />
+                <PartyPopper className="text-green-500/80" size={40} />
               </div>
               <h2 className="text-3xl font-bold text-green-500/80">Success! 🎉</h2>
               <p className="text-gray-400/70">
