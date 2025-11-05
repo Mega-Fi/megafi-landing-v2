@@ -7,7 +7,7 @@ import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '@/lib/contract-abi';
 import { currentNetwork } from '@/lib/wagmi-config';
 import { createSupabaseClient } from '@/lib/supabase';
 import Image from 'next/image';
-import { Check, X, Loader2, ExternalLink, Sparkles } from 'lucide-react';
+import { Check, X, Loader2, ExternalLink, Wallet, Sparkles, PartyPopper } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { FuturisticAlienBackground } from '@/components/ui/futuristic-alien-background';
 import { ElectricCard } from '@/components/ui/electric-card';
@@ -25,6 +25,11 @@ const XLogo = ({ size = 20, className = "", style }: { size?: number; className?
   <svg width={size} height={size} viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
     <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="currentColor"/>
   </svg>
+);
+
+// Favicon Icon Component
+const FaviconIcon = ({ size = 20 }: { size?: number }) => (
+  <img src="/favicon.png" alt="MegaFi" width={size} height={size} style={{ objectFit: 'contain' }} />
 );
 
 type Step = 'start' | 'twitter' | 'eligibility' | 'wallet' | 'mint' | 'success';
@@ -306,12 +311,12 @@ export default function ClaimOGNFT() {
             className="w-full"
           >
             {[
-              { key: 'start', label: 'Start', icon: Sparkles, step: 0 },
+              { key: 'start', label: 'Start', icon: FaviconIcon, step: 0 },
               { key: 'twitter', label: 'Connect X', icon: XLogo, step: 1 },
               { key: 'eligibility', label: 'Verify', icon: Check, step: 2 },
-              { key: 'wallet', label: 'Wallet', icon: Check, step: 3 },
-              { key: 'mint', label: 'Mint', icon: Check, step: 4 },
-              { key: 'success', label: 'Success', icon: Check, step: 5 },
+              { key: 'wallet', label: 'Wallet', icon: Wallet, step: 3 },
+              { key: 'mint', label: 'Mint', icon: Sparkles, step: 4 },
+              { key: 'success', label: 'Success', icon: PartyPopper, step: 5 },
             ].map(({ key, label, icon: Icon, step }, index, array) => {
               const status = getStepStatus(key as Step);
               const isLast = index === array.length - 1;
@@ -392,7 +397,7 @@ export default function ClaimOGNFT() {
           {currentStep === 'start' && (
             <div className="text-center space-y-6">
               <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
-                <Sparkles className="text-[#FF3A1E]/50" size={40} style={{ filter: 'drop-shadow(0 0 8px rgba(255, 58, 30, 0.25))' }} />
+                <FaviconIcon size={40} />
               </div>
               <h2 className="text-2xl font-bold text-white/80">The 9.5% Pass</h2>
               <p className="text-gray-400/70 max-w-xl mx-auto">
