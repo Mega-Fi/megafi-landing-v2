@@ -7,9 +7,9 @@ import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '@/lib/contract-abi';
 import { currentNetwork } from '@/lib/wagmi-config';
 import { createSupabaseClient } from '@/lib/supabase';
 import Image from 'next/image';
-import { Check, X, Loader2, ExternalLink, Info, Sparkles } from 'lucide-react';
+import { Check, X, Loader2, ExternalLink, Sparkles } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
-import { ParticleCanvas } from '@/components/ui/particle-canvas';
+import { FuturisticAlienBackground } from '@/components/ui/futuristic-alien-background';
 import { ElectricCard } from '@/components/ui/electric-card';
 import {
   Stepper,
@@ -248,9 +248,9 @@ export default function ClaimOGNFT() {
   if (loading) {
     return (
       <>
-        <div className="relative min-h-screen text-white overflow-hidden">
+        <div className="relative min-h-screen text-white overflow-hidden bg-black">
           <div className="fixed inset-0 z-0">
-            <ParticleCanvas pointerSize={6} pointerColor="#FF3A1E" />
+            <FuturisticAlienBackground />
           </div>
         <div className="relative z-10 flex items-center justify-center min-h-screen">
           <Loader2 className="animate-spin text-[#FF3A1E]/50" size={60} style={{ filter: 'drop-shadow(0 0 12px rgba(255, 58, 30, 0.3))' }} />
@@ -267,9 +267,9 @@ export default function ClaimOGNFT() {
   }
 
   return (
-    <div className="relative min-h-screen text-white overflow-hidden">
+    <div className="relative min-h-screen text-white overflow-hidden bg-black">
       <div className="fixed inset-0 z-0">
-        <ParticleCanvas pointerSize={6} pointerColor="#FF3A1E" />
+        <FuturisticAlienBackground />
       </div>
       <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
         {/* Header */}
@@ -400,17 +400,17 @@ export default function ClaimOGNFT() {
               
               <div className="space-y-4 text-left max-w-lg mx-auto">
                 <div className="p-4 rounded-lg bg-gradient-to-r from-[#FF3A1E]/10 to-[#FF6B3D]/10 border border-[#FF3A1E]/20">
-                  <h3 className="font-bold text-white/80 mb-2">✨ What You Get</h3>
+                  <h3 className="font-bold text-white/80 mb-2">What You Get</h3>
                   <ul className="text-sm text-gray-400/70 space-y-1">
                     <li>• Exclusive OG supporter status</li>
                     <li>• 1.25x points multiplier on MegaFi</li>
-                    <li>• Limited to 270 community members</li>
+                    <li>• Limited to 279 MegaETH OGs</li>
                     <li>• ERC-721 NFT on Ethereum</li>
                   </ul>
                 </div>
                 
                 <div className="p-4 rounded-lg bg-gray-800/30 border border-gray-700/30">
-                  <h3 className="font-bold text-white/80 mb-2">📋 Requirements</h3>
+                  <h3 className="font-bold text-white/80 mb-2">Requirements</h3>
                   <ul className="text-sm text-gray-400/70 space-y-1">
                     <li>• X (Twitter) account verification</li>
                     <li>• Must be on eligible supporters list</li>
@@ -617,20 +617,6 @@ export default function ClaimOGNFT() {
         </div>
           </div>
           
-        </div>
-
-        {/* Info Box */}
-        <div className="mt-8 p-6 rounded-lg max-w-2xl mx-auto opacity-60">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Info className="text-[#FF3A1E]" size={20} style={{ filter: 'drop-shadow(0 0 8px rgba(255, 58, 30, 0.5))' }} />
-            <h3 className="font-bold text-white/80 text-sm">Important Information</h3>
-          </div>
-          <ul className="text-xs text-gray-400/70 space-y-2 max-w-md mx-auto px-4 text-center">
-            <li>• NFT holders get 1.25x multiplier on points when MegaFi launches</li>
-            <li>• Only the top 270 MegaETH community supporters are eligible</li>
-            <li>• Each X handle can only claim one NFT</li>
-            <li>• You'll need ETH in your wallet to pay for gas fees</li>
-          </ul>
         </div>
       </div>
 
