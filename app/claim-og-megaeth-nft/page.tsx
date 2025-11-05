@@ -367,9 +367,10 @@ export default function ClaimOGNFT() {
             <ElectricCard
               variant="swirl"
               color="#FF3A1E"
-              badge="OG NFT"
+              badge="001"
               title="The 9.5% Pass"
               description="Exclusive for top 279 supporters"
+              centerImage="/favicon.png"
               width="22rem"
               aspectRatio="7 / 10"
             />

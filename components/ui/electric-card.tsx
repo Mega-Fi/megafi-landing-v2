@@ -21,6 +21,9 @@ export type ElectricCardProps = {
   /** Aspect ratio of the card (e.g. "7 / 10", "3 / 4"). */
   aspectRatio?: string;
 
+  /** Center image source (optional). */
+  centerImage?: string;
+
   /** Extra class names for the outer wrapper (optional). */
   className?: string;
 };
@@ -39,6 +42,7 @@ const ElectricCard = ({
   description = "In case you'd like to emphasize something very dramatically.",
   width = "22rem",
   aspectRatio = "7 / 10",
+  centerImage,
   className = "",
 }: ElectricCardProps) => {
   // Make unique IDs so multiple components don't clash
@@ -133,8 +137,16 @@ const ElectricCard = ({
         <div className="content-container">
           <div className="content-top">
             <div className="scrollbar-glass">{badge}</div>
-            <p className="title">{title}</p>
           </div>
+
+          {centerImage && (
+            <div className="center-content">
+              <div className="center-image-container">
+                <img src={centerImage} alt="NFT" className="center-image" />
+              </div>
+              <p className="title">{title}</p>
+            </div>
+          )}
 
           <hr className="divider" />
 
@@ -264,7 +276,31 @@ const ElectricCard = ({
           flex-direction: column;
           padding: 48px;
           padding-bottom: 16px;
-          height: 100%;
+        }
+
+        .center-content {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 24px;
+          z-index: 5;
+        }
+
+        .center-image-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .center-image {
+          width: 120px;
+          height: 120px;
+          object-fit: contain;
+          filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
         }
 
         .content-bottom {
@@ -320,9 +356,11 @@ const ElectricCard = ({
         }
 
         .title {
-          font-size: 2.25em;
+          font-size: 1.75em;
           font-weight: 500;
-          margin-top: auto;
+          margin: 0;
+          text-align: center;
+          white-space: nowrap;
         }
 
         .description {
