@@ -222,16 +222,10 @@ export async function POST(request: Request) {
           process.env.NEXT_PUBLIC_RPC_URL ||
           "https://eth.llamarpc.com"; // Public fallback
       } else if (network === "arbitrum") {
-        rpcUrl =
-          process.env.NEXT_PUBLIC_ARBITRUM_RPC_URL ||
-          process.env.NEXT_PUBLIC_RPC_URL ||
-          "https://arb1.arbitrum.io/rpc"; // Public Arbitrum RPC
+        rpcUrl = "https://arb1.arbitrum.io/rpc"; // Public Arbitrum RPC
       } else {
         // testnet (Arbitrum Sepolia)
-        rpcUrl =
-          process.env.NEXT_PUBLIC_TESTNET_RPC_URL ||
-          process.env.NEXT_PUBLIC_RPC_URL ||
-          "https://arbitrum-sepolia.drpc.org"; // Public testnet RPC
+        rpcUrl = "https://arbitrum-sepolia.drpc.org"; // Public testnet RPC
       }
 
       const publicClient = createPublicClient({
