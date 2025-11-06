@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { isAddress, getAddress, createPublicClient, http } from "viem";
-import { mainnet, arbitrumSepolia } from "viem/chains";
+import { mainnet, arbitrum, arbitrumSepolia } from "viem/chains";
 import { supabase } from "@/lib/supabase";
 import { isRateLimited } from "@/lib/rate-limit";
 import {
@@ -200,7 +200,10 @@ export async function POST(request: Request) {
     // SECURITY: Check if wallet has already minted on-chain
     try {
       const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
-      const selectedChain = network === "mainnet" ? mainnet : arbitrumSepolia;
+      const selectedChain = 
+        network === "mainnet" ? mainnet :
+        network === "arbitrum" ? arbitrum :
+        arbitrumSepolia; // default to testnet
 
       const publicClient = createPublicClient({
         chain: selectedChain,

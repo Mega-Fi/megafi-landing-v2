@@ -1,11 +1,16 @@
 'use client';
 
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { mainnet, arbitrumSepolia } from 'wagmi/chains';
+import { mainnet, arbitrum, arbitrumSepolia } from 'wagmi/chains';
 
 // Determine which network to use based on environment variable
+// Options: 'testnet' | 'mainnet' | 'arbitrum'
 const network = process.env.NEXT_PUBLIC_NETWORK || 'testnet';
-const selectedChain = network === 'mainnet' ? mainnet : arbitrumSepolia;
+
+const selectedChain = 
+  network === 'mainnet' ? mainnet :
+  network === 'arbitrum' ? arbitrum :
+  arbitrumSepolia; // default to testnet
 
 export const config = getDefaultConfig({
   appName: 'MegaFi - MegaETH OG NFT',
@@ -20,5 +25,6 @@ export const currentNetwork = {
   chainId: selectedChain.id,
   isTestnet: network === 'testnet',
   explorerUrl: selectedChain.blockExplorers?.default.url || 'https://etherscan.io',
+  network: network, // 'testnet' | 'mainnet' | 'arbitrum'
 };
 

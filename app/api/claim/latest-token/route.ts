@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 import { createPublicClient, http } from "viem";
-import { mainnet, arbitrumSepolia } from "viem/chains";
+import { mainnet, arbitrum, arbitrumSepolia } from "viem/chains";
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
 
 export async function GET() {
   try {
     // Determine network from environment variable
+    // Options: 'testnet' | 'mainnet' | 'arbitrum'
     const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
-    const selectedChain = network === "mainnet" ? mainnet : arbitrumSepolia;
+    const selectedChain = 
+      network === "mainnet" ? mainnet :
+      network === "arbitrum" ? arbitrum :
+      arbitrumSepolia; // default to testnet
 
     // Create public client to read from contract
     const publicClient = createPublicClient({
