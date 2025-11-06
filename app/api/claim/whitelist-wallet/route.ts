@@ -15,6 +15,12 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey);
 
+// Whitelist server URL - hardcoded for production
+const WHITELIST_SERVER_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://server.megafi.app"
+    : "http://localhost:3001";
+
 /**
  * Verify user is authenticated via Supabase session
  */
@@ -291,21 +297,14 @@ export async function POST(request: Request) {
       }
 
       // Same wallet - check if already whitelisted on-chain
-      const whitelistServerUrl =
-        process.env.WHITELIST_SERVER_URL ||
-        process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-        (process.env.NODE_ENV === "production"
-          ? "https://server.megafi.app"
-          : "http://localhost:3001");
-
-      if (whitelistServerUrl) {
+      if (WHITELIST_SERVER_URL) {
         const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
         // Create timeout controller (AbortSignal.timeout may not be available in all Node versions)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
 
         const statusResponse = await fetch(
-          `${whitelistServerUrl}/api/status/${normalizedAddress}`,
+          `${WHITELIST_SERVER_URL}/api/status/${normalizedAddress}`,
           {
             method: "GET",
             headers: {
@@ -386,31 +385,13 @@ export async function POST(request: Request) {
       }
     }
 
-    // Get whitelist server URL from environment
-    // SECURITY: Require env var in production, fail if missing
-    const whitelistServerUrl =
-      process.env.WHITELIST_SERVER_URL ||
-      process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-      (process.env.NODE_ENV === "production"
-        ? "https://server.megafi.app"
-        : "http://localhost:3001");
-
-    if (!whitelistServerUrl) {
-      console.error("[Whitelist API] WHITELIST_SERVER_URL not configured");
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Server configuration error",
-        },
-        { status: 500 }
-      );
-    }
+    // Use hardcoded whitelist server URL
 
     // SECURITY: Get API key for whitelist-server authentication
     const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
 
     // Call the whitelist-server with API key authentication
-    const response = await fetch(`${whitelistServerUrl}/api/whitelist`, {
+    const response = await fetch(`${WHITELIST_SERVER_URL}/api/whitelist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -528,11 +509,11 @@ export async function POST(request: Request) {
       name: error?.name,
       cause: error?.cause,
     });
-    
+
     // Log the actual error message in production (sanitized)
     const errorMessage = error?.message || String(error) || "Unknown error";
     console.error(`[Whitelist API] Error message: ${errorMessage}`);
-    
+
     // SECURITY: Generic error message for users, but log details
     return NextResponse.json(
       {
@@ -579,46 +560,11 @@ export async function GET(request: Request) {
       );
     }
 
-    // Check environment variables (for debugging)
-    const hasWhitelistServerUrl = !!process.env.WHITELIST_SERVER_URL;
-    const hasPublicWhitelistServerUrl =
-      !!process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL;
-    const nodeEnv = process.env.NODE_ENV;
-
-    console.log("[Whitelist API] Environment check:", {
-      hasWhitelistServerUrl,
-      hasPublicWhitelistServerUrl,
-      nodeEnv,
-      whitelistServerUrl: hasWhitelistServerUrl ? "SET" : "NOT SET",
-      publicWhitelistServerUrl: hasPublicWhitelistServerUrl ? "SET" : "NOT SET",
-    });
-
-    const whitelistServerUrl =
-      process.env.WHITELIST_SERVER_URL ||
-      process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-      (process.env.NODE_ENV === "production"
-        ? "https://server.megafi.app"
-        : "http://localhost:3001");
-
-    if (!whitelistServerUrl) {
-      console.error("[Whitelist API] WHITELIST_SERVER_URL not configured");
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Server configuration error: WHITELIST_SERVER_URL not set",
-          whitelisted: false,
-          details:
-            process.env.NODE_ENV === "development"
-              ? {
-                  hasWhitelistServerUrl,
-                  hasPublicWhitelistServerUrl,
-                  nodeEnv,
-                }
-              : undefined,
-        },
-        { status: 500 }
-      );
-    }
+    // Use hardcoded whitelist server URL
+    console.log(
+      "[Whitelist API] Using whitelist server:",
+      WHITELIST_SERVER_URL
+    );
 
     const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
 
@@ -641,10 +587,10 @@ export async function GET(request: Request) {
       );
     }
 
-    const statusUrl = `${whitelistServerUrl}/api/status/${normalizedAddress}`;
+    const statusUrl = `${WHITELIST_SERVER_URL}/api/status/${normalizedAddress}`;
 
     console.log(
-      `[Whitelist API] Checking status for ${normalizedAddress} at ${whitelistServerUrl}`
+      `[Whitelist API] Checking status for ${normalizedAddress} at ${WHITELIST_SERVER_URL}`
     );
     console.log(`[Whitelist API] Full URL: ${statusUrl}`);
 
@@ -667,7 +613,10 @@ export async function GET(request: Request) {
       console.log(
         `[Whitelist API] Response status: ${response.status} ${response.statusText}`
       );
-      console.log(`[Whitelist API] Response headers:`, Object.fromEntries(response.headers.entries()));
+      console.log(
+        `[Whitelist API] Response headers:`,
+        Object.fromEntries(response.headers.entries())
+      );
     } catch (fetchError: any) {
       console.error("[Whitelist API] Fetch error:", fetchError);
       console.error("[Whitelist API] Error details:", {
@@ -685,7 +634,7 @@ export async function GET(request: Request) {
           details:
             process.env.NODE_ENV === "development"
               ? {
-                  whitelistServerUrl,
+                  whitelistServerUrl: WHITELIST_SERVER_URL,
                   statusUrl,
                   error: String(fetchError),
                   errorName: fetchError?.name,
@@ -699,18 +648,27 @@ export async function GET(request: Request) {
     let data: any;
     try {
       const responseText = await response.text();
-      console.log(`[Whitelist API] Response body (first 500 chars):`, responseText.substring(0, 500));
-      
+      console.log(
+        `[Whitelist API] Response body (first 500 chars):`,
+        responseText.substring(0, 500)
+      );
+
       if (!responseText) {
         throw new Error("Empty response from whitelist server");
       }
-      
+
       try {
         data = JSON.parse(responseText);
       } catch (parseError) {
         console.error("[Whitelist API] JSON parse error:", parseError);
         console.error("[Whitelist API] Response text:", responseText);
-        throw new Error(`Invalid JSON response: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+        throw new Error(
+          `Invalid JSON response: ${
+            parseError instanceof Error
+              ? parseError.message
+              : String(parseError)
+          }`
+        );
       }
     } catch (jsonError: any) {
       console.error("[Whitelist API] Response parsing error:", jsonError);
@@ -766,24 +724,26 @@ export async function GET(request: Request) {
       name: error?.name,
       cause: error?.cause,
     });
-    
+
     // Log the actual error message in production (sanitized)
     const errorMessage = error?.message || String(error) || "Unknown error";
     console.error(`[Whitelist API] Error message: ${errorMessage}`);
-    
+
     // On error, return not whitelisted so user can proceed
     return NextResponse.json(
       {
         success: false,
-        error: errorMessage.includes("Failed to connect") 
-          ? errorMessage 
+        error: errorMessage.includes("Failed to connect")
+          ? errorMessage
           : "An error occurred. Please try again later.",
         whitelisted: false,
         // Always include error details for debugging (but sanitized)
         details: {
           errorType: error?.name || "Unknown",
           // Only include message if it's a connection error
-          ...(errorMessage.includes("Failed to connect") && { message: errorMessage }),
+          ...(errorMessage.includes("Failed to connect") && {
+            message: errorMessage,
+          }),
         },
       },
       { status: 200 } // Return 200 so frontend can handle it
