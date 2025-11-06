@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { isAddress, getAddress } from "viem";
+import { isAddress, getAddress, createPublicClient, http } from "viem";
+import { mainnet, arbitrumSepolia } from "viem/chains";
 import { supabase } from "@/lib/supabase";
 import { isRateLimited } from "@/lib/rate-limit";
 import {
   verifyWalletSignature,
   isSignatureTimestampValid,
 } from "@/lib/signature-verification";
+import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
 
 // Server-side Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -63,7 +65,12 @@ export async function POST(request: Request) {
   try {
     // SECURITY: Rate limiting
     const clientIp = request.headers.get("x-forwarded-for") || "unknown";
-    if (isRateLimited(`whitelist:${clientIp}`, { windowMs: 60000, maxRequests: 5 })) {
+    if (
+      isRateLimited(`whitelist:${clientIp}`, {
+        windowMs: 60000,
+        maxRequests: 5,
+      })
+    ) {
       return NextResponse.json(
         { success: false, error: "Too many requests. Please try again later." },
         { status: 429 }
@@ -106,7 +113,8 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          error: "Wallet signature required. Please sign the message with your wallet.",
+          error:
+            "Wallet signature required. Please sign the message with your wallet.",
         },
         { status: 400 }
       );
@@ -131,7 +139,8 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          error: "Invalid wallet signature. Please sign with the correct wallet.",
+          error:
+            "Invalid wallet signature. Please sign with the correct wallet.",
         },
         { status: 403 }
       );
@@ -188,6 +197,39 @@ export async function POST(request: Request) {
       );
     }
 
+    // SECURITY: Check if wallet has already minted on-chain
+    try {
+      const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
+      const selectedChain = network === "mainnet" ? mainnet : arbitrumSepolia;
+
+      const publicClient = createPublicClient({
+        chain: selectedChain,
+        transport: http(),
+      });
+
+      const hasMintedResult = await publicClient.readContract({
+        address: NFT_CONTRACT_ADDRESS,
+        abi: NFT_CONTRACT_ABI,
+        functionName: "hasMinted",
+        args: [normalizedAddress as `0x${string}`],
+      });
+
+      if (hasMintedResult) {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "This wallet has already minted an NFT. Each wallet can only mint once.",
+          },
+          { status: 409 }
+        );
+      }
+    } catch (contractError) {
+      // If contract check fails, log but don't block (could be network issue)
+      console.error("Error checking hasMinted from contract:", contractError);
+      // Continue with whitelisting - the contract will reject if hasMinted is true
+    }
+
     // Check if already claimed (has token_id)
     const { data: existingClaim } = await supabaseAdmin
       .from("og_nft_claims")
@@ -215,7 +257,8 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             success: false,
-            error: "You have already whitelisted a different wallet address. Please use the same wallet you whitelisted previously.",
+            error:
+              "You have already whitelisted a different wallet address. Please use the same wallet you whitelisted previously.",
           },
           { status: 409 }
         );
@@ -225,7 +268,9 @@ export async function POST(request: Request) {
       const whitelistServerUrl =
         process.env.WHITELIST_SERVER_URL ||
         process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-        (process.env.NODE_ENV === "production" ? null : "http://localhost:3001");
+        (process.env.NODE_ENV === "production"
+          ? null
+          : "http://localhost:3001");
 
       if (whitelistServerUrl) {
         const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
@@ -289,12 +334,10 @@ export async function POST(request: Request) {
               updateData.status = "pending_whitelist";
             }
 
-            await supabaseAdmin
-              .from("og_nft_claims")
-              .upsert(updateData, {
-                onConflict: "twitter_handle",
-                ignoreDuplicates: false,
-              });
+            await supabaseAdmin.from("og_nft_claims").upsert(updateData, {
+              onConflict: "twitter_handle",
+              ignoreDuplicates: false,
+            });
 
             // Already whitelisted on-chain, return success
             return NextResponse.json(
@@ -358,21 +401,19 @@ export async function POST(request: Request) {
       const errorMessage = data.error || "Failed to prepare wallet";
 
       // Update database with error status
-      await supabaseAdmin
-        .from("og_nft_claims")
-        .upsert(
-          {
-            twitter_handle: normalizedHandle,
-            twitter_user_id: twitterUserId,
-            wallet_address: normalizedAddress.toLowerCase(),
-            status: "whitelist_failed",
-            error_message: errorMessage,
-          },
-          {
-            onConflict: "twitter_handle",
-            ignoreDuplicates: false,
-          }
-        );
+      await supabaseAdmin.from("og_nft_claims").upsert(
+        {
+          twitter_handle: normalizedHandle,
+          twitter_user_id: twitterUserId,
+          wallet_address: normalizedAddress.toLowerCase(),
+          status: "whitelist_failed",
+          error_message: errorMessage,
+        },
+        {
+          onConflict: "twitter_handle",
+          ignoreDuplicates: false,
+        }
+      );
 
       // SECURITY: Don't expose internal error details
       return NextResponse.json(
@@ -468,7 +509,11 @@ export async function GET(request: Request) {
 
     if (!wallet_address) {
       return NextResponse.json(
-        { success: false, error: "Wallet address is required", whitelisted: false },
+        {
+          success: false,
+          error: "Wallet address is required",
+          whitelisted: false,
+        },
         { status: 400 }
       );
     }
@@ -476,7 +521,11 @@ export async function GET(request: Request) {
     // SECURITY: Validate Ethereum address format
     if (!validateEthereumAddress(wallet_address)) {
       return NextResponse.json(
-        { success: false, error: "Invalid Ethereum address format", whitelisted: false },
+        {
+          success: false,
+          error: "Invalid Ethereum address format",
+          whitelisted: false,
+        },
         { status: 400 }
       );
     }
@@ -523,11 +572,11 @@ export async function GET(request: Request) {
 
     // Ensure whitelisted property is always present
     return NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         whitelisted: data.whitelisted || false,
-        ...data 
-      }, 
+        ...data,
+      },
       { status: 200 }
     );
   } catch (error: any) {

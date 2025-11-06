@@ -1,53 +1,33 @@
 import { NextResponse } from "next/server";
-import { createSupabaseClient } from "@/lib/supabase";
+import { createPublicClient, http } from "viem";
+import { mainnet, arbitrumSepolia } from "viem/chains";
+import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
 
 export async function GET() {
   try {
-    const supabase = createSupabaseClient();
+    // Determine network from environment variable
+    const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
+    const selectedChain = network === "mainnet" ? mainnet : arbitrumSepolia;
 
-    // Get the latest token ID from og_nft_claims table
-    // Note: token_id is stored as TEXT, so we need to cast to integer for proper numeric ordering
-    const { data, error } = await supabase
-      .from("og_nft_claims")
-      .select("token_id")
-      .not("token_id", "is", null)
-      .order("token_id", { ascending: false })
-      .limit(100); // Get multiple records to find max numerically
+    // Create public client to read from contract
+    const publicClient = createPublicClient({
+      chain: selectedChain,
+      transport: http(),
+    });
 
-    if (error) {
-      console.error("Error fetching token IDs:", error);
-      return NextResponse.json({
-        success: true,
-        latestTokenId: 0,
-        nextTokenId: 1,
-      });
-    }
+    // Call getCurrentTokenId() on the contract
+    // This returns the NEXT token ID that will be minted
+    const currentTokenId = await publicClient.readContract({
+      address: NFT_CONTRACT_ADDRESS,
+      abi: NFT_CONTRACT_ABI,
+      functionName: "getCurrentTokenId",
+    });
 
-    // If no records found
-    if (!data || data.length === 0) {
-      return NextResponse.json({
-        success: true,
-        latestTokenId: 0,
-        nextTokenId: 1,
-      });
-    }
-
-    // Convert all token_ids to numbers and find the maximum
-    console.log("=== DATABASE QUERY RESULT ===");
-    console.log("Total records returned:", data.length);
-    console.log("Raw data:", JSON.stringify(data, null, 2));
-
-    const tokenIds = data
-      .map((record) => parseInt(record.token_id))
-      .filter((id) => !isNaN(id)); // Filter out any invalid numbers
-
-    const latestTokenId = tokenIds.length > 0 ? Math.max(...tokenIds) : 0;
-    const nextTokenId = latestTokenId + 1;
-
-    console.log("Parsed token IDs:", tokenIds);
-    console.log("Latest token ID:", latestTokenId);
-    console.log("Next token ID:", nextTokenId);
-    console.log("=== END ===");
+    // Convert BigInt to number
+    const nextTokenId = Number(currentTokenId);
+    // Latest minted token ID is one less than the current counter
+    // (since counter increments after minting)
+    const latestTokenId = nextTokenId > 1 ? nextTokenId - 1 : 0;
 
     return NextResponse.json({
       success: true,
@@ -55,11 +35,13 @@ export async function GET() {
       nextTokenId,
     });
   } catch (error: any) {
-    console.error("Error fetching latest token ID:", error);
+    console.error("Error fetching latest token ID from contract:", error);
+
+    // Fallback: return default values if contract call fails
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to fetch latest token ID",
+        error: "Failed to fetch latest token ID from contract",
         latestTokenId: 0,
         nextTokenId: 1,
       },

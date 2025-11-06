@@ -33,7 +33,7 @@ export default function DemoBanner() {
           <li>🎨 Customizable accent color</li>
           <li>📱 Fully responsive design (900-1200px wide on desktop)</li>
           <li>✋ Interactive hover states</li>
-          <li>🔗 Links to /claim-og-megaeth-nft page</li>
+          <li>🔗 Links to /claim page</li>
           <li>⚡ Smooth slide-down animation on load</li>
           <li>💎 Glass morphism badge design</li>
           <li>🌟 Glowing CTA button</li>
