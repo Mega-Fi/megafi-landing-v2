@@ -1,20 +1,23 @@
-'use client';
+"use client";
 
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { mainnet, arbitrum, arbitrumSepolia } from 'wagmi/chains';
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { mainnet, arbitrum, arbitrumSepolia } from "wagmi/chains";
 
 // Determine which network to use based on environment variable
 // Options: 'testnet' | 'mainnet' | 'arbitrum'
-const network = process.env.NEXT_PUBLIC_NETWORK || 'testnet';
+const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
 
-const selectedChain = 
-  network === 'mainnet' ? mainnet :
-  network === 'arbitrum' ? arbitrum :
-  arbitrumSepolia; // default to testnet
+const selectedChain =
+  network === "mainnet"
+    ? mainnet
+    : network === "arbitrum"
+    ? arbitrum
+    : arbitrumSepolia; // default to testnet
 
 export const config = getDefaultConfig({
-  appName: 'MegaFi - MegaETH OG NFT',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
+  appName: "MegaFi - MegaETH OG NFT",
+  projectId:
+    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID",
   chains: [selectedChain],
   ssr: true, // Enable server-side rendering support
 });
@@ -23,8 +26,8 @@ export const config = getDefaultConfig({
 export const currentNetwork = {
   name: selectedChain.name,
   chainId: selectedChain.id,
-  isTestnet: network === 'testnet',
-  explorerUrl: selectedChain.blockExplorers?.default.url || 'https://etherscan.io',
+  isTestnet: network === "testnet",
+  explorerUrl:
+    selectedChain.blockExplorers?.default.url || "https://etherscan.io",
   network: network, // 'testnet' | 'mainnet' | 'arbitrum'
 };
-
