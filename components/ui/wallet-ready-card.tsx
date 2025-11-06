@@ -1,12 +1,13 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check, Wallet } from 'lucide-react';
 
-interface EligibilityCardProps {
-  twitterHandle: string;
-  onDisconnect?: () => void;
+interface WalletReadyCardProps {
+  walletAddress: string;
 }
 
-export function EligibilityCard({ twitterHandle, onDisconnect }: EligibilityCardProps) {
+export function WalletReadyCard({ walletAddress }: WalletReadyCardProps) {
+  const shortAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+  
   return (
     <div className="eligibility-card-outer">
       <div className="eligibility-dot"></div>
@@ -16,23 +17,13 @@ export function EligibilityCard({ twitterHandle, onDisconnect }: EligibilityCard
         {/* Icon */}
         <div className="flex items-center justify-center gap-2 mb-2">
           <Check className="text-emerald-400" size={24} />
-          <h3 className="eligibility-title">Eligibility Verified</h3>
+          <h3 className="eligibility-title">Wallet Ready</h3>
         </div>
         
         {/* Message */}
         <p className="eligibility-message">
-          Your X account <span className="text-emerald-400 font-semibold">@{twitterHandle}</span> is eligible to claim this NFT
+          Your wallet <span className="text-emerald-400 font-semibold font-mono">{shortAddress}</span> is ready to mint
         </p>
-        
-        {/* Disconnect button */}
-        {onDisconnect && (
-          <button
-            onClick={onDisconnect}
-            className="relative z-20 mt-4 text-xs text-gray-400/70 hover:text-red-400/70 underline transition-colors"
-          >
-            Disconnect & Try Different Account
-          </button>
-        )}
         
         {/* Animated borders */}
         <div className="eligibility-line eligibility-topl"></div>

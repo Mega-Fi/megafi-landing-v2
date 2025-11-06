@@ -1,8 +1,48 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+// Server-side Supabase client for auth verification
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey);
+
+/**
+ * Verify user is authenticated (admin check can be added here)
+ */
+async function verifyAuth(request: Request): Promise<{ authenticated: boolean; error?: string }> {
+  try {
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader) {
+      return { authenticated: false, error: "Authentication required" };
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error } = await supabaseAuth.auth.getUser(token);
+    
+    if (error || !user) {
+      return { authenticated: false, error: "Invalid or expired token" };
+    }
+
+    // TODO: Add admin role check here
+    // For now, require authentication
+    return { authenticated: true };
+  } catch (error) {
+    return { authenticated: false, error: "Authentication failed" };
+  }
+}
 
 export async function POST(request: Request) {
   try {
+    // SECURITY: Verify authentication
+    const auth = await verifyAuth(request);
+    if (!auth.authenticated) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { handles } = body;
 

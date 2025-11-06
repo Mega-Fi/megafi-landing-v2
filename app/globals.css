@@ -71,20 +71,20 @@
 /* Eligibility Card Animation Styles */
 @keyframes moveDot {
   0%, 100% {
-    top: 10%;
-    right: 10%;
+    top: 12px;
+    right: 12px;
   }
   25% {
-    top: 10%;
-    right: calc(100% - 35px);
+    top: 12px;
+    right: calc(100% - 37px);
   }
   50% {
-    top: calc(100% - 30px);
-    right: calc(100% - 35px);
+    top: calc(100% - 37px);
+    right: calc(100% - 37px);
   }
   75% {
-    top: calc(100% - 30px);
-    right: 10%;
+    top: calc(100% - 37px);
+    right: 12px;
   }
 }
 
@@ -114,7 +114,7 @@
   perspective: 1000px;
 }
 
-.eligibility-dot {
+/* .eligibility-dot {
   position: absolute;
   width: 25px;
   height: 25px;
@@ -126,7 +126,8 @@
     inset 0 0 10px rgba(16, 185, 129, 0.6);
   z-index: 10;
   animation: moveDot 4s ease-in-out infinite;
-}
+  pointer-events: none;
+} */
 
 .eligibility-card {
   position: relative;
@@ -190,7 +191,7 @@
   text-align: center;
   line-height: 1.5;
   position: relative;
-  z-index: 1;
+  z-index: 10;
 }
 
 .eligibility-line {
@@ -202,6 +203,8 @@
     transparent 100%
   );
   opacity: 0.6;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .eligibility-topl {
