@@ -1,0 +1,430 @@
+---
+description: OG NFT Banner component - Electric-styled promotional banner for the NFT claim feature
+globs: components/ui/og-nft-banner.tsx, app/page.tsx
+alwaysApply: false
+---
+
+# OG NFT Banner Component
+
+## Overview
+
+A stunning, animated banner component designed to promote the OG NFT claim feature on the landing page. Built using the same electric/glass aesthetic as the `ElectricCard` component, featuring animated SVG filters, layered glow effects, and smooth interactions.
+
+## Component Location
+
+**Path:** `components/ui/og-nft-banner.tsx`
+
+## Features
+
+- ✨ **Animated Electric Border:** SVG filter with traveling turbulence effect
+- 🎨 **Customizable Colors:** Accent color matches your brand
+- 📱 **Fully Responsive:** Adapts layout for mobile devices
+- ✋ **Interactive States:** Hover effects with smooth transitions
+- 🔗 **Direct Navigation:** Links to `/claim-og-megaeth-nft`
+- ⚡ **Entrance Animation:** Smooth slide-down on mount
+- 💎 **Glass Morphism:** Beautiful badge with gradient borders
+- 🌟 **Glowing CTA:** Eye-catching call-to-action button
+- 🎯 **Fixed Position:** Stays at the top center of the viewport
+
+## Usage
+
+### Basic Implementation
+
+```tsx
+import { OGNFTBanner } from '@/components/ui/og-nft-banner';
+
+export default function Page() {
+  return (
+    <>
+      <OGNFTBanner />
+      {/* Your page content */}
+    </>
+  );
+}
+```
+
+### With Custom Color
+
+```tsx
+<OGNFTBanner color="#FF3A1E" />
+```
+
+### Toggle Visibility
+
+```tsx
+<OGNFTBanner visible={true} />
+```
+
+### Integration with Hero Section
+
+The banner is integrated into the `WordHeroPage` component via the `showOGNFTBanner` prop:
+
+```tsx
+import { WordHeroPage } from "@/components/ui/scroll-hero-section";
+
+export default function Home() {
+  return (
+    <WordHeroPage
+      showOGNFTBanner={true}
+      accentColor="#FF3A1E"
+      // ... other props
+    />
+  );
+}
+```
+
+## Props
+
+```typescript
+export type OGNFTBannerProps = {
+  /** Accent color for the banner (CSS color) */
+  color?: string;
+  
+  /** Show/hide the banner */
+  visible?: boolean;
+  
+  /** Custom class name */
+  className?: string;
+};
+```
+
+### Prop Details
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `color` | `string` | `'#FF3A1E'` | Accent color used for borders, glows, and CTA button |
+| `visible` | `boolean` | `true` | Controls banner visibility |
+| `className` | `string` | `''` | Additional CSS classes |
+
+## Component Structure
+
+### Banner Content
+
+1. **Badge (Left):** "LIMITED" pill with sparkle icon
+2. **Main Text (Center):**
+   - Title: "Claim Your OG MegaETH NFT"
+   - Subtitle: "Top 279 Supporters • Exclusive 1.25x Multiplier"
+3. **CTA Button (Right):** "Claim Now" with arrow icon
+
+### Visual Effects
+
+1. **SVG Filters:** Animated displacement map with traveling turbulence
+2. **Border Layers:** Multiple glowing borders with blur effects
+3. **Overlay Gradients:** Subtle white overlays with blend modes
+4. **Background Glow:** Soft radial glow behind the banner
+5. **Hover States:** Scale transform and enhanced glow on hover
+
+## Responsive Behavior
+
+### Desktop (> 1024px)
+- Horizontal layout with 3 sections
+- 900px minimum width, 1200px maximum width
+- 80px height
+- Elements arranged in a row
+- Larger padding and spacing (2.5rem horizontal)
+- Full text visibility (no truncation)
+
+### Tablet (768px - 1024px)
+- Horizontal layout maintained
+- 700px minimum width
+- 80px height
+- Slightly condensed spacing
+
+### Mobile (≤ 768px)
+- Vertical stacked layout
+- 340px minimum width
+- 100px height
+- Centered text alignment
+- Adjusted padding and gaps
+
+## Animation Details
+
+### Entrance Animation
+
+```css
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+```
+
+Duration: 0.6s with ease-out timing
+
+### Badge Pulse
+
+```css
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+```
+
+Duration: 2s infinite
+
+### SVG Filter Animation
+
+- 4 turbulence layers with traveling offsets
+- 8-second loop duration
+- Displacement scale: 20px
+- Creates swirling, electric effect
+
+## Styling Approach
+
+### CSS-in-JS with styled-jsx
+
+The component uses Next.js's built-in `styled-jsx` for scoped styles. This ensures:
+- No style conflicts with other components
+- Unique filter IDs per instance
+- Full CSS feature support
+- Server-side rendering compatibility
+
+### Color System
+
+Uses OKLCH color space for smooth color transformations:
+
+```css
+--banner-light-color: oklch(from var(--banner-color) l c h);
+--banner-gradient: oklch(from var(--banner-color) 0.3 calc(c / 2) h / 0.3);
+```
+
+This creates consistent, perceptually-uniform color variations.
+
+## Integration with Existing Components
+
+### Hero Section Integration
+
+The banner is automatically positioned above the hero section when enabled:
+
+```tsx
+// In scroll-hero-section.tsx
+{showOGNFTBanner && <OGNFTBanner color={accentColor || '#FF3A1E'} />}
+```
+
+The banner:
+- Appears at `position: fixed; top: 1rem; left: 50%`
+- Uses `z-index: 50` to stay above content
+- Doesn't affect page layout (fixed positioning)
+- Automatically inherits accent color from hero
+
+### Icons Used
+
+- `Sparkles` from lucide-react (badge icon)
+- `ArrowRight` from lucide-react (CTA icon)
+
+Both are already installed in the project.
+
+## Accessibility
+
+- ✅ Semantic HTML with proper heading hierarchy
+- ✅ ARIA labels where needed
+- ✅ Keyboard navigable (links are focusable)
+- ✅ High contrast colors for readability
+- ✅ Proper focus states
+- ✅ Screen reader friendly
+
+## Performance Considerations
+
+- **Filter Optimization:** Uses efficient SVG filters with limited layers
+- **Unique IDs:** Each instance generates unique filter IDs to prevent conflicts
+- **CSS Containment:** Self-contained styles don't affect other components
+- **Lazy Loading:** Only renders when `visible={true}`
+- **Hardware Acceleration:** Uses transform for animations (GPU-accelerated)
+
+## Browser Support
+
+- ✅ Chrome/Edge 88+
+- ✅ Firefox 85+
+- ✅ Safari 14+
+- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
+
+**Note:** SVG filters have excellent cross-browser support. Fallback is a solid border if filters fail.
+
+## Example Implementations
+
+### Landing Page Banner
+
+```tsx
+// app/page.tsx
+import { WordHeroPage } from "@/components/ui/scroll-hero-section";
+
+export default function Home() {
+  return (
+    <WordHeroPage
+      items={['swap.', 'earn.', 'hedge.', 'tokenize.', 'automate.']}
+      theme="system"
+      animate
+      accentColor="#FF3A1E"
+      showOGNFTBanner={true}  // Enable banner
+      // ... other props
+    />
+  );
+}
+```
+
+### Standalone Usage
+
+```tsx
+import { OGNFTBanner } from '@/components/ui/og-nft-banner';
+
+export default function Page() {
+  return (
+    <div>
+      <OGNFTBanner 
+        color="#FF3A1E"
+        visible={true}
+      />
+      <main>
+        {/* Your content */}
+      </main>
+    </div>
+  );
+}
+```
+
+### Conditional Display
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { OGNFTBanner } from '@/components/ui/og-nft-banner';
+
+export default function Page() {
+  const [showBanner, setShowBanner] = useState(true);
+
+  return (
+    <>
+      <OGNFTBanner visible={showBanner} />
+      {/* Close button could be added to hide banner */}
+    </>
+  );
+}
+```
+
+## Customization Guide
+
+### Change Banner Text
+
+Edit the content in `og-nft-banner.tsx`:
+
+```tsx
+<span className="banner-title">Your Custom Title</span>
+<span className="banner-subtitle">Your Custom Subtitle</span>
+```
+
+### Adjust Dimensions
+
+Modify the sizing in the styles:
+
+```css
+.banner-card {
+  min-width: 900px;    /* Desktop width */
+  max-width: 1200px;   /* Maximum width */
+  height: 80px;        /* Desktop height */
+}
+
+@media (max-width: 1024px) {
+  .banner-card {
+    min-width: 700px;  /* Tablet width */
+    height: 80px;      /* Tablet height */
+  }
+}
+
+@media (max-width: 768px) {
+  .banner-card {
+    min-width: 340px;  /* Mobile width */
+    height: 100px;     /* Mobile height */
+  }
+}
+```
+
+### Change Link Destination
+
+Update the Link component:
+
+```tsx
+<Link href="/your-custom-path" className="banner-link">
+```
+
+### Modify Animation Duration
+
+Adjust the SVG filter animation:
+
+```tsx
+<animate attributeName="dy" values="500; 0" dur="8s" ... />
+```
+
+## Troubleshooting
+
+### Banner Not Appearing
+
+**Check:**
+- Is `visible` prop set to `true`?
+- Is the component imported correctly?
+- Are there z-index conflicts?
+- Is the banner being rendered?
+
+### Colors Not Working
+
+**Check:**
+- Is the color value valid CSS? (hex, rgb, oklch, etc.)
+- Does your browser support OKLCH color space? (fallback: use hex/rgb)
+
+### Layout Issues on Mobile
+
+**Check:**
+- Viewport meta tag in layout.tsx
+- Container width constraints
+- Media query breakpoints
+
+### Filter Not Animating
+
+**Check:**
+- Browser supports SVG filters (all modern browsers do)
+- No JavaScript errors blocking render
+- Filter IDs are unique (component handles this automatically)
+
+## Best Practices
+
+1. **Enable Conditionally:** Only show when NFT claim is active
+2. **Match Brand Colors:** Use consistent accent color with site theme
+3. **Test Responsiveness:** Verify on mobile devices
+4. **Monitor Performance:** SVG filters are efficient but test on lower-end devices
+5. **Update Text:** Keep copy relevant to current campaign
+
+## Future Enhancements
+
+Potential improvements:
+
+- [ ] Dismiss button with localStorage persistence
+- [ ] A/B testing for different copy variations
+- [ ] Click tracking/analytics integration
+- [ ] Custom badge icons
+- [ ] Multiple color variants
+- [ ] Countdown timer integration
+- [ ] User-specific messaging (authenticated vs. anonymous)
+
+## Related Components
+
+- **ElectricCard** (`components/ui/electric-card.tsx`) - Shares visual style
+- **WordHeroPage** (`components/ui/scroll-hero-section.tsx`) - Parent integration
+- **Waitlist** (`components/ui/waitlist.tsx`) - Similar promotional component
+
+## References
+
+- [SVG Filters Documentation](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter)
+- [OKLCH Color Space](https://oklch.com/)
+- [Next.js styled-jsx](https://nextjs.org/docs/app/building-your-application/styling/css-in-js)
+- [lucide-react Icons](https://lucide.dev/)
+
+---
+
+**Created:** November 5, 2025  
+**Status:** Production Ready  
+**Design Language:** Electric/Glass Morphism

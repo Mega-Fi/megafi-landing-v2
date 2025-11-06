@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Image from 'next/image';
 import { FileText } from 'lucide-react';
 import { Waitlist } from './waitlist';
+import { OGNFTBanner } from './og-nft-banner';
 
 type Theme = 'system' | 'light' | 'dark';
 
@@ -36,6 +37,8 @@ export type ShipStickyHeaderProps = {
   debug?: boolean;
   /** Optional custom intro text under the header */
   taglineHTML?: string; // allows <br />
+  /** Show OG NFT claim banner */
+  showOGNFTBanner?: boolean;
 };
 
 function WordHeroPage({
@@ -51,6 +54,7 @@ function WordHeroPage({
   spaceVh = 50,
   debug = false,
   taglineHTML = `and i&apos;ll show you how.<br /><a href="https://rahil.pro">rahil.pro</a>.`,
+  showOGNFTBanner = false,
 }: ShipStickyHeaderProps) {
   useEffect(() => {
     const root = document.documentElement;
@@ -75,6 +79,9 @@ function WordHeroPage({
         } as React.CSSProperties
       }
     >
+      {/* OG NFT Claim Banner */}
+      {showOGNFTBanner && <OGNFTBanner color={accentColor || '#FF3A1E'} />}
+
       {logoSrc && (
         <div className="logo-container">
           <Image

@@ -1,0 +1,582 @@
+---
+description: MegaETH OG NFT Claim System - Complete implementation guide and architecture
+globs: app/claim-og-megaeth-nft/**/*.*, app/api/claim/**/*.*, lib/wagmi-config.ts, lib/contract-abi.ts, supabase/03_*.sql, supabase/04_*.sql
+alwaysApply: false
+---
+
+# MegaETH OG NFT Claim System
+
+## Overview
+
+A complete NFT claiming system for the top 279 MegaETH community supporters. Users authenticate with Twitter/X via Supabase Auth, verify eligibility against a whitelist, connect their wallet, and mint an exclusive OG NFT on-chain.
+
+## Architecture
+
+### Tech Stack
+
+- **Authentication**: Supabase Auth with Twitter OAuth 2.0
+- **Web3**: RainbowKit + wagmi + viem
+- **Database**: Supabase PostgreSQL with RLS
+- **Blockchain**: Ethereum Mainnet / Arbitrum Sepolia (switchable)
+- **Framework**: Next.js 14 App Router
+
+### Why Supabase Auth (Not NextAuth.js)
+
+✅ **Simpler** - No extra dependencies or config files  
+✅ **Better integrated** - Works seamlessly with existing Supabase  
+✅ **Automatic** - Built-in session management and token refresh  
+✅ **More secure** - Credentials stored in dashboard, not .env  
+✅ **User dashboard** - Built-in user management in Supabase  
+
+**Key Decision**: Originally implemented with NextAuth.js, but refactored to Supabase Auth for better integration and simpler maintenance.
+
+## Database Schema
+
+### Table: `og_eligible_handles`
+
+Stores the 279 whitelisted Twitter handles.
+
+```sql
+CREATE TABLE og_eligible_handles (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  twitter_handle TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+**Indexes**:
+- `idx_og_eligible_handles_twitter` on `twitter_handle`
+
+### Table: `og_nft_claims`
+
+Tracks NFT claims to prevent duplicates.
+
+```sql
+CREATE TABLE og_nft_claims (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  twitter_handle TEXT NOT NULL UNIQUE,
+  twitter_user_id TEXT NOT NULL,
+  wallet_address TEXT NOT NULL,
+  token_id TEXT,
+  transaction_hash TEXT,
+  claimed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+**Indexes**:
+- `idx_og_nft_claims_twitter_handle` on `twitter_handle`
+- `idx_og_nft_claims_wallet` on `wallet_address`
+- `idx_og_nft_claims_claimed_at` on `claimed_at DESC`
+
+## Row Level Security (RLS) Policies
+
+### `og_eligible_handles` Policies
+
+1. **"Allow public read eligible handles"**
+   ```sql
+   FOR SELECT TO anon USING (true)
+   ```
+   - Anyone can check if a handle is eligible
+   
+2. **"Only authenticated can insert handles"**
+   ```sql
+   FOR INSERT TO authenticated WITH CHECK (true)
+   ```
+   - Only Supabase admins can add handles (protects whitelist)
+
+### `og_nft_claims` Policies
+
+3. **"Allow public insert claims"**
+   ```sql
+   FOR INSERT TO anon WITH CHECK (true)
+   ```
+   - Anyone can record their claim after minting
+   
+4. **"Allow public read claims"**
+   ```sql
+   FOR SELECT TO anon USING (true)
+   ```
+   - Anyone can check if a handle already claimed (prevents duplicates)
+   
+5. **"Allow update own claims"**
+   ```sql
+   FOR UPDATE TO anon USING (true) WITH CHECK (true)
+   ```
+   - Update claims to add token_id/tx_hash after minting
+
+### Security Model
+
+- **Dual Whitelist System**:
+  - **Off-chain:** Twitter handles in Supabase `og_eligible_handles` table (279 handles)
+  - **On-chain:** Wallet addresses in smart contract whitelist
+  - **Important:** Both whitelists must be managed separately!
+- **Off-chain Whitelist:** Only admins can add eligible Twitter handles
+- **On-chain Whitelist:** Contract owner must call `addToWhitelist([addresses])` 
+- **Claims are public but protected**: 
+  - Unique constraint prevents duplicates in database
+  - Contract `hasMinted` mapping prevents duplicate mints on-chain
+  - App checks Twitter eligibility before allowing mint
+  - Contract enforces wallet whitelist on mint
+  - Blockchain transaction is the source of truth
+
+## Authentication Flow
+
+### Supabase Auth Configuration
+
+**Setup in Dashboard:**
+1. Authentication → Providers → Twitter
+2. Enable Twitter OAuth 2.0
+3. Add Twitter Client ID and Secret
+4. Callback URL: `https://PROJECT_REF.supabase.co/auth/v1/callback`
+
+**No environment variables needed!** All credentials stored in Supabase dashboard.
+
+### OAuth Implementation
+
+```typescript
+const signInWithTwitter = async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'twitter',
+    options: {
+      redirectTo: `${window.location.origin}/claim-og-megaeth-nft`,
+    },
+  });
+};
+```
+
+**Session Management:**
+```typescript
+// Check session on mount
+const { data: { session } } = await supabase.auth.getSession();
+
+// Listen for auth changes
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN') {
+    const handle = session.user.user_metadata?.user_name;
+    setTwitterHandle(handle);
+  }
+});
+```
+
+**Twitter Handle Extraction:**
+Twitter handle is stored in `user.user_metadata.user_name` by Supabase Auth.
+
+## API Routes
+
+### `GET /api/claim/check-eligibility`
+
+Checks if a Twitter handle is eligible and hasn't claimed yet.
+
+**Query params:** `twitter_handle`
+
+**Logic:**
+1. Normalize handle (remove @, lowercase)
+2. Check `og_eligible_handles` table (eligible?)
+3. Check `og_nft_claims` table (already claimed?)
+4. Return eligibility status
+
+**Response:**
+```typescript
+{ eligible: boolean, message?: string, reason?: string }
+```
+
+### `POST /api/claim/record-claim`
+
+Records a successful NFT claim in the database.
+
+**Body:**
+```typescript
+{
+  twitter_handle: string,
+  twitter_user_id: string,
+  wallet_address: string,
+  token_id?: string,
+  transaction_hash: string
+}
+```
+
+**Logic:**
+1. Validate required fields
+2. Check eligibility (fail if not eligible)
+3. Check if already claimed (fail if duplicate)
+4. Insert claim record
+5. Return success
+
+### `POST /api/claim/upload-handles`
+
+Bulk import eligible Twitter handles (admin utility).
+
+**Body:**
+```typescript
+{ handles: string[] }
+```
+
+**Logic:**
+1. Normalize handles (remove @, lowercase, trim)
+2. Remove duplicates
+3. Upsert into `og_eligible_handles`
+4. Return count
+
+**Note:** Used for initial setup via CSV import script.
+
+## Network Switching
+
+### Environment Configuration
+
+```bash
+# testnet = Arbitrum Sepolia, mainnet = Ethereum Mainnet
+NEXT_PUBLIC_NETWORK=testnet|mainnet
+NEXT_PUBLIC_CONTRACT_ADDRESS=0x...
+```
+
+### Implementation
+
+```typescript
+// lib/wagmi-config.ts
+const network = process.env.NEXT_PUBLIC_NETWORK || 'testnet';
+const selectedChain = network === 'mainnet' ? mainnet : arbitrumSepolia;
+
+export const currentNetwork = {
+  name: selectedChain.name,
+  chainId: selectedChain.id,
+  isTestnet: network === 'testnet',
+  explorerUrl: selectedChain.blockExplorers?.default.url,
+};
+```
+
+**Benefits:**
+- Test on Arbitrum Sepolia (free) before mainnet
+- Explorer links automatically adjust (Arbiscan vs Etherscan)
+- Easy switching via single env variable
+
+## User Flow (5 Steps)
+
+### Step 1: Twitter Authentication
+- User clicks "Connect with X"
+- Redirected to Twitter OAuth
+- Supabase handles callback
+- Returns with session + Twitter handle
+
+### Step 2: Eligibility Check
+- Automatically triggered when handle detected
+- Calls `GET /api/claim/check-eligibility`
+- Shows "You're Eligible!" or "Not Eligible"
+
+### Step 3: Wallet Connection
+- RainbowKit connect button
+- Supports multiple wallets
+- Verifies correct network
+
+### Step 4: NFT Minting
+- Calls contract mint function via wagmi
+- User pays gas fees
+- Transaction broadcast to blockchain
+- Wait for confirmation
+
+### Step 5: Success
+- Record claim in database
+- Show transaction details
+- Display benefits (1.25x multiplier)
+- Link to block explorer
+
+## File Structure
+
+```
+app/
+├── claim-og-megaeth-nft/
+│   └── page.tsx              # Main claim page (5-step flow)
+├── api/
+│   └── claim/
+│       ├── check-eligibility/
+│       │   └── route.ts      # Eligibility verification API
+│       ├── record-claim/
+│       │   └── route.ts      # Claim recording API
+│       └── upload-handles/
+│           └── route.ts      # Bulk import API
+
+lib/
+├── supabase.ts               # Supabase client (with auth support)
+├── wagmi-config.ts           # Web3 config (network switching)
+├── contract-abi.ts           # NFT contract ABI
+└── providers.tsx             # Web3 providers (RainbowKit, wagmi)
+
+supabase/
+├── 03_create_og_nft_claims.sql    # Database schema
+└── 04_populate_og_eligible_handles.sql  # Populate whitelist
+
+scripts/
+├── import-handles.ts         # CSV import utility
+└── README.md                 # Import instructions
+```
+
+## Key Components
+
+### Main Claim Page
+
+**Path:** `app/claim-og-megaeth-nft/page.tsx`
+
+**State Management:**
+```typescript
+const [currentStep, setCurrentStep] = useState<Step>('twitter');
+const [user, setUser] = useState<User | null>(null);
+const [twitterHandle, setTwitterHandle] = useState<string | null>(null);
+const [eligibility, setEligibility] = useState<EligibilityCheck | null>(null);
+```
+
+**Step Progression:**
+1. `twitter` → `eligibility` (auto)
+2. `eligibility` → `wallet` (auto if eligible)
+3. `wallet` → `mint` (user clicks)
+4. `mint` → `success` (after tx confirms)
+
+**Progress Indicator:**
+Visual 5-step progress bar showing current position.
+
+### Web3 Integration
+
+**Wallet Connection:**
+```typescript
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount, useWriteContract } from 'wagmi';
+```
+
+**Minting:**
+```typescript
+const { writeContract } = useWriteContract();
+
+writeContract({
+  address: NFT_CONTRACT_ADDRESS,
+  abi: NFT_CONTRACT_ABI,
+  functionName: 'mint',
+  args: [userWalletAddress],
+});
+```
+
+**Transaction Tracking:**
+```typescript
+const { isLoading, isSuccess } = useWaitForTransactionReceipt({ hash });
+```
+
+## Environment Variables
+
+```bash
+# Supabase (Required)
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+
+# Network (Required)
+NEXT_PUBLIC_NETWORK=testnet  # or mainnet
+
+# Contract (Required)
+NEXT_PUBLIC_CONTRACT_ADDRESS=0x...
+
+# WalletConnect (Optional but recommended)
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=...
+```
+
+**Note:** Twitter OAuth credentials are NOT in .env - they're configured in Supabase dashboard!
+
+## Contract Requirements
+
+**The95Pass NFT Contract:**
+- **Mint Function:** `mint()` with no parameters (mints to msg.sender)
+- **Whitelist System:** On-chain whitelist managed by contract owner
+- **One Per Wallet:** `hasMinted` mapping prevents duplicate mints
+- **Standard ERC-721:** Full ERC-721 compliance with metadata support
+
+**Key Contract Functions:**
+- `mint()` - Mint NFT to caller (whitelisted only, one per wallet)
+- `isWhitelisted(address)` - Check if address is whitelisted on-chain
+- `hasMinted(address)` - Check if address has already minted
+- `getCurrentTokenId()` - Get current token ID counter
+
+**ABI Configuration:**
+✅ Contract ABI imported from `The95Pass.abi.json`
+
+## Testing Strategy
+
+### Local Development
+1. Set `NEXT_PUBLIC_NETWORK=testnet`
+2. Deploy contract to Arbitrum Sepolia
+3. Import test handles into database
+4. Test complete flow with testnet wallet
+
+### Pre-Production Checklist
+- [ ] Twitter OAuth works (auth and handle extraction)
+- [ ] Eligibility check working (eligible & non-eligible)
+- [ ] Wallet connection (multiple wallet types)
+- [ ] Mint transaction (testnet)
+- [ ] Claim recording in database
+- [ ] Duplicate prevention working
+- [ ] Explorer links correct
+- [ ] Mobile responsive
+
+### Production Deployment
+1. Deploy contract to Ethereum Mainnet
+2. Set `NEXT_PUBLIC_NETWORK=mainnet`
+3. Update contract address
+4. Import all 279 eligible handles
+5. Update Twitter OAuth callback URL
+6. Update Supabase Site URL
+7. Test with small amount first
+
+## Common Issues & Solutions
+
+### "requested path is invalid" OAuth Error
+
+**Cause:** Site URL not configured in Supabase
+
+**Solution:**
+1. Supabase Dashboard → Authentication → URL Configuration
+2. Set Site URL: `http://localhost:3000` (dev) or production domain
+3. Add Redirect URLs: `http://localhost:3000/**`
+4. Click "Save changes"
+5. Restart dev server
+
+### Twitter Handle Not Found
+
+**Cause:** Handle not in user metadata
+
+**Solution:**
+```typescript
+// Try multiple metadata fields
+const handle = user.user_metadata?.user_name || 
+               user.user_metadata?.preferred_username ||
+               user.user_metadata?.name;
+```
+
+### Wrong Network in Wallet
+
+**Cause:** User's wallet on different network
+
+**Solution:**
+RainbowKit automatically prompts user to switch networks.
+
+### Gas Estimation Failed
+
+**Cause:** Contract function signature mismatch or insufficient funds
+
+**Solution:**
+1. Verify ABI matches deployed contract
+2. Check user has enough ETH/testnet ETH
+3. Test contract function in block explorer first
+
+## Best Practices
+
+### Handle Normalization
+Always normalize Twitter handles:
+```typescript
+const normalized = handle.replace('@', '').toLowerCase().trim();
+```
+
+### Error Handling
+```typescript
+try {
+  const { data, error } = await supabase.auth.signInWithOAuth({...});
+  if (error) {
+    setError('Failed to connect: ' + error.message);
+    console.error('OAuth error:', error);
+  }
+} catch (err) {
+  setError('Unexpected error: ' + err.message);
+}
+```
+
+### SSR Safety
+Always check for browser environment:
+```typescript
+const redirectTo = typeof window !== 'undefined' 
+  ? `${window.location.origin}/claim-og-megaeth-nft`
+  : undefined;
+```
+
+### Transaction Confirmation
+Wait for transaction confirmation before recording claim:
+```typescript
+useEffect(() => {
+  if (isConfirmed && hash) {
+    recordClaim(hash);
+  }
+}, [isConfirmed, hash]);
+```
+
+## Performance Considerations
+
+- **Auto-advancing steps**: Improves UX by automatically progressing when conditions met
+- **Loading states**: Clear feedback during async operations
+- **Session persistence**: Supabase Auth handles token refresh automatically
+- **RLS policies**: Database-level security prevents unnecessary API checks
+
+## Maintenance
+
+### Adding New Eligible Handles
+
+**Method 1: SQL (Recommended)**
+```sql
+INSERT INTO og_eligible_handles (twitter_handle) VALUES
+  ('newhandle1'), ('newhandle2')
+ON CONFLICT (twitter_handle) DO NOTHING;
+```
+
+**Method 2: CSV Import**
+```bash
+npx tsx scripts/import-handles.ts new-handles.csv
+```
+
+### Viewing Claims
+
+```sql
+-- All claims
+SELECT * FROM og_nft_claims ORDER BY claimed_at DESC;
+
+-- Count by date
+SELECT DATE(claimed_at), COUNT(*) 
+FROM og_nft_claims 
+GROUP BY DATE(claimed_at);
+
+-- Unclaimed eligible handles
+SELECT twitter_handle FROM og_eligible_handles
+WHERE twitter_handle NOT IN (SELECT twitter_handle FROM og_nft_claims);
+```
+
+### Monitoring
+
+**Check in Supabase Dashboard:**
+- Authentication → Users (see Twitter-authenticated users)
+- Table Editor → og_nft_claims (see all claims)
+- Logs → Edge Functions (API errors)
+
+## Security Checklist
+
+- [x] RLS enabled on both tables
+- [x] Whitelist protected (admin-only inserts)
+- [x] Duplicate claims prevented (unique constraint)
+- [x] Input validation on all API endpoints
+- [x] Handle normalization (case-insensitive)
+- [x] OAuth handled by Supabase (secure)
+- [x] No sensitive data in client code
+- [x] Transaction hash recorded for verification
+- [x] Rate limiting via Supabase (built-in)
+
+## Future Enhancements
+
+- [ ] Admin dashboard for monitoring claims
+- [ ] Email notifications on successful claim
+- [ ] NFT metadata on IPFS
+- [ ] Bulk claim status checker
+- [ ] Analytics dashboard
+- [ ] Support for multiple NFT contracts
+- [ ] Whitelist management UI
+
+## References
+
+- [Supabase Auth Docs](https://supabase.com/docs/guides/auth)
+- [RainbowKit Docs](https://www.rainbowkit.com/)
+- [wagmi Docs](https://wagmi.sh/)
+- [Twitter OAuth 2.0](https://developer.twitter.com/en/docs/authentication/oauth-2-0)
+
+---
+
+**Last Updated:** November 5, 2025  
+**Status:** Production Ready  
+**Total Handles:** 279 eligible supporters
