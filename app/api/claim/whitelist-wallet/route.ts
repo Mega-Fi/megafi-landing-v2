@@ -570,10 +570,12 @@ export async function GET(request: Request) {
       publicWhitelistServerUrl: hasPublicWhitelistServerUrl ? "SET" : "NOT SET",
     });
 
-    const whitelistServerUrl = "https://whitelist-server.megafi.io";
-    // process.env.WHITELIST_SERVER_URL ||
-    //   process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-    //   (process.env.NODE_ENV === "production" ? null : "http://localhost:3001");
+    const whitelistServerUrl =
+      process.env.WHITELIST_SERVER_URL ||
+      process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
+      (process.env.NODE_ENV === "production" 
+        ? "https://server.megafi.app" 
+        : "http://localhost:3001");
 
     if (!whitelistServerUrl) {
       console.error("[Whitelist API] WHITELIST_SERVER_URL not configured");
