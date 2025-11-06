@@ -295,11 +295,15 @@ export async function POST(request: Request) {
         process.env.WHITELIST_SERVER_URL ||
         process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
         (process.env.NODE_ENV === "production"
-          ? null
+          ? "https://server.megafi.app"
           : "http://localhost:3001");
 
       if (whitelistServerUrl) {
         const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
+        // Create timeout controller (AbortSignal.timeout may not be available in all Node versions)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
         const statusResponse = await fetch(
           `${whitelistServerUrl}/api/status/${normalizedAddress}`,
           {
@@ -308,9 +312,11 @@ export async function POST(request: Request) {
               "Content-Type": "application/json",
               ...(apiKey && { "X-API-Key": apiKey }),
             },
-            signal: AbortSignal.timeout(10000),
+            signal: controller.signal,
           }
         );
+
+        clearTimeout(timeoutId);
 
         if (statusResponse.ok) {
           const statusData = await statusResponse.json();
@@ -385,7 +391,9 @@ export async function POST(request: Request) {
     const whitelistServerUrl =
       process.env.WHITELIST_SERVER_URL ||
       process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-      (process.env.NODE_ENV === "production" ? null : "http://localhost:3001");
+      (process.env.NODE_ENV === "production"
+        ? "https://server.megafi.app"
+        : "http://localhost:3001");
 
     if (!whitelistServerUrl) {
       console.error("[Whitelist API] WHITELIST_SERVER_URL not configured");
@@ -513,12 +521,27 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data, { status: 200 });
   } catch (error: any) {
-    console.error("[Whitelist API] Error:", error);
-    // SECURITY: Generic error message
+    console.error("[Whitelist API] POST Error:", error);
+    console.error("[Whitelist API] Error details:", {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+      cause: error?.cause,
+    });
+    
+    // Log the actual error message in production (sanitized)
+    const errorMessage = error?.message || String(error) || "Unknown error";
+    console.error(`[Whitelist API] Error message: ${errorMessage}`);
+    
+    // SECURITY: Generic error message for users, but log details
     return NextResponse.json(
       {
         success: false,
         error: "An error occurred. Please try again later.",
+        // Include error type for debugging (not the full message for security)
+        details: {
+          errorType: error?.name || "Unknown",
+        },
       },
       { status: 500 }
     );
@@ -641,7 +664,10 @@ export async function GET(request: Request) {
       });
 
       clearTimeout(timeoutId);
-      console.log(`[Whitelist API] Response status: ${response.status} ${response.statusText}`);
+      console.log(
+        `[Whitelist API] Response status: ${response.status} ${response.statusText}`
+      );
+      console.log(`[Whitelist API] Response headers:`, Object.fromEntries(response.headers.entries()));
     } catch (fetchError: any) {
       console.error("[Whitelist API] Fetch error:", fetchError);
       console.error("[Whitelist API] Error details:", {
@@ -652,7 +678,9 @@ export async function GET(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          error: `Failed to connect to whitelist server: ${fetchError.message || String(fetchError)}`,
+          error: `Failed to connect to whitelist server: ${
+            fetchError.message || String(fetchError)
+          }`,
           whitelisted: false,
           details:
             process.env.NODE_ENV === "development"
@@ -670,21 +698,32 @@ export async function GET(request: Request) {
 
     let data: any;
     try {
-      data = await response.json();
+      const responseText = await response.text();
+      console.log(`[Whitelist API] Response body (first 500 chars):`, responseText.substring(0, 500));
+      
+      if (!responseText) {
+        throw new Error("Empty response from whitelist server");
+      }
+      
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("[Whitelist API] JSON parse error:", parseError);
+        console.error("[Whitelist API] Response text:", responseText);
+        throw new Error(`Invalid JSON response: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+      }
     } catch (jsonError: any) {
-      console.error("[Whitelist API] JSON parse error:", jsonError);
+      console.error("[Whitelist API] Response parsing error:", jsonError);
       return NextResponse.json(
         {
           success: false,
-          error: "Invalid response from whitelist server",
+          error: jsonError.message || "Invalid response from whitelist server",
           whitelisted: false,
-          details:
-            process.env.NODE_ENV === "development"
-              ? {
-                  status: response.status,
-                  statusText: response.statusText,
-                }
-              : undefined,
+          details: {
+            status: response.status,
+            statusText: response.statusText,
+            error: jsonError.message || String(jsonError),
+          },
         },
         { status: 200 }
       );
@@ -725,20 +764,27 @@ export async function GET(request: Request) {
       message: error?.message,
       stack: error?.stack,
       name: error?.name,
+      cause: error?.cause,
     });
+    
+    // Log the actual error message in production (sanitized)
+    const errorMessage = error?.message || String(error) || "Unknown error";
+    console.error(`[Whitelist API] Error message: ${errorMessage}`);
+    
     // On error, return not whitelisted so user can proceed
     return NextResponse.json(
       {
         success: false,
-        error: error?.message || "An error occurred. Please try again later.",
+        error: errorMessage.includes("Failed to connect") 
+          ? errorMessage 
+          : "An error occurred. Please try again later.",
         whitelisted: false,
-        details:
-          process.env.NODE_ENV === "development"
-            ? {
-                error: String(error),
-                stack: error?.stack,
-              }
-            : undefined,
+        // Always include error details for debugging (but sanitized)
+        details: {
+          errorType: error?.name || "Unknown",
+          // Only include message if it's a connection error
+          ...(errorMessage.includes("Failed to connect") && { message: errorMessage }),
+        },
       },
       { status: 200 } // Return 200 so frontend can handle it
     );
