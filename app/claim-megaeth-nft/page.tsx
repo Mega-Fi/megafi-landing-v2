@@ -8,6 +8,7 @@ import {
   useWaitForTransactionReceipt,
   useSignMessage,
   usePublicClient,
+  useDisconnect,
 } from "wagmi";
 import { decodeEventLog } from "viem";
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
@@ -85,6 +86,7 @@ export default function ClaimOGNFT() {
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const publicClient = usePublicClient();
+  const { disconnect } = useDisconnect();
 
   const [user, setUser] = useState<User | null>(null);
   const [twitterHandle, setTwitterHandle] = useState<string | null>(null);
@@ -108,6 +110,8 @@ export default function ClaimOGNFT() {
   const [nextTokenId, setNextTokenId] = useState<number>(1);
   const [isLoadingTokenId, setIsLoadingTokenId] = useState(true);
   const [isRecordingClaim, setIsRecordingClaim] = useState(false);
+  const [hasMinted, setHasMinted] = useState<boolean | null>(null);
+  const [isCheckingHasMinted, setIsCheckingHasMinted] = useState(false);
   // Removed whitelistTxHash - we don't want to show backend transaction details
 
   const {
@@ -128,23 +132,25 @@ export default function ClaimOGNFT() {
     analytics.track(MIXPANEL_EVENTS.PAGE_VIEW_NFT_CLAIM);
   }, []);
 
+  // Function to fetch latest token ID
+  const fetchLatestTokenId = async () => {
+    setIsLoadingTokenId(true);
+    try {
+      const response = await fetch("/api/claim/latest-token");
+      const data = await response.json();
+      if (data.success && data.nextTokenId) {
+        setNextTokenId(data.nextTokenId);
+      }
+    } catch (err) {
+      console.error("Error fetching latest token ID:", err);
+      // Keep default value of 1
+    } finally {
+      setIsLoadingTokenId(false);
+    }
+  };
+
   // Fetch latest token ID on mount
   useEffect(() => {
-    const fetchLatestTokenId = async () => {
-      try {
-        const response = await fetch("/api/claim/latest-token");
-        const data = await response.json();
-        if (data.success && data.nextTokenId) {
-          setNextTokenId(data.nextTokenId);
-        }
-      } catch (err) {
-        console.error("Error fetching latest token ID:", err);
-        // Keep default value of 1
-      } finally {
-        setIsLoadingTokenId(false);
-      }
-    };
-
     fetchLatestTokenId();
   }, []);
 
@@ -281,14 +287,49 @@ export default function ClaimOGNFT() {
     }
   }, [eligibility, currentStep]);
 
+  // Check if wallet has already minted
+  const checkHasMinted = async (walletAddress: string) => {
+    if (!publicClient || !walletAddress) return false;
+
+    setIsCheckingHasMinted(true);
+    try {
+      const result = await publicClient.readContract({
+        address: NFT_CONTRACT_ADDRESS,
+        abi: NFT_CONTRACT_ABI,
+        functionName: "hasMinted",
+        args: [walletAddress as `0x${string}`],
+      });
+
+      setHasMinted(result as boolean);
+      return result as boolean;
+    } catch (err) {
+      console.error("Error checking hasMinted:", err);
+      setHasMinted(false); // Default to false on error
+      return false;
+    } finally {
+      setIsCheckingHasMinted(false);
+    }
+  };
+
   // Track wallet connection and auto-whitelist
+  // Use ref to prevent infinite loops when checking eligibility
+  const hasCheckedEligibilityForWallet = useRef<string | null>(null);
+
   useEffect(() => {
     if (
       isConnected &&
       address &&
       currentStep === "wallet" &&
-      eligibility?.eligible
+      eligibility?.eligible &&
+      twitterHandle
     ) {
+      // Prevent duplicate checks for the same wallet address
+      if (hasCheckedEligibilityForWallet.current === address) {
+        return;
+      }
+
+      hasCheckedEligibilityForWallet.current = address;
+
       analytics.track(MIXPANEL_EVENTS.WALLET_CONNECT_SUCCESS, {
         wallet_address: address,
         twitter_handle: twitterHandle,
@@ -299,11 +340,60 @@ export default function ClaimOGNFT() {
         network: currentNetwork.name,
       });
 
-      // Auto-check whitelist status and whitelist if needed
+      // SECURITY: Re-check eligibility to ensure Twitter handle hasn't already claimed
+      // This prevents users from claiming again with a different wallet
+      const recheckEligibility = async () => {
+        try {
+          const response = await fetch(
+            `/api/claim/check-eligibility?twitter_handle=${encodeURIComponent(
+              twitterHandle
+            )}`
+          );
+          const data = await response.json();
+
+          // If Twitter handle has already claimed, show error and prevent proceeding
+          if (data.reason === "already_claimed") {
+            setEligibility(data);
+            setCurrentStep("success");
+            setMintedTokenId(data.token_id || null);
+            setError(null);
+            return false; // Prevent further checks
+          }
+
+          // Don't update eligibility state here to prevent infinite loop
+          return data.eligible === true;
+        } catch (err) {
+          console.error("Error re-checking eligibility:", err);
+          return true; // On error, allow to proceed (will be caught by other checks)
+        }
+      };
+
+      recheckEligibility().then((isStillEligible) => {
+        if (!isStillEligible) {
+          return; // Already claimed, stop here
+        }
+
+        // After eligibility check, check if wallet has already minted
+        checkHasMinted(address).then((hasMintedResult) => {
+          if (hasMintedResult) {
+            // Don't set error - we show a custom card instead
+            setError(null);
+            return;
+          }
+          // If eligibility is still valid and wallet hasn't minted, proceed with whitelist check
       checkWhitelistStatus(address);
+        });
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected, address, currentStep, twitterHandle, eligibility]);
+  }, [
+    isConnected,
+    address,
+    currentStep,
+    twitterHandle,
+    eligibility?.eligible, // Only depend on the eligible flag, not the whole object
+    publicClient,
+  ]);
 
   // Track which transaction hashes we've already processed to prevent duplicate calls
   const processedHashes = useRef<Set<string>>(new Set());
@@ -335,7 +425,7 @@ export default function ClaimOGNFT() {
                 abi: NFT_CONTRACT_ABI,
                 data: log.data,
                 topics: log.topics,
-              });
+              }) as any; // Cast to any to avoid TypeScript unknown type error
 
               // Check if this is the NFTMinted event
               if (
@@ -424,7 +514,7 @@ export default function ClaimOGNFT() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "twitter",
         options: {
-          redirectTo: `${window.location.origin}/claim-og-megaeth-nft`,
+          redirectTo: `${window.location.origin}/claim-megaeth-nft`,
         },
       });
 
@@ -445,11 +535,40 @@ export default function ClaimOGNFT() {
     }
   };
 
-  const signOut = async () => {
+  // Disconnect Twitter and reset to start
+  const disconnectTwitter = async () => {
     await supabase.auth.signOut();
     setCurrentStep("start");
     setEligibility(null);
     setError(null);
+    // Clear the minted token ID so card shows next available token
+    setMintedTokenId(null);
+    // Clear hasMinted state
+    setHasMinted(null);
+    // Refetch latest token ID to update the card display
+    fetchLatestTokenId();
+  };
+
+  // Disconnect wallet only and go back to wallet step
+  const disconnectWallet = () => {
+    // Disconnect wallet if connected
+    if (isConnected) {
+      disconnect();
+    }
+    // Don't disconnect Twitter - keep it connected
+    // Go back to wallet step so they can connect a different wallet
+    setCurrentStep("wallet");
+    setError(null);
+    // Clear the minted token ID so card shows next available token
+    setMintedTokenId(null);
+    // Clear hasMinted state so user can try with different wallet
+    setHasMinted(null);
+    // Clear whitelist status
+    setIsWhitelisted(null);
+    // Reset the eligibility check ref so it can run again for new wallet
+    hasCheckedEligibilityForWallet.current = null;
+    // Refetch latest token ID to update the card display
+    fetchLatestTokenId();
   };
 
   const checkEligibility = async (handle: string) => {
@@ -605,6 +724,41 @@ export default function ClaimOGNFT() {
   const handleMint = async () => {
     if (!address || !twitterHandle) {
       setError("Please connect both Twitter and wallet");
+      return;
+    }
+
+    // SECURITY: Re-check if Twitter handle has already claimed (prevents double claiming with different wallet)
+    try {
+      const eligibilityResponse = await fetch(
+        `/api/claim/check-eligibility?twitter_handle=${encodeURIComponent(
+          twitterHandle
+        )}`
+      );
+      const eligibilityData = await eligibilityResponse.json();
+
+      if (eligibilityData.reason === "already_claimed") {
+        // Twitter handle has already claimed - redirect to success screen
+        setCurrentStep("success");
+        setMintedTokenId(eligibilityData.token_id || null);
+        setEligibility(eligibilityData);
+        setError(null);
+        return;
+      }
+
+      if (!eligibilityData.eligible) {
+        setError("Your Twitter account is not eligible or has already claimed");
+        return;
+      }
+    } catch (err) {
+      console.error("Error checking eligibility before mint:", err);
+      // Continue with other checks - this is a safety check
+    }
+
+    // SECURITY: Check if wallet has already minted
+    const hasMintedResult = await checkHasMinted(address);
+    if (hasMintedResult) {
+      // Don't set error - we show a custom card instead
+      setError(null);
       return;
     }
 
@@ -1054,7 +1208,10 @@ export default function ClaimOGNFT() {
                             >
                               Continue
                             </button>
-                            <button onClick={signOut} className="btn-secondary">
+                            <button
+                              onClick={disconnectTwitter}
+                              className="btn-secondary"
+                            >
                               Disconnect & Use Different Account
                             </button>
                           </div>
@@ -1120,7 +1277,7 @@ export default function ClaimOGNFT() {
                           <Check className="text-green-500/80" size={40} />
                         </div>
                         <h2 className="text-2xl font-bold text-green-500/80">
-                          You're Eligible!
+                          You&apos;re Eligible!
                         </h2>
                         <p className="text-gray-400/70">
                           Congratulations! Your X handle is on the MegaETH OG
@@ -1136,10 +1293,10 @@ export default function ClaimOGNFT() {
                           />
                         </div>
                         <h2 className="text-2xl font-bold text-green-500/80">
-                          You've Already Claimed! 🎉
+                          You&apos;ve Already Claimed! 🎉
                         </h2>
                         <p className="text-gray-400/70">
-                          You've successfully claimed your MegaETH OG NFT!
+                          You&apos;ve successfully claimed your MegaETH OG NFT!
                           {eligibility.token_id && (
                             <span className="block mt-2 text-green-400/80">
                               Token ID: #{eligibility.token_id}
@@ -1180,7 +1337,7 @@ export default function ClaimOGNFT() {
                         <div className="space-y-3">
                           <button
                             onClick={() => {
-                              signOut();
+                              disconnectTwitter();
                               setEligibility(null);
                             }}
                             className="btn-primary"
@@ -1200,11 +1357,11 @@ export default function ClaimOGNFT() {
                 {/* Step 3: Wallet Connection */}
                 {currentStep === "wallet" && (
                   <div className="text-center space-y-6">
-                    {/* Eligibility Confirmation - Show at top */}
+                    {/* Eligibility Confirmation - Show at top (always show if eligible, even if wallet has minted) */}
                     {eligibility?.eligible && twitterHandle && (
                       <EligibilityCard
                         twitterHandle={twitterHandle}
-                        onDisconnect={signOut}
+                        onDisconnect={disconnectTwitter}
                       />
                     )}
 
@@ -1233,8 +1390,54 @@ export default function ClaimOGNFT() {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {/* Wallet Ready Card - Show when whitelisted */}
-                        {isWhitelisted && address && (
+                        {/* Show error if wallet has already minted */}
+                        {hasMinted === true && address && (
+                          <div className="eligibility-card-outer">
+                            <div className="eligibility-dot"></div>
+                            <div className="eligibility-card">
+                              <div className="eligibility-ray"></div>
+                              <div className="relative z-20">
+                                <div className="flex items-center justify-center gap-3 mb-2">
+                                  <X className="text-red-400" size={24} />
+                                  <h3 className="eligibility-title text-red-400">
+                                    Already Minted
+                                  </h3>
+                                </div>
+                                <p className="eligibility-message mt-2 text-center">
+                                  This wallet has already minted an NFT. Each
+                                  wallet can only mint once.
+                                </p>
+                                <p className="text-xs text-gray-400/70 mt-3 text-center">
+                                  💡 Want to try with a different account or
+                                  wallet?
+                                </p>
+                              </div>
+                              <div className="eligibility-line eligibility-topl"></div>
+                              <div className="eligibility-line eligibility-leftl"></div>
+                              <div className="eligibility-line eligibility-bottoml"></div>
+                              <div className="eligibility-line eligibility-rightl"></div>
+                            </div>
+                            {/* Button positioned outside card to avoid stacking context issues */}
+                            <div className="mt-4">
+                              <button
+                                onClick={disconnectWallet}
+                                className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer bg-gradient-to-r from-[#FF3A1E]/80 to-[#FF6B3D]/80 hover:from-[#FF6B3D]/90 hover:to-[#FF3A1E]/90 border-2 border-[#FF6B3D]/50 hover:border-[#FF6B3D]/80"
+                                style={{
+                                  position: "relative",
+                                  zIndex: 1000,
+                                  boxShadow:
+                                    "0 0 20px rgba(255, 58, 30, 0.4), 0 0 40px rgba(255, 58, 30, 0.2)",
+                                }}
+                                type="button"
+                              >
+                                Go Back to Start
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Wallet Ready Card - Show when whitelisted and not already minted */}
+                        {isWhitelisted && address && hasMinted !== true && (
                           <>
                             <div className="eligibility-card-outer">
                               <WalletReadyCard walletAddress={address} />
@@ -1251,19 +1454,24 @@ export default function ClaimOGNFT() {
                                 disabled={
                                   isMintPending ||
                                   isConfirming ||
-                                  isWhitelisted !== true
+                                  isWhitelisted !== true ||
+                                  isCheckingHasMinted
                                 }
                               >
                                 {isMintPending || isConfirming
                                   ? "Processing..."
+                                  : isCheckingHasMinted
+                                  ? "Checking..."
                                   : "Mint NFT"}
                               </button>
                             </div>
                           </>
                         )}
 
-                        {/* Wallet Prepare Card - Show when not whitelisted */}
-                        {isWhitelisted === false && address && (
+                        {/* Wallet Prepare Card - Show when not whitelisted and not already minted */}
+                        {isWhitelisted === false &&
+                          address &&
+                          hasMinted !== true && (
                           <WalletPrepareCard
                             walletAddress={address}
                             onContinue={() =>
@@ -1273,9 +1481,10 @@ export default function ClaimOGNFT() {
                           />
                         )}
 
-                        {/* Checking Status - Show when status is unknown */}
+                        {/* Checking Status - Show when status is unknown and not already minted */}
                         {isWhitelisted === null &&
                           !isWhitelisting &&
+                          hasMinted !== true &&
                           address && (
                             <div className="eligibility-card-outer">
                               <div className="eligibility-dot"></div>
@@ -1358,7 +1567,7 @@ export default function ClaimOGNFT() {
                       Success! 🎉
                     </h2>
                     <p className="text-gray-400/70">
-                      You've successfully claimed your MegaETH OG NFT!
+                      You&apos;ve successfully claimed your MegaETH OG NFT!
                     </p>
 
                     {/* Show connected Twitter account */}
@@ -1371,7 +1580,7 @@ export default function ClaimOGNFT() {
                           @{twitterHandle}
                         </p>
                         <button
-                          onClick={signOut}
+                          onClick={disconnectTwitter}
                           className="text-xs text-gray-400/70 hover:text-red-400/70 underline transition-colors"
                         >
                           Disconnect X Account
@@ -1417,8 +1626,8 @@ export default function ClaimOGNFT() {
                       <div className="p-4 border-2 border-yellow-500/30 bg-yellow-500/10 rounded-lg">
                         <p className="text-yellow-400/80 text-sm mb-3">
                           ⚠️ Claim recording failed. Your NFT was minted
-                          successfully, but we couldn't save the record to our
-                          database. Click below to retry.
+                          successfully, but we couldn&apos;t save the record to
+                          our database. Click below to retry.
                         </p>
                         <button
                           onClick={() => {
@@ -1462,7 +1671,7 @@ export default function ClaimOGNFT() {
                     </button>
                     {eligibility?.reason === "already_claimed" && (
                       <p className="text-xs text-gray-500/70 mt-2">
-                        💡 When you return, you'll see your claimed NFT
+                        💡 When you return, you&apos;ll see your claimed NFT
                         automatically
                       </p>
                     )}

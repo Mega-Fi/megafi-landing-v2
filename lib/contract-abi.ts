@@ -1,12 +1,15 @@
 // NFT Contract Configuration - The 95 Pass
 // ERC-721 NFT Contract with Whitelist functionality
 
-import contractAbi from '../The95Pass.abi.json';
+import contractAbi from "../The95Pass.abi.json";
 
-export const NFT_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}` || '0x0000000000000000000000000000000000000000';
+export const NFT_CONTRACT_ADDRESS =
+  (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`) ||
+  "0x0000000000000000000000000000000000000000";
 
 // Import the full ABI from The95Pass.abi.json
-export const NFT_CONTRACT_ABI = contractAbi as const;
+// Cast to any to avoid TypeScript const assertion error on imported JSON
+export const NFT_CONTRACT_ABI = contractAbi as any;
 
 // Key Functions Available:
 // - mint(): Mint NFT to msg.sender (whitelisted addresses only, one per wallet)

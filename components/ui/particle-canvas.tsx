@@ -46,12 +46,34 @@ export function ParticleCanvas({ pointerSize = 4, pointerColor = "white" }) {
       tau: Math.PI * 2,
     };
 
-    const particles: Particle[] = [];
-    const source = new Source();
+    // Type definition for Particle instances
+    interface ParticleType {
+      dist: number;
+      rad: number;
+      baseAngSpeed: number;
+      variedAngSpeed: number;
+      baseSize: number;
+      addedSize: number;
+      color: string;
+      step: () => void;
+      draw: (ctx: CanvasRenderingContext2D) => void;
+    }
+
+    // Type definition for Source instances
+    interface SourceType {
+      x: number;
+      y: number;
+      rad: number;
+      mouseControlled: boolean;
+      step: () => void;
+    }
+
+    const particles: ParticleType[] = [];
+    const source = new (Source as any)() as SourceType;
     let tick = 0;
 
     function Particle(this: any) {
-      this.dist = Math.sqrt(Math.random()) * s / 2;
+      this.dist = (Math.sqrt(Math.random()) * s) / 2;
       this.rad = Math.random() * util.tau;
       this.baseAngSpeed =
         opts.particleBaseBaseAngSpeed +
@@ -59,7 +81,8 @@ export function ParticleCanvas({ pointerSize = 4, pointerColor = "white" }) {
       this.variedAngSpeed =
         opts.particleBaseVariedAngSpeed +
         opts.particleAddedVariedAngSpeed * Math.random();
-      this.size = opts.particleBaseSize + opts.particleAddedSize * Math.random();
+      this.size =
+        opts.particleBaseSize + opts.particleAddedSize * Math.random();
     }
 
     Particle.prototype.step = function () {
@@ -75,7 +98,10 @@ export function ParticleCanvas({ pointerSize = 4, pointerColor = "white" }) {
         .replace("hue", ((this.rad / util.tau) * 360 + tick).toString())
         .replace(
           "light",
-          (opts.particleBaseLight + sizeProp * opts.particleAddedLight).toString()
+          (
+            opts.particleBaseLight +
+            sizeProp * opts.particleAddedLight
+          ).toString()
         )
         .replace("alp", "0.8");
 
@@ -119,12 +145,14 @@ export function ParticleCanvas({ pointerSize = 4, pointerColor = "white" }) {
 
     function anim() {
       window.requestAnimationFrame(anim);
+      if (!c) return; // Guard against null canvas
       tick++;
       if (!opts.enableTrails) ctx.globalCompositeOperation = "source-over";
       ctx.fillStyle = opts.repaintColor;
       ctx.fillRect(0, 0, c.width, c.height);
       ctx.globalCompositeOperation = "lighter";
-      if (particles.length < opts.particles) particles.push(new (Particle as any)());
+      if (particles.length < opts.particles)
+        particles.push(new (Particle as any)());
       ctx.save();
       ctx.translate(c.width / 2, c.height / 2);
       source.step();
@@ -161,8 +189,5 @@ export function ParticleCanvas({ pointerSize = 4, pointerColor = "white" }) {
     };
   }, [pointerSize, pointerColor]);
 
-  return (
-    <canvas ref={canvasRef} className="w-full h-full bg-black block" />
-  );
+  return <canvas ref={canvasRef} className="w-full h-full bg-black block" />;
 }
-
