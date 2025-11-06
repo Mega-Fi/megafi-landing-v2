@@ -4,10 +4,29 @@ import { mainnet, arbitrum, arbitrumSepolia } from "viem/chains";
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
 
 export async function GET() {
+  // Determine network from environment variable
+  // Options: 'testnet' | 'mainnet' | 'arbitrum'
+  const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
+  
+  // Get RPC URL from environment or use default public RPCs
+  let rpcUrl: string | undefined;
+  
+  if (network === "mainnet") {
+    rpcUrl = process.env.NEXT_PUBLIC_MAINNET_RPC_URL || 
+             process.env.NEXT_PUBLIC_RPC_URL ||
+             "https://eth.llamarpc.com"; // Public fallback
+  } else if (network === "arbitrum") {
+    rpcUrl = process.env.NEXT_PUBLIC_ARBITRUM_RPC_URL || 
+             process.env.NEXT_PUBLIC_RPC_URL ||
+             "https://arb1.arbitrum.io/rpc"; // Public Arbitrum RPC
+  } else {
+    // testnet (Arbitrum Sepolia)
+    rpcUrl = process.env.NEXT_PUBLIC_TESTNET_RPC_URL || 
+             process.env.NEXT_PUBLIC_RPC_URL ||
+             "https://sepolia-rollup.arbitrum.io/rpc"; // Public testnet RPC
+  }
+
   try {
-    // Determine network from environment variable
-    // Options: 'testnet' | 'mainnet' | 'arbitrum'
-    const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
     const selectedChain = 
       network === "mainnet" ? mainnet :
       network === "arbitrum" ? arbitrum :
@@ -16,7 +35,7 @@ export async function GET() {
     // Create public client to read from contract
     const publicClient = createPublicClient({
       chain: selectedChain,
-      transport: http(),
+      transport: http(rpcUrl),
     });
 
     // Call getCurrentTokenId() on the contract
@@ -41,12 +60,16 @@ export async function GET() {
     });
   } catch (error: any) {
     console.error("Error fetching latest token ID from contract:", error);
+    console.error("Network:", network);
+    console.error("Contract Address:", NFT_CONTRACT_ADDRESS);
+    console.error("RPC URL:", rpcUrl);
 
     // Fallback: return default values if contract call fails
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to fetch latest token ID from contract",
+        error: error?.message || "Failed to fetch latest token ID from contract",
+        details: process.env.NODE_ENV === "development" ? String(error) : undefined,
         latestTokenId: 0,
         nextTokenId: 1,
       },
