@@ -562,10 +562,11 @@ export async function GET(request: Request) {
       (process.env.NODE_ENV === "production" ? null : "http://localhost:3001");
 
     if (!whitelistServerUrl) {
+      console.error("[Whitelist API] WHITELIST_SERVER_URL not configured");
       return NextResponse.json(
         {
           success: false,
-          error: "Server configuration error",
+          error: "Server configuration error: WHITELIST_SERVER_URL not set",
           whitelisted: false,
         },
         { status: 500 }
@@ -573,25 +574,80 @@ export async function GET(request: Request) {
     }
 
     const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
+    const normalizedAddress = getAddress(wallet_address);
+    const statusUrl = `${whitelistServerUrl}/api/status/${normalizedAddress}`;
 
-    const response = await fetch(
-      `${whitelistServerUrl}/api/status/${getAddress(wallet_address)}`,
-      {
+    console.log(
+      `[Whitelist API] Checking status for ${normalizedAddress} at ${whitelistServerUrl}`
+    );
+
+    let response: Response;
+    try {
+      response = await fetch(statusUrl, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           ...(apiKey && { "X-API-Key": apiKey }),
         },
         signal: AbortSignal.timeout(10000), // 10 second timeout for GET
-      }
-    );
+      });
+    } catch (fetchError: any) {
+      console.error("[Whitelist API] Fetch error:", fetchError);
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Failed to connect to whitelist server: ${fetchError.message}`,
+          whitelisted: false,
+          details:
+            process.env.NODE_ENV === "development"
+              ? {
+                  whitelistServerUrl,
+                  error: String(fetchError),
+                }
+              : undefined,
+        },
+        { status: 200 } // Return 200 so frontend can handle it
+      );
+    }
 
-    const data = await response.json();
+    let data: any;
+    try {
+      data = await response.json();
+    } catch (jsonError: any) {
+      console.error("[Whitelist API] JSON parse error:", jsonError);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid response from whitelist server",
+          whitelisted: false,
+          details:
+            process.env.NODE_ENV === "development"
+              ? {
+                  status: response.status,
+                  statusText: response.statusText,
+                }
+              : undefined,
+        },
+        { status: 200 }
+      );
+    }
 
     if (!response.ok) {
+      console.error("[Whitelist API] Server error:", response.status, data);
       // If status check fails, assume not whitelisted
       return NextResponse.json(
-        { success: false, error: "Failed to check status", whitelisted: false },
+        {
+          success: false,
+          error: data.error || "Failed to check status",
+          whitelisted: false,
+          details:
+            process.env.NODE_ENV === "development"
+              ? {
+                  status: response.status,
+                  serverResponse: data,
+                }
+              : undefined,
+        },
         { status: 200 } // Return 200 so frontend can handle it
       );
     }
@@ -607,12 +663,24 @@ export async function GET(request: Request) {
     );
   } catch (error: any) {
     console.error("[Whitelist API] Status check error:", error);
+    console.error("[Whitelist API] Error details:", {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+    });
     // On error, return not whitelisted so user can proceed
     return NextResponse.json(
       {
         success: false,
-        error: "An error occurred. Please try again later.",
+        error: error?.message || "An error occurred. Please try again later.",
         whitelisted: false,
+        details:
+          process.env.NODE_ENV === "development"
+            ? {
+                error: String(error),
+                stack: error?.stack,
+              }
+            : undefined,
       },
       { status: 200 } // Return 200 so frontend can handle it
     );
