@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { isAddress, getAddress, createPublicClient, http } from "viem";
-import { mainnet, arbitrum, arbitrumSepolia } from "viem/chains";
+import { mainnet, base, arbitrumSepolia } from "viem/chains";
 import { supabase } from "@/lib/supabase";
 import { isRateLimited } from "@/lib/rate-limit";
 import {
@@ -209,8 +209,8 @@ export async function POST(request: Request) {
       const selectedChain =
         network === "mainnet"
           ? mainnet
-          : network === "arbitrum"
-          ? arbitrum
+          : network === "base"
+          ? base
           : arbitrumSepolia; // default to testnet
 
       // Get RPC URL from environment or use default public RPCs
@@ -221,8 +221,8 @@ export async function POST(request: Request) {
           process.env.NEXT_PUBLIC_MAINNET_RPC_URL ||
           process.env.NEXT_PUBLIC_RPC_URL ||
           "https://eth.llamarpc.com"; // Public fallback
-      } else if (network === "arbitrum") {
-        rpcUrl = "https://arb1.arbitrum.io/rpc"; // Public Arbitrum RPC
+      } else if (network === "base") {
+        rpcUrl = "https://mainnet.base.org"; // Public Base RPC
       } else {
         // testnet (Arbitrum Sepolia)
         rpcUrl = "https://arbitrum-sepolia.drpc.org"; // Public testnet RPC

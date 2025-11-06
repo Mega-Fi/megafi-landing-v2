@@ -1,17 +1,17 @@
 "use client";
 
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { mainnet, arbitrum, arbitrumSepolia } from "wagmi/chains";
+import { mainnet, base, arbitrumSepolia } from "wagmi/chains";
 
 // Determine which network to use based on environment variable
-// Options: 'testnet' | 'mainnet' | 'arbitrum'
+// Options: 'testnet' | 'mainnet' | 'base'
 const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
 
 const selectedChain =
   network === "mainnet"
     ? mainnet
-    : network === "arbitrum"
-    ? arbitrum
+    : network === "base"
+    ? base
     : arbitrumSepolia; // default to testnet
 
 export const config = getDefaultConfig({
@@ -29,5 +29,5 @@ export const currentNetwork = {
   isTestnet: network === "testnet",
   explorerUrl:
     selectedChain.blockExplorers?.default.url || "https://etherscan.io",
-  network: network, // 'testnet' | 'mainnet' | 'arbitrum'
+  network: network, // 'testnet' | 'mainnet' | 'base'
 };
