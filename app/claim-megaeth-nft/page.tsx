@@ -9,6 +9,7 @@ import {
   useSignMessage,
   usePublicClient,
   useDisconnect,
+  useSwitchChain,
 } from "wagmi";
 import { decodeEventLog } from "viem";
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
@@ -84,10 +85,11 @@ type Step = "start" | "twitter" | "eligibility" | "wallet" | "mint" | "success";
 
 export default function ClaimOGNFT() {
   const supabase = createSupabaseClient();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const publicClient = usePublicClient();
   const { disconnect } = useDisconnect();
+  const { switchChain, isPending: isSwitchingChain } = useSwitchChain();
 
   const [user, setUser] = useState<User | null>(null);
   const [twitterHandle, setTwitterHandle] = useState<string | null>(null);
@@ -382,7 +384,7 @@ export default function ClaimOGNFT() {
             return;
           }
           // If eligibility is still valid and wallet hasn't minted, proceed with whitelist check
-          checkWhitelistStatus(address);
+      checkWhitelistStatus(address);
         });
       });
     }
@@ -1391,8 +1393,72 @@ export default function ClaimOGNFT() {
                       </div>
                     ) : (
                       <div className="space-y-4">
+                        {/* Show warning if user is on wrong network */}
+                        {isConnected && chainId && chainId !== currentNetwork.chainId && (
+                          <div className="eligibility-card-outer">
+                            <div className="eligibility-dot"></div>
+                            <div className="eligibility-card">
+                              <div className="eligibility-ray"></div>
+                              <div className="relative z-20">
+                                <div className="flex items-center justify-center gap-3 mb-2">
+                                  <X className="text-yellow-400" size={24} />
+                                  <h3 className="eligibility-title text-yellow-400">
+                                    Wrong Network
+                                  </h3>
+                                </div>
+                                <p className="eligibility-message mt-2 text-center">
+                                  Please switch to <span className="font-semibold text-yellow-400">{currentNetwork.name}</span> to continue.
+                                </p>
+                                <p className="text-xs text-gray-400/70 mt-3 text-center">
+                                  💡 Your wallet is currently connected to a different network
+                                </p>
+                              </div>
+                              <div className="eligibility-line eligibility-topl"></div>
+                              <div className="eligibility-line eligibility-leftl"></div>
+                              <div className="eligibility-line eligibility-bottoml"></div>
+                              <div className="eligibility-line eligibility-rightl"></div>
+                            </div>
+                            {/* Switch Network Button */}
+                            <div className="mt-4">
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    await switchChain({ chainId: currentNetwork.chainId });
+                                  } catch (error: any) {
+                                    console.error("Error switching chain:", error);
+                                    // User rejected the request
+                                    if (error?.code === 4001) {
+                                      toast.error("Network switch was rejected. Please switch manually in your wallet.");
+                                    } else {
+                                      toast.error("Failed to switch network. Please switch manually in your wallet.");
+                                    }
+                                  }
+                                }}
+                                disabled={isSwitchingChain}
+                                className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer bg-gradient-to-r from-yellow-500/80 to-yellow-600/80 hover:from-yellow-600/90 hover:to-yellow-500/90 border-2 border-yellow-500/50 hover:border-yellow-500/80"
+                                style={{
+                                  position: "relative",
+                                  zIndex: 1000,
+                                  boxShadow:
+                                    "0 0 20px rgba(234, 179, 8, 0.4), 0 0 40px rgba(234, 179, 8, 0.2)",
+                                }}
+                                type="button"
+                              >
+                                {isSwitchingChain ? (
+                                  <span className="flex items-center justify-center gap-2">
+                                    <Loader2 className="animate-spin" size={16} />
+                                    Switching...
+                                  </span>
+                                ) : (
+                                  `Switch to ${currentNetwork.name}`
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
                         {/* Show error if wallet has already minted */}
-                        {hasMinted === true && address && (
+                        {hasMinted === true && address && chainId === currentNetwork.chainId && (
                           <div className="eligibility-card-outer">
                             <div className="eligibility-dot"></div>
                             <div className="eligibility-card">
@@ -1438,7 +1504,7 @@ export default function ClaimOGNFT() {
                         )}
 
                         {/* Wallet Ready Card - Show when whitelisted and not already minted */}
-                        {isWhitelisted && address && hasMinted !== true && (
+                        {isWhitelisted && address && hasMinted !== true && chainId === currentNetwork.chainId && (
                           <>
                             <div className="eligibility-card-outer">
                               <WalletReadyCard walletAddress={address} />
@@ -1472,21 +1538,23 @@ export default function ClaimOGNFT() {
                         {/* Wallet Prepare Card - Show when not whitelisted and not already minted */}
                         {isWhitelisted === false &&
                           address &&
-                          hasMinted !== true && (
-                            <WalletPrepareCard
-                              walletAddress={address}
-                              onContinue={() =>
-                                address && whitelistWallet(address)
-                              }
-                              isPreparing={isWhitelisting}
-                            />
-                          )}
+                          hasMinted !== true &&
+                          chainId === currentNetwork.chainId && (
+                          <WalletPrepareCard
+                            walletAddress={address}
+                            onContinue={() =>
+                              address && whitelistWallet(address)
+                            }
+                            isPreparing={isWhitelisting}
+                          />
+                        )}
 
                         {/* Checking Status - Show when status is unknown and not already minted */}
                         {isWhitelisted === null &&
                           !isWhitelisting &&
                           hasMinted !== true &&
-                          address && (
+                          address &&
+                          chainId === currentNetwork.chainId && (
                             <div className="eligibility-card-outer">
                               <div className="eligibility-dot"></div>
                               <div className="eligibility-card">
@@ -1570,30 +1638,30 @@ export default function ClaimOGNFT() {
                         <div className="eligibility-ray"></div>
 
                         <div className="space-y-4">
-                          <h2 className="text-3xl font-bold text-green-500/80">
+                    <h2 className="text-3xl font-bold text-green-500/80">
                             Success!
-                          </h2>
-                          <p className="text-gray-400/70">
+                    </h2>
+                    <p className="text-gray-400/70">
                             You&apos;ve successfully claimed your MegaETH OG
                             NFT!
-                          </p>
+                    </p>
 
-                          {/* Show connected Twitter account */}
-                          {twitterHandle && (
+                    {/* Show connected Twitter account */}
+                    {twitterHandle && (
                             <div className="mt-4 p-4 rounded-lg bg-gray-800/30 border border-gray-700/30">
-                              <p className="text-sm text-gray-400/70 mb-1">
-                                Claimed with
-                              </p>
-                              <p className="font-semibold text-white/80 mb-2">
-                                @{twitterHandle}
-                              </p>
+                        <p className="text-sm text-gray-400/70 mb-1">
+                          Claimed with
+                        </p>
+                        <p className="font-semibold text-white/80 mb-2">
+                          @{twitterHandle}
+                        </p>
                               <div className="flex flex-col gap-2">
-                                <button
-                                  onClick={disconnectTwitter}
+                        <button
+                          onClick={disconnectTwitter}
                                   className="text-xs text-gray-400/70 hover:text-red-400/70 underline transition-colors text-center"
-                                >
-                                  Disconnect X Account
-                                </button>
+                        >
+                          Disconnect X Account
+                        </button>
                                 {/* View NFT Link */}
                                 {mintedTokenId && (
                                   <Link
@@ -1604,8 +1672,8 @@ export default function ClaimOGNFT() {
                                   </Link>
                                 )}
                               </div>
-                            </div>
-                          )}
+                      </div>
+                    )}
 
                           {/* View NFT Link - Show even if no Twitter handle */}
                           {!twitterHandle && mintedTokenId && (
