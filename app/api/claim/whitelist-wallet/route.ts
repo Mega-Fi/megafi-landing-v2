@@ -573,8 +573,8 @@ export async function GET(request: Request) {
     const whitelistServerUrl =
       process.env.WHITELIST_SERVER_URL ||
       process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-      (process.env.NODE_ENV === "production" 
-        ? "https://server.megafi.app" 
+      (process.env.NODE_ENV === "production"
+        ? "https://server.megafi.app"
         : "http://localhost:3001");
 
     if (!whitelistServerUrl) {
@@ -623,29 +623,44 @@ export async function GET(request: Request) {
     console.log(
       `[Whitelist API] Checking status for ${normalizedAddress} at ${whitelistServerUrl}`
     );
+    console.log(`[Whitelist API] Full URL: ${statusUrl}`);
 
     let response: Response;
     try {
+      // Create timeout controller (AbortSignal.timeout may not be available in all Node versions)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       response = await fetch(statusUrl, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           ...(apiKey && { "X-API-Key": apiKey }),
         },
-        signal: AbortSignal.timeout(10000), // 10 second timeout for GET
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+      console.log(`[Whitelist API] Response status: ${response.status} ${response.statusText}`);
     } catch (fetchError: any) {
       console.error("[Whitelist API] Fetch error:", fetchError);
+      console.error("[Whitelist API] Error details:", {
+        message: fetchError?.message,
+        name: fetchError?.name,
+        cause: fetchError?.cause,
+      });
       return NextResponse.json(
         {
           success: false,
-          error: `Failed to connect to whitelist server: ${fetchError.message}`,
+          error: `Failed to connect to whitelist server: ${fetchError.message || String(fetchError)}`,
           whitelisted: false,
           details:
             process.env.NODE_ENV === "development"
               ? {
                   whitelistServerUrl,
+                  statusUrl,
                   error: String(fetchError),
+                  errorName: fetchError?.name,
                 }
               : undefined,
         },
