@@ -381,7 +381,7 @@ export default function ClaimOGNFT() {
             return;
           }
           // If eligibility is still valid and wallet hasn't minted, proceed with whitelist check
-          checkWhitelistStatus(address);
+      checkWhitelistStatus(address);
         });
       });
     }
@@ -1472,14 +1472,14 @@ export default function ClaimOGNFT() {
                         {isWhitelisted === false &&
                           address &&
                           hasMinted !== true && (
-                            <WalletPrepareCard
-                              walletAddress={address}
-                              onContinue={() =>
-                                address && whitelistWallet(address)
-                              }
-                              isPreparing={isWhitelisting}
-                            />
-                          )}
+                          <WalletPrepareCard
+                            walletAddress={address}
+                            onContinue={() =>
+                              address && whitelistWallet(address)
+                            }
+                            isPreparing={isWhitelisting}
+                          />
+                        )}
 
                         {/* Checking Status - Show when status is unknown and not already minted */}
                         {isWhitelisted === null &&
