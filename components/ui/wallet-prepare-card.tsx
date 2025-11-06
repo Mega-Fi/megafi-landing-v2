@@ -66,13 +66,48 @@ export function WalletPrepareCard({
       {!isPreparing && (
         <button
           onClick={onContinue}
-          className="w-full px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer mt-4"
+          className="btn-continue-emerald"
           type="button"
           style={{ position: "relative", zIndex: 1000 }}
         >
           Continue
         </button>
       )}
+
+      <style jsx>{`
+        .btn-continue-emerald {
+          width: 100%;
+          padding: 12px 24px;
+          background: linear-gradient(
+            135deg,
+            rgba(16, 185, 129, 0.9) 0%,
+            rgba(5, 150, 105, 0.9) 100%
+          );
+          color: white;
+          font-weight: 600;
+          border-radius: 12px;
+          transition: all 0.2s ease;
+          cursor: pointer;
+          margin-top: 16px;
+          box-shadow: 0 0 20px rgba(16, 185, 129, 0.4),
+            0 0 40px rgba(16, 185, 129, 0.2);
+          border: 2px solid rgba(16, 185, 129, 0.5);
+        }
+        .btn-continue-emerald:hover {
+          background: linear-gradient(
+            135deg,
+            rgba(5, 150, 105, 0.95) 0%,
+            rgba(16, 185, 129, 0.95) 100%
+          );
+          box-shadow: 0 0 30px rgba(16, 185, 129, 0.6),
+            0 0 60px rgba(16, 185, 129, 0.3);
+          border-color: rgba(16, 185, 129, 0.8);
+          transform: translateY(-1px);
+        }
+        .btn-continue-emerald:active {
+          transform: translateY(0);
+        }
+      `}</style>
 
       {isPreparing && (
         <div

@@ -381,7 +381,7 @@ export default function ClaimOGNFT() {
             return;
           }
           // If eligibility is still valid and wallet hasn't minted, proceed with whitelist check
-      checkWhitelistStatus(address);
+          checkWhitelistStatus(address);
         });
       });
     }
@@ -1384,7 +1384,7 @@ export default function ClaimOGNFT() {
                         <p className="text-gray-400/70">
                           Connect your Ethereum wallet to mint your OG NFT
                         </p>
-                        <div className="flex justify-center pt-2">
+                        <div className="flex justify-center pt-2 connect-wallet-wrapper">
                           <ConnectButton />
                         </div>
                       </div>
@@ -1472,14 +1472,14 @@ export default function ClaimOGNFT() {
                         {isWhitelisted === false &&
                           address &&
                           hasMinted !== true && (
-                          <WalletPrepareCard
-                            walletAddress={address}
-                            onContinue={() =>
-                              address && whitelistWallet(address)
-                            }
-                            isPreparing={isWhitelisting}
-                          />
-                        )}
+                            <WalletPrepareCard
+                              walletAddress={address}
+                              onContinue={() =>
+                                address && whitelistWallet(address)
+                              }
+                              isPreparing={isWhitelisting}
+                            />
+                          )}
 
                         {/* Checking Status - Show when status is unknown and not already minted */}
                         {isWhitelisted === null &&
@@ -1716,6 +1716,25 @@ export default function ClaimOGNFT() {
           }
           .btn-secondary {
             @apply w-full max-w-xs mx-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2;
+          }
+
+          /* Connect Wallet Button Glow Effect */
+          .connect-wallet-wrapper :global button {
+            box-shadow: 0 0 20px rgba(255, 58, 30, 0.4),
+              0 0 40px rgba(255, 58, 30, 0.2) !important;
+            border: 2px solid rgba(255, 107, 61, 0.5) !important;
+            transition: all 0.2s ease !important;
+          }
+
+          .connect-wallet-wrapper :global button:hover {
+            box-shadow: 0 0 30px rgba(255, 58, 30, 0.6),
+              0 0 60px rgba(255, 58, 30, 0.3) !important;
+            border-color: rgba(255, 107, 61, 0.8) !important;
+            transform: translateY(-1px) !important;
+          }
+
+          .connect-wallet-wrapper :global button:active {
+            transform: translateY(0) !important;
           }
         `}</style>
       </div>
