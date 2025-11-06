@@ -70,7 +70,11 @@ class MixpanelService {
         console.log('✅ Mixpanel initialized');
       }
     } catch (error) {
-      console.error('Failed to initialize Mixpanel:', error);
+      // Silently fail - analytics blocking is common and shouldn't break the app
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Mixpanel initialization failed (may be blocked by ad blocker):', error);
+      }
     }
   }
 
@@ -92,7 +96,11 @@ class MixpanelService {
         environment: process.env.NODE_ENV,
       });
     } catch (error) {
-      console.error('Failed to track event:', error);
+      // Silently fail - analytics blocking is common and shouldn't break the app
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Mixpanel tracking blocked or failed (this is normal with ad blockers):', error);
+      }
     }
   }
 
