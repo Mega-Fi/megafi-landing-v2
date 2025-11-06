@@ -104,7 +104,7 @@ export const OGNFTBanner = ({
         </defs>
       </svg>
 
-      {/* <Link href="/claim" className="banner-link" onClick={handleBannerClick}>
+      {/* <Link href="/claim-megaeth-nft" className="banner-link" onClick={handleBannerClick}>
         <div
           className="banner-container"
           style={
