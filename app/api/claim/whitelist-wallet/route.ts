@@ -558,9 +558,10 @@ export async function GET(request: Request) {
 
     // Check environment variables (for debugging)
     const hasWhitelistServerUrl = !!process.env.WHITELIST_SERVER_URL;
-    const hasPublicWhitelistServerUrl = !!process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL;
+    const hasPublicWhitelistServerUrl =
+      !!process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL;
     const nodeEnv = process.env.NODE_ENV;
-    
+
     console.log("[Whitelist API] Environment check:", {
       hasWhitelistServerUrl,
       hasPublicWhitelistServerUrl,
@@ -569,10 +570,10 @@ export async function GET(request: Request) {
       publicWhitelistServerUrl: hasPublicWhitelistServerUrl ? "SET" : "NOT SET",
     });
 
-    const whitelistServerUrl =
-      process.env.WHITELIST_SERVER_URL ||
-      process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-      (process.env.NODE_ENV === "production" ? null : "http://localhost:3001");
+    const whitelistServerUrl = "https://whitelist-server.megafi.io";
+    // process.env.WHITELIST_SERVER_URL ||
+    //   process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
+    //   (process.env.NODE_ENV === "production" ? null : "http://localhost:3001");
 
     if (!whitelistServerUrl) {
       console.error("[Whitelist API] WHITELIST_SERVER_URL not configured");
@@ -581,24 +582,30 @@ export async function GET(request: Request) {
           success: false,
           error: "Server configuration error: WHITELIST_SERVER_URL not set",
           whitelisted: false,
-          details: process.env.NODE_ENV === "development" ? {
-            hasWhitelistServerUrl,
-            hasPublicWhitelistServerUrl,
-            nodeEnv,
-          } : undefined,
+          details:
+            process.env.NODE_ENV === "development"
+              ? {
+                  hasWhitelistServerUrl,
+                  hasPublicWhitelistServerUrl,
+                  nodeEnv,
+                }
+              : undefined,
         },
         { status: 500 }
       );
     }
 
     const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
-    
+
     // Normalize address (this can throw if address is invalid)
     let normalizedAddress: string;
     try {
       normalizedAddress = getAddress(wallet_address);
     } catch (addressError: any) {
-      console.error("[Whitelist API] Address normalization error:", addressError);
+      console.error(
+        "[Whitelist API] Address normalization error:",
+        addressError
+      );
       return NextResponse.json(
         {
           success: false,
@@ -608,7 +615,7 @@ export async function GET(request: Request) {
         { status: 400 }
       );
     }
-    
+
     const statusUrl = `${whitelistServerUrl}/api/status/${normalizedAddress}`;
 
     console.log(
