@@ -1653,7 +1653,7 @@ export default function ClaimOGNFT() {
                       }}
                     >
                       <h3 className="font-bold text-lg mb-2 text-white/80">
-                        🎁 Your Benefits
+                        Awarded to MegaETH OG Supporters
                       </h3>
                       <p className="text-gray-300/80">
                         <span className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent font-bold">
