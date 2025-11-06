@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import { createPublicClient, http } from "viem";
-import { mainnet, base, arbitrumSepolia } from "viem/chains";
+import { arbitrum, base, arbitrumSepolia } from "viem/chains";
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
 
 export async function GET() {
   // Determine network from environment variable
-  // Options: 'testnet' | 'mainnet' | 'base'
+  // Options: 'testnet' | 'arbitrum' | 'base'
   const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
 
   // Get RPC URL from environment or use default public RPCs
   let rpcUrl: string | undefined;
 
-  if (network === "mainnet") {
-    rpcUrl = "https://eth.llamarpc.com"; // Public fallback
+  if (network === "arbitrum") {
+    rpcUrl = "https://arbitrum.drpc.org"; // Public Arbitrum RPC
   } else if (network === "base") {
     rpcUrl = "https://mainnet.base.org"; // Public Base RPC
   } else {
@@ -39,8 +39,8 @@ export async function GET() {
 
   try {
     const selectedChain =
-      network === "mainnet"
-        ? mainnet
+      network === "arbitrum"
+        ? arbitrum
         : network === "base"
         ? base
         : arbitrumSepolia; // default to testnet

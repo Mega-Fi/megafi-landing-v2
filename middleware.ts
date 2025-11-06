@@ -36,7 +36,7 @@ export function middleware(request: NextRequest) {
       "style-src 'self' 'unsafe-inline'; " +
       "img-src 'self' data: https:; " +
       "font-src 'self' data:; " +
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.base.org https://*.basescan.org https://*.ethereum.org https://*.walletconnect.com https://*.walletconnect.org https://api.web3modal.org https://*.web3modal.org https://cca-lite.coinbase.com https://*.coinbase.com https://api.mixpanel.com https://*.mixpanel.com; " +
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.arbitrum.io https://*.arbiscan.io https://*.base.org https://*.basescan.org https://*.ethereum.org https://*.walletconnect.com https://*.walletconnect.org https://api.web3modal.org https://*.web3modal.org https://cca-lite.coinbase.com https://*.coinbase.com https://api.mixpanel.com https://*.mixpanel.com; " +
       "frame-src 'self' https:;"
   );
 
