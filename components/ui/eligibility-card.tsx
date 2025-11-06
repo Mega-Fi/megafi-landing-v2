@@ -43,7 +43,7 @@ export function EligibilityCard({
           onClick={onDisconnect}
           className="relative z-20 mt-4 text-xs text-gray-400/70 hover:text-red-400/70 underline transition-colors"
         >
-          Disconnect & Try Different Account
+          Disconnect & Try Different X Account
         </button>
       )}
     </div>

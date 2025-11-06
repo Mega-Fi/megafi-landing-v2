@@ -15,6 +15,7 @@ import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
 import { currentNetwork } from "@/lib/wagmi-config";
 import { createSupabaseClient } from "@/lib/supabase";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Check,
   X,
@@ -1560,34 +1561,74 @@ export default function ClaimOGNFT() {
                 {/* Step 5: Success */}
                 {currentStep === "success" && (
                   <div className="text-center space-y-6">
-                    <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
-                      <PartyPopper className="text-green-500/80" size={40} />
-                    </div>
-                    <h2 className="text-3xl font-bold text-green-500/80">
-                      Success! 🎉
-                    </h2>
-                    <p className="text-gray-400/70">
-                      You&apos;ve successfully claimed your MegaETH OG NFT!
-                    </p>
+                    {/* Network Info Card - Green Neon Style */}
+                    <div
+                      className="eligibility-card-outer"
+                      style={{ maxWidth: "100%" }}
+                    >
+                      <div className="eligibility-card">
+                        <div className="eligibility-ray"></div>
 
-                    {/* Show connected Twitter account */}
-                    {twitterHandle && (
-                      <div className="p-4 rounded-lg bg-gray-800/30 border border-gray-700/30">
-                        <p className="text-sm text-gray-400/70 mb-1">
-                          Claimed with
-                        </p>
-                        <p className="font-semibold text-white/80 mb-2">
-                          @{twitterHandle}
-                        </p>
-                        <button
-                          onClick={disconnectTwitter}
-                          className="text-xs text-gray-400/70 hover:text-red-400/70 underline transition-colors"
-                        >
-                          Disconnect X Account
-                        </button>
+                        <div className="space-y-4">
+                          <h2 className="text-3xl font-bold text-green-500/80">
+                            Success!
+                          </h2>
+                          <p className="text-gray-400/70">
+                            You&apos;ve successfully claimed your MegaETH OG
+                            NFT!
+                          </p>
+
+                          {/* Show connected Twitter account */}
+                          {twitterHandle && (
+                            <div className="mt-4 p-4 rounded-lg bg-gray-800/30 border border-gray-700/30">
+                              <p className="text-sm text-gray-400/70 mb-1">
+                                Claimed with
+                              </p>
+                              <p className="font-semibold text-white/80 mb-2">
+                                @{twitterHandle}
+                              </p>
+                              <div className="flex flex-col gap-2">
+                                <button
+                                  onClick={disconnectTwitter}
+                                  className="text-xs text-gray-400/70 hover:text-red-400/70 underline transition-colors text-center"
+                                >
+                                  Disconnect X Account
+                                </button>
+                                {/* View NFT Link */}
+                                {mintedTokenId && (
+                                  <Link
+                                    href={`/nft/${mintedTokenId}`}
+                                    className="text-xs text-emerald-400 hover:text-emerald-300 underline transition-colors text-center"
+                                  >
+                                    View Your NFT
+                                  </Link>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* View NFT Link - Show even if no Twitter handle */}
+                          {!twitterHandle && mintedTokenId && (
+                            <div className="mt-4 text-center">
+                              <Link
+                                href={`/nft/${mintedTokenId}`}
+                                className="text-sm text-emerald-400 hover:text-emerald-300 underline transition-colors"
+                              >
+                                View Your NFT
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Animated borders */}
+                        <div className="eligibility-line eligibility-topl"></div>
+                        <div className="eligibility-line eligibility-leftl"></div>
+                        <div className="eligibility-line eligibility-bottoml"></div>
+                        <div className="eligibility-line eligibility-rightl"></div>
                       </div>
-                    )}
+                    </div>
 
+                    {/* Network, Transaction, Token ID - Outside the card
                     <div className="space-y-3 text-left rounded-lg p-6">
                       <div className="flex justify-between">
                         <span className="text-gray-400/70">Network:</span>
@@ -1620,7 +1661,7 @@ export default function ClaimOGNFT() {
                           </span>
                         </div>
                       )}
-                    </div>
+                    </div> */}
 
                     {claimRecordFailed && lastMintHash && (
                       <div className="p-4 border-2 border-yellow-500/30 bg-yellow-500/10 rounded-lg">
@@ -1653,11 +1694,11 @@ export default function ClaimOGNFT() {
                       }}
                     >
                       <h3 className="font-bold text-lg mb-2 text-white/80">
-                        Awarded to MegaETH OG Supporters
+                        Your Benefits
                       </h3>
                       <p className="text-gray-300/80">
                         <span className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent font-bold">
-                          1.25x Multiplier
+                          1.25x Multiplier on points
                         </span>{" "}
                         when MegaFi launches!
                       </p>
