@@ -425,7 +425,7 @@ export default function ClaimOGNFT() {
                 abi: NFT_CONTRACT_ABI,
                 data: log.data,
                 topics: log.topics,
-              });
+              }) as any; // Cast to any to avoid TypeScript unknown type error
 
               // Check if this is the NFTMinted event
               if (
@@ -1277,7 +1277,7 @@ export default function ClaimOGNFT() {
                           <Check className="text-green-500/80" size={40} />
                         </div>
                         <h2 className="text-2xl font-bold text-green-500/80">
-                          You're Eligible!
+                          You&apos;re Eligible!
                         </h2>
                         <p className="text-gray-400/70">
                           Congratulations! Your X handle is on the MegaETH OG
@@ -1293,10 +1293,10 @@ export default function ClaimOGNFT() {
                           />
                         </div>
                         <h2 className="text-2xl font-bold text-green-500/80">
-                          You've Already Claimed! 🎉
+                          You&apos;ve Already Claimed! 🎉
                         </h2>
                         <p className="text-gray-400/70">
-                          You've successfully claimed your MegaETH OG NFT!
+                          You&apos;ve successfully claimed your MegaETH OG NFT!
                           {eligibility.token_id && (
                             <span className="block mt-2 text-green-400/80">
                               Token ID: #{eligibility.token_id}
@@ -1567,7 +1567,7 @@ export default function ClaimOGNFT() {
                       Success! 🎉
                     </h2>
                     <p className="text-gray-400/70">
-                      You've successfully claimed your MegaETH OG NFT!
+                      You&apos;ve successfully claimed your MegaETH OG NFT!
                     </p>
 
                     {/* Show connected Twitter account */}
@@ -1626,8 +1626,8 @@ export default function ClaimOGNFT() {
                       <div className="p-4 border-2 border-yellow-500/30 bg-yellow-500/10 rounded-lg">
                         <p className="text-yellow-400/80 text-sm mb-3">
                           ⚠️ Claim recording failed. Your NFT was minted
-                          successfully, but we couldn't save the record to our
-                          database. Click below to retry.
+                          successfully, but we couldn&apos;t save the record to
+                          our database. Click below to retry.
                         </p>
                         <button
                           onClick={() => {
@@ -1671,7 +1671,7 @@ export default function ClaimOGNFT() {
                     </button>
                     {eligibility?.reason === "already_claimed" && (
                       <p className="text-xs text-gray-500/70 mt-2">
-                        💡 When you return, you'll see your claimed NFT
+                        💡 When you return, you&apos;ll see your claimed NFT
                         automatically
                       </p>
                     )}

@@ -21,6 +21,7 @@ export async function GET() {
       address: NFT_CONTRACT_ADDRESS,
       abi: NFT_CONTRACT_ABI,
       functionName: "getCurrentTokenId",
+      args: [], // Empty args array required by viem
     });
 
     // Convert BigInt to number
