@@ -17,7 +17,7 @@ const path = require("path");
 
 const CONTRACT_ADDRESS =
   process.env.CONTRACT_ADDRESS || "0xF182Ae21E8Bf69e043d4F3144bfA9182F9CB3949";
-const RPC_URL = process.env.RPC_URL || "https://sepolia-rollup.arbitrum.io/rpc";
+const RPC_URL = process.env.RPC_URL || "https://arbitrum-sepolia.drpc.org";
 
 // ANSI color codes
 const colors = {

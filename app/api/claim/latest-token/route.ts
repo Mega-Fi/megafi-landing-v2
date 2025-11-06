@@ -26,7 +26,7 @@ export async function GET() {
     rpcUrl =
       process.env.NEXT_PUBLIC_TESTNET_RPC_URL ||
       process.env.NEXT_PUBLIC_RPC_URL ||
-      "https://sepolia-rollup.arbitrum.io/rpc"; // Public testnet RPC
+      "https://arbitrum-sepolia.drpc.org"; // Public testnet RPC
   }
 
   // Validate contract address
