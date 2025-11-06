@@ -200,27 +200,32 @@ export async function POST(request: Request) {
     // SECURITY: Check if wallet has already minted on-chain
     try {
       const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
-      const selectedChain = 
-        network === "mainnet" ? mainnet :
-        network === "arbitrum" ? arbitrum :
-        arbitrumSepolia; // default to testnet
+      const selectedChain =
+        network === "mainnet"
+          ? mainnet
+          : network === "arbitrum"
+          ? arbitrum
+          : arbitrumSepolia; // default to testnet
 
       // Get RPC URL from environment or use default public RPCs
       let rpcUrl: string | undefined;
-      
+
       if (network === "mainnet") {
-        rpcUrl = process.env.NEXT_PUBLIC_MAINNET_RPC_URL || 
-                 process.env.NEXT_PUBLIC_RPC_URL ||
-                 "https://eth.llamarpc.com"; // Public fallback
+        rpcUrl =
+          process.env.NEXT_PUBLIC_MAINNET_RPC_URL ||
+          process.env.NEXT_PUBLIC_RPC_URL ||
+          "https://eth.llamarpc.com"; // Public fallback
       } else if (network === "arbitrum") {
-        rpcUrl = process.env.NEXT_PUBLIC_ARBITRUM_RPC_URL || 
-                 process.env.NEXT_PUBLIC_RPC_URL ||
-                 "https://arb1.arbitrum.io/rpc"; // Public Arbitrum RPC
+        rpcUrl =
+          process.env.NEXT_PUBLIC_ARBITRUM_RPC_URL ||
+          process.env.NEXT_PUBLIC_RPC_URL ||
+          "https://arb1.arbitrum.io/rpc"; // Public Arbitrum RPC
       } else {
         // testnet (Arbitrum Sepolia)
-        rpcUrl = process.env.NEXT_PUBLIC_TESTNET_RPC_URL || 
-                 process.env.NEXT_PUBLIC_RPC_URL ||
-                 "https://sepolia-rollup.arbitrum.io/rpc"; // Public testnet RPC
+        rpcUrl =
+          process.env.NEXT_PUBLIC_TESTNET_RPC_URL ||
+          process.env.NEXT_PUBLIC_RPC_URL ||
+          "https://sepolia-rollup.arbitrum.io/rpc"; // Public testnet RPC
       }
 
       const publicClient = createPublicClient({

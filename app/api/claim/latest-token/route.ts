@@ -30,7 +30,10 @@ export async function GET() {
   }
 
   // Validate contract address
-  if (!NFT_CONTRACT_ADDRESS || NFT_CONTRACT_ADDRESS === "0x0000000000000000000000000000000000000000") {
+  if (
+    !NFT_CONTRACT_ADDRESS ||
+    NFT_CONTRACT_ADDRESS === "0x0000000000000000000000000000000000000000"
+  ) {
     return NextResponse.json(
       {
         success: false,
