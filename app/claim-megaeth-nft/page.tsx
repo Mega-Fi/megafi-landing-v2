@@ -1137,7 +1137,7 @@ export default function ClaimOGNFT() {
                     <p className="text-gray-400/70 max-w-xl mx-auto">
                       An exclusive NFT for the top 279 MegaETH community
                       supporters. Holders receive a 1.25x multiplier on points
-                      when MegaFi launches.
+                      + 9.5% fee rebates when MegaFi launches.
                     </p>
 
                     <div className="space-y-4 text-left max-w-lg mx-auto">
@@ -1147,9 +1147,10 @@ export default function ClaimOGNFT() {
                         </h3>
                         <ul className="text-sm text-gray-400/70 space-y-1">
                           <li>• Exclusive OG supporter status</li>
-                          <li>• 1.25x points multiplier on MegaFi</li>
+                          <li>• 1.25x points multiplier on all MegaFi</li>
+                          <li>• 9.5% fee rebates when MegaFi launches</li>
                           <li>• Limited to 279 MegaETH OGs</li>
-                          <li>• ERC-721 NFT on Ethereum</li>
+                          <li>• ERC-721 NFT on Arbitrum</li>
                         </ul>
                       </div>
 
@@ -1160,8 +1161,8 @@ export default function ClaimOGNFT() {
                         <ul className="text-sm text-gray-400/70 space-y-1">
                           <li>• X (Twitter) account verification</li>
                           <li>• Must be on eligible supporters list</li>
-                          <li>• Ethereum wallet (MetaMask, etc.)</li>
-                          <li>• ETH for gas fees</li>
+                          <li>• Arbitrum wallet (MetaMask, etc.)</li>
+                          <li>• ETH for gas fees on Arbitrum</li>
                         </ul>
                       </div>
                     </div>
@@ -1385,7 +1386,7 @@ export default function ClaimOGNFT() {
                           Connect Your Wallet
                         </h2>
                         <p className="text-gray-400/70">
-                          Connect your Ethereum wallet to mint your OG NFT
+                          Connect your Arbitrum wallet to mint your OG NFT
                         </p>
                         <div className="flex justify-center pt-2 connect-wallet-wrapper">
                           <ConnectButton />
@@ -1642,8 +1643,7 @@ export default function ClaimOGNFT() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent hover:from-[#FF6B3D]/50 hover:to-[#FF3A1E]/50 underline transition-all"
                       >
-                        View on{" "}
-                        {currentNetwork.isTestnet ? "Arbiscan" : "Etherscan"}
+                        View on Arbiscan
                         <ExternalLink size={16} className="text-[#FF3A1E]/50" />
                       </a>
                     )}
@@ -1790,7 +1790,7 @@ export default function ClaimOGNFT() {
                       </h3>
                       <p className="text-gray-300/80">
                         <span className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent font-bold">
-                          1.25x Multiplier on points
+                          1.25x Multiplier on points + 9.5% Fee Rebates
                         </span>{" "}
                         when MegaFi launches!
                       </p>
