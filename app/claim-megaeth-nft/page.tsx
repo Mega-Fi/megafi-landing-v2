@@ -1985,7 +1985,7 @@ export default function ClaimOGNFT() {
                 <span>Join Discord</span>
               </a>
               <a
-                href="https://twitter.com/megafi"
+                href="https://x.com/megafi_app"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-btn"
