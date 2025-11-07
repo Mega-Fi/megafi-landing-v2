@@ -12,7 +12,7 @@ export async function GET() {
   let rpcUrl: string | undefined;
 
   if (network === "arbitrum") {
-    rpcUrl = "https://arbitrum.drpc.org"; // Public Arbitrum RPC
+    rpcUrl = "https://floral-dawn-season.arbitrum-mainnet.quiknode.pro/04a79ce838f80121b551f34e94f15c18977f7132/";
   } else if (network === "base") {
     rpcUrl = "https://mainnet.base.org"; // Public Base RPC
   } else {
