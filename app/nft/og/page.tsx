@@ -184,7 +184,7 @@ export default function OGCollectionPage() {
                 </div>
                 <div>
                   <p className="font-semibold text-lg text-red-400/90 mb-3">
-                    ❌ DON'Ts
+                    ❌ DON&apos;Ts
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
                     <li>Posting {'>'}10 times in 1 hour (spam)</li>
