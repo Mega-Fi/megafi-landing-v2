@@ -254,22 +254,27 @@ export default function NFTDetailPage() {
                   </div>
 
                   {/* Benefits Section */}
-                  <div
-                    className="p-6 border-2 border-transparent bg-gradient-to-r from-[#FF3A1E]/10 to-[#FF6B3D]/10 rounded-lg"
-                    style={{
-                      borderImage:
-                        "linear-gradient(to right, rgba(255, 58, 30, 0.5), rgba(255, 107, 61, 0.5)) 1",
-                    }}
-                  >
-                    <h3 className="font-bold text-lg mb-2 text-white/80">
-                      Awarded to MegaETH OG Supporters
-                    </h3>
-                    <p className="text-gray-300/80">
-                      <span className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent font-bold">
-                        1.25x Multiplier
-                      </span>{" "}
-                      on points when MegaFi launches!
-                    </p>
+                  <div className="pass-benefits-card-outer">
+                    <div className="pass-benefits-dot"></div>
+                    <div className="pass-benefits-card">
+                      <div className="pass-benefits-ray"></div>
+                      
+                      <h3 className="pass-benefits-title">
+                        Awarded to MegaETH OG Supporters
+                      </h3>
+                      <p className="pass-benefits-message">
+                        <span className="pass-benefits-highlight">
+                          1.25x Multiplier
+                        </span>{" "}
+                        on points when MegaFi launches!
+                      </p>
+
+                      {/* Animated borders */}
+                      <div className="pass-benefits-line pass-benefits-topl"></div>
+                      <div className="pass-benefits-line pass-benefits-leftl"></div>
+                      <div className="pass-benefits-line pass-benefits-bottoml"></div>
+                      <div className="pass-benefits-line pass-benefits-rightl"></div>
+                    </div>
                   </div>
 
                   {/* Back to Home Button */}

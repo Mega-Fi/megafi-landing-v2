@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 import { ElectricCard } from "@/components/ui/electric-card";
 import { FuturisticAlienBackground } from "@/components/ui/futuristic-alien-background";
 import { analytics } from "@/lib/mixpanel";
@@ -21,6 +22,17 @@ export default function PioneerCollectionPage() {
           <FuturisticAlienBackground />
         </div>
         <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+          {/* Back Button - Top Left */}
+          <div className="mb-8">
+            <button
+              onClick={() => (window.location.href = "/nft")}
+              className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm"
+            >
+              <ArrowLeft size={18} />
+              <span>Back</span>
+            </button>
+          </div>
+
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
@@ -38,7 +50,7 @@ export default function PioneerCollectionPage() {
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-              For MegaFi early testers
+              For MegaFi early testers. Details TBA.
             </p>
           </div>
 
@@ -85,30 +97,27 @@ export default function PioneerCollectionPage() {
                 </div>
 
                 {/* Benefits Section */}
-                <div
-                  className="p-6 border-2 border-transparent bg-gradient-to-r from-[#9333EA]/10 to-[#A855F7]/10 rounded-lg"
-                  style={{
-                    borderImage:
-                      "linear-gradient(to right, rgba(147, 51, 234, 0.5), rgba(168, 85, 247, 0.5)) 1",
-                  }}
-                >
-                  <h3 className="font-bold text-lg mb-2 text-white/80">
-                    Awarded to MegaFi Early Testers
-                  </h3>
-                  <p className="text-gray-300/80">
-                    <span className="bg-gradient-to-r from-[#9333EA]/80 to-[#A855F7]/80 bg-clip-text text-transparent font-bold">
-                      Rewards & Benefits: TBA
-                    </span>
-                  </p>
-                </div>
+                <div className="pioneer-benefits-card-outer">
+                  <div className="pioneer-benefits-dot"></div>
+                  <div className="pioneer-benefits-card">
+                    <div className="pioneer-benefits-ray"></div>
+                    
+                    <h3 className="pioneer-benefits-title">
+                      Awarded to MegaFi Early Testers
+                    </h3>
+                    <p className="pioneer-benefits-message">
+                      <span className="pioneer-benefits-highlight">
+                        Rewards & Benefits: TBA
+                      </span>
+                    </p>
 
-                {/* Back to Home Button */}
-                <button
-                  onClick={() => (window.location.href = "/")}
-                  className="w-full max-w-xs mx-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
-                >
-                  Back to Home
-                </button>
+                    {/* Animated borders */}
+                    <div className="pioneer-benefits-line pioneer-benefits-topl"></div>
+                    <div className="pioneer-benefits-line pioneer-benefits-leftl"></div>
+                    <div className="pioneer-benefits-line pioneer-benefits-bottoml"></div>
+                    <div className="pioneer-benefits-line pioneer-benefits-rightl"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

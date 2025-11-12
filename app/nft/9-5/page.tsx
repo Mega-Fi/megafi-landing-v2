@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-import { ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { ElectricCard } from "@/components/ui/electric-card";
 import { FuturisticAlienBackground } from "@/components/ui/futuristic-alien-background";
 import { analytics } from "@/lib/mixpanel";
@@ -27,6 +27,17 @@ export default function NinetyFivePassCollectionPage() {
           <FuturisticAlienBackground />
         </div>
         <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+          {/* Back Button - Top Left */}
+          <div className="mb-8">
+            <button
+              onClick={() => (window.location.href = "/nft")}
+              className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm"
+            >
+              <ArrowLeft size={18} />
+              <span>Back</span>
+            </button>
+          </div>
+
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
@@ -109,31 +120,28 @@ export default function NinetyFivePassCollectionPage() {
                 </div>
 
                 {/* Benefits Section */}
-                <div
-                  className="p-6 border-2 border-transparent bg-gradient-to-r from-[#FF3A1E]/10 to-[#FF6B3D]/10 rounded-lg"
-                  style={{
-                    borderImage:
-                      "linear-gradient(to right, rgba(255, 58, 30, 0.5), rgba(255, 107, 61, 0.5)) 1",
-                  }}
-                >
-                  <h3 className="font-bold text-lg mb-2 text-white/80">
-                    Awarded to MegaETH OG Supporters
-                  </h3>
-                  <p className="text-gray-300/80">
-                    <span className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent font-bold">
-                      1.25x Multiplier + 9.5% Fee Rebates
-                    </span>{" "}
-                    on points when MegaFi launches!
-                  </p>
-                </div>
+                <div className="pass-benefits-card-outer">
+                  <div className="pass-benefits-dot"></div>
+                  <div className="pass-benefits-card">
+                    <div className="pass-benefits-ray"></div>
+                    
+                    <h3 className="pass-benefits-title">
+                      Awarded to MegaETH OG Supporters
+                    </h3>
+                    <p className="pass-benefits-message">
+                      <span className="pass-benefits-highlight">
+                        1.25x Multiplier + 9.5% Fee Rebates
+                      </span>{" "}
+                      on points when MegaFi launches!
+                    </p>
 
-                {/* Back to Home Button */}
-                <button
-                  onClick={() => (window.location.href = "/")}
-                  className="w-full max-w-xs mx-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
-                >
-                  Back to Home
-                </button>
+                    {/* Animated borders */}
+                    <div className="pass-benefits-line pass-benefits-topl"></div>
+                    <div className="pass-benefits-line pass-benefits-leftl"></div>
+                    <div className="pass-benefits-line pass-benefits-bottoml"></div>
+                    <div className="pass-benefits-line pass-benefits-rightl"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

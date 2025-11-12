@@ -22,14 +22,14 @@ export default function OGCollectionPage() {
           <FuturisticAlienBackground />
         </div>
         <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
-          {/* Back to Home Button - Top Left */}
+          {/* Back Button - Top Left */}
           <div className="mb-8">
             <button
-              onClick={() => (window.location.href = "/")}
+              onClick={() => (window.location.href = "/nft")}
               className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm"
             >
               <ArrowLeft size={18} />
-              <span>Back to Home</span>
+              <span>Back</span>
             </button>
           </div>
 
@@ -97,21 +97,26 @@ export default function OGCollectionPage() {
                 </div>
 
                 {/* Benefits Section */}
-                <div
-                  className="p-6 border-2 border-transparent bg-gradient-to-r from-[#FFD700]/10 to-[#FFA500]/10 rounded-lg"
-                  style={{
-                    borderImage:
-                      "linear-gradient(to right, rgba(255, 215, 0, 0.5), rgba(255, 165, 0, 0.5)) 1",
-                  }}
-                >
-                  <h3 className="font-bold text-lg mb-2 text-white/80">
-                    Awarded to MegaFi OG Supporters
-                  </h3>
-                  <p className="text-gray-300/80">
-                    <span className="bg-gradient-to-r from-[#FFD700]/80 to-[#FFA500]/80 bg-clip-text text-transparent font-bold">
-                      1.5x Multiplier (lifetime) + Fee Refunds (1 year after launch)
-                    </span>
-                  </p>
+                <div className="og-benefits-card-outer">
+                  <div className="og-benefits-dot"></div>
+                  <div className="og-benefits-card">
+                    <div className="og-benefits-ray"></div>
+                    
+                    <h3 className="og-benefits-title">
+                      Awarded to MegaFi OG Supporters
+                    </h3>
+                    <p className="og-benefits-message">
+                      <span className="og-benefits-highlight">
+                        1.5x Multiplier (lifetime) + Fee Refunds (1 year after launch)
+                      </span>
+                    </p>
+
+                    {/* Animated borders */}
+                    <div className="og-benefits-line og-benefits-topl"></div>
+                    <div className="og-benefits-line og-benefits-leftl"></div>
+                    <div className="og-benefits-line og-benefits-bottoml"></div>
+                    <div className="og-benefits-line og-benefits-rightl"></div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -118,7 +118,7 @@ export default function PioneerNFTDetailPage() {
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-              For MegaFi early testers
+              For MegaFi early testers. Details TBA.
             </p>
           </div>
 
