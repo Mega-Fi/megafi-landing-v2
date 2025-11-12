@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { ElectricCard } from "@/components/ui/electric-card";
-import { FuturisticAlienBackground } from "@/components/ui/futuristic-alien-background";
+import { GridBackground } from "@/components/ui/grid-background";
 import { currentNetwork } from "@/lib/wagmi-config";
 
 const MAX_TOKEN_ID = 60;
@@ -41,67 +41,39 @@ export default function OGNFTDetailPage() {
 
   if (loading) {
     return (
-      <>
-        <div className="relative min-h-screen text-white overflow-hidden bg-black">
-          <div className="fixed inset-0 z-0">
-            <FuturisticAlienBackground />
-          </div>
-          <div className="relative z-10 flex items-center justify-center min-h-screen">
-            <Loader2
-              className="animate-spin text-[#FFD700]/50"
-              size={60}
-              style={{ filter: "drop-shadow(0 0 12px rgba(255, 215, 0, 0.3))" }}
-            />
-          </div>
+      <GridBackground variant="black" className="text-white overflow-hidden">
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <Loader2
+            className="animate-spin text-[#FFD700]/50"
+            size={60}
+            style={{ filter: "drop-shadow(0 0 12px rgba(255, 215, 0, 0.3))" }}
+          />
         </div>
-        <style jsx global>{`
-          body {
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-              Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji,
-              Segoe UI Emoji;
-          }
-        `}</style>
-      </>
+      </GridBackground>
     );
   }
 
   if (error) {
     return (
-      <>
-        <div className="relative min-h-screen text-white overflow-hidden bg-black">
-          <div className="fixed inset-0 z-0">
-            <FuturisticAlienBackground />
-          </div>
-          <div className="relative z-10 flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <p className="text-red-400 text-xl mb-4">{error}</p>
-              <button
-                onClick={() => (window.location.href = "/nft/og")}
-                className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all"
-              >
-                Back to OG Collection
-              </button>
-            </div>
+      <GridBackground variant="black" className="text-white overflow-hidden">
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-red-400 text-xl mb-4">{error}</p>
+            <button
+              onClick={() => (window.location.href = "/nft/og")}
+              className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all"
+            >
+              Back to OG Collection
+            </button>
           </div>
         </div>
-        <style jsx global>{`
-          body {
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-              Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji,
-              Segoe UI Emoji;
-          }
-        `}</style>
-      </>
+      </GridBackground>
     );
   }
 
   return (
-    <>
-      <div className="relative min-h-screen text-white overflow-hidden bg-black">
-        <div className="fixed inset-0 z-0">
-          <FuturisticAlienBackground />
-        </div>
-        <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+    <GridBackground variant="black" className="text-white overflow-hidden">
+      <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
@@ -204,16 +176,7 @@ export default function OGNFTDetailPage() {
             </div>
           )}
         </div>
-      </div>
-
-      <style jsx global>{`
-        body {
-          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-            Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji,
-            Segoe UI Emoji;
-        }
-      `}</style>
-    </>
+    </GridBackground>
   );
 }
 

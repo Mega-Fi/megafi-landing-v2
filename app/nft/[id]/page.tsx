@@ -8,7 +8,7 @@ import { Loader2, ExternalLink, X } from "lucide-react";
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
 import { currentNetwork } from "@/lib/wagmi-config";
 import { ElectricCard } from "@/components/ui/electric-card";
-import { FuturisticAlienBackground } from "@/components/ui/futuristic-alien-background";
+import { GridBackground } from "@/components/ui/grid-background";
 
 const MAX_TOKEN_ID = 279;
 
@@ -111,37 +111,21 @@ export default function NFTDetailPage() {
 
   if (loading) {
     return (
-      <>
-        <div className="relative min-h-screen text-white overflow-hidden bg-black">
-          <div className="fixed inset-0 z-0">
-            <FuturisticAlienBackground />
-          </div>
-          <div className="relative z-10 flex items-center justify-center min-h-screen">
-            <Loader2
-              className="animate-spin text-[#FF3A1E]/50"
-              size={60}
-              style={{ filter: "drop-shadow(0 0 12px rgba(255, 58, 30, 0.3))" }}
-            />
-          </div>
+      <GridBackground variant="black" className="text-white overflow-hidden">
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <Loader2
+            className="animate-spin text-[#FF3A1E]/50"
+            size={60}
+            style={{ filter: "drop-shadow(0 0 12px rgba(255, 58, 30, 0.3))" }}
+          />
         </div>
-        <style jsx global>{`
-          body {
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-              Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji,
-              Segoe UI Emoji;
-          }
-        `}</style>
-      </>
+      </GridBackground>
     );
   }
 
   return (
-    <>
-      <div className="relative min-h-screen text-white overflow-hidden bg-black">
-        <div className="fixed inset-0 z-0">
-          <FuturisticAlienBackground />
-        </div>
-        <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+    <GridBackground variant="black" className="text-white overflow-hidden">
+      <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
@@ -289,16 +273,7 @@ export default function NFTDetailPage() {
             </div>
           )}
         </div>
-      </div>
-
-      <style jsx global>{`
-        body {
-          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-            Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji,
-            Segoe UI Emoji;
-        }
-      `}</style>
-    </>
+    </GridBackground>
   );
 }
 

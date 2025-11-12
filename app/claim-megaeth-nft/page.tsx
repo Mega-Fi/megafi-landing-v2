@@ -25,7 +25,7 @@ import {
   PartyPopper,
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
-import { FuturisticAlienBackground } from "@/components/ui/futuristic-alien-background";
+import { GridBackground } from "@/components/ui/grid-background";
 import { ElectricCard } from "@/components/ui/electric-card";
 import {
   Stepper,
@@ -937,27 +937,15 @@ export default function ClaimOGNFT() {
 
   if (loading) {
     return (
-      <>
-        <div className="relative min-h-screen text-white overflow-hidden bg-black">
-          <div className="fixed inset-0 z-0">
-            <FuturisticAlienBackground />
-          </div>
-          <div className="relative z-10 flex items-center justify-center min-h-screen">
-            <Loader2
-              className="animate-spin text-[#FF3A1E]/50"
-              size={60}
-              style={{ filter: "drop-shadow(0 0 12px rgba(255, 58, 30, 0.3))" }}
-            />
-          </div>
+      <GridBackground variant="black" className="text-white overflow-hidden">
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <Loader2
+            className="animate-spin text-[#FF3A1E]/50"
+            size={60}
+            style={{ filter: "drop-shadow(0 0 12px rgba(255, 58, 30, 0.3))" }}
+          />
         </div>
-        <style jsx global>{`
-          body {
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-              Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji,
-              Segoe UI Emoji;
-          }
-        `}</style>
-      </>
+      </GridBackground>
     );
   }
 
@@ -974,10 +962,7 @@ export default function ClaimOGNFT() {
           },
         }}
       />
-      <div className="relative min-h-screen text-white overflow-hidden bg-black">
-        <div className="fixed inset-0 z-0">
-          <FuturisticAlienBackground />
-        </div>
+      <GridBackground variant="black" className="text-white overflow-hidden">
         <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
           {/* Header */}
           <div className="text-center mb-12">
@@ -1681,44 +1666,7 @@ export default function ClaimOGNFT() {
             </div>
           </div>
         </div>
-
-        <style jsx global>{`
-          body {
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-              Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji,
-              Segoe UI Emoji;
-          }
-        `}</style>
-        <style jsx>{`
-          .btn-primary {
-            @apply w-full max-w-xs mx-auto text-white font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
-            padding: 16px 32px;
-            border-radius: 12px;
-            background: linear-gradient(
-              135deg,
-              rgba(255, 58, 30, 0.8) 0%,
-              rgba(255, 107, 61, 0.8) 100%
-            );
-            box-shadow: 0 0 20px rgba(255, 58, 30, 0.4),
-              0 0 40px rgba(255, 58, 30, 0.2);
-            border: 2px solid rgba(255, 107, 61, 0.5);
-          }
-          .btn-primary:hover {
-            background: linear-gradient(
-              135deg,
-              rgba(255, 107, 61, 0.9) 0%,
-              rgba(255, 58, 30, 0.9) 100%
-            );
-            box-shadow: 0 0 30px rgba(255, 58, 30, 0.6),
-              0 0 60px rgba(255, 58, 30, 0.3);
-            border-color: rgba(255, 107, 61, 0.8);
-            transform: translateY(-1px);
-          }
-          .btn-secondary {
-            @apply w-full max-w-xs mx-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2;
-          }
-        `}</style>
-      </div>
+      </GridBackground>
     </>
   );
 }

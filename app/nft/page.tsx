@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ElectricCard } from "@/components/ui/electric-card";
-import { FuturisticAlienBackground } from "@/components/ui/futuristic-alien-background";
+import { GridBackground } from "@/components/ui/grid-background";
 import { analytics, MIXPANEL_EVENTS } from "@/lib/mixpanel";
 
 export default function NFTCollectionsPage() {
@@ -13,12 +13,8 @@ export default function NFTCollectionsPage() {
   }, []);
 
   return (
-    <>
-      <div className="relative min-h-screen text-white overflow-hidden bg-black">
-        <div className="fixed inset-0 z-0">
-          <FuturisticAlienBackground />
-        </div>
-        <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+    <GridBackground variant="black" className="text-white overflow-hidden">
+      <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
@@ -93,16 +89,7 @@ export default function NFTCollectionsPage() {
             </button>
           </div>
         </div>
-      </div>
-
-      <style jsx global>{`
-        body {
-          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-            Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji,
-            Segoe UI Emoji;
-        }
-      `}</style>
-    </>
+    </GridBackground>
   );
 }
 
