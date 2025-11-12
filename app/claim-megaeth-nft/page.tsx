@@ -941,12 +941,24 @@ export default function ClaimOGNFT() {
   if (loading) {
     return (
       <GridBackground variant="black" className="text-white overflow-hidden">
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <Loader2
-            className="animate-spin text-[#FF3A1E]/50"
-            size={60}
-            style={{ filter: "drop-shadow(0 0 12px rgba(255, 58, 30, 0.3))" }}
-          />
+        <div className="relative z-10 container mx-auto px-4 py-12">
+          {/* Back Button - Top Left */}
+          <div className="mb-8">
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all backdrop-blur-sm"
+            >
+              Home
+            </button>
+          </div>
+          
+          <div className="flex items-center justify-center min-h-[70vh]">
+            <Loader2
+              className="animate-spin text-[#FF3A1E]/50"
+              size={60}
+              style={{ filter: "drop-shadow(0 0 12px rgba(255, 58, 30, 0.3))" }}
+            />
+          </div>
         </div>
       </GridBackground>
     );
@@ -967,6 +979,16 @@ export default function ClaimOGNFT() {
       />
       <GridBackground variant="black" className="text-white overflow-hidden">
         <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+          {/* Back Button - Top Left */}
+          <div className="mb-8">
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all backdrop-blur-sm"
+            >
+              Home
+            </button>
+          </div>
+
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { ElectricCard } from "@/components/ui/electric-card";
 import { GridBackground } from "@/components/ui/grid-background";
 import { analytics, MIXPANEL_EVENTS } from "@/lib/mixpanel";
@@ -15,6 +16,17 @@ export default function NFTCollectionsPage() {
   return (
     <GridBackground variant="black" className="text-white overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+          {/* Back Button - Top Left */}
+          <div className="mb-8">
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm"
+            >
+              <ArrowLeft size={18} />
+              <span>Home</span>
+            </button>
+          </div>
+
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
@@ -77,16 +89,6 @@ export default function NFTCollectionsPage() {
                 aspectRatio="7 / 10"
               />
             </Link>
-          </div>
-
-          {/* Back to Home Button */}
-          <div className="flex justify-center mt-12">
-            <button
-              onClick={() => (window.location.href = "/")}
-              className="px-8 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all"
-            >
-              Back to Home
-            </button>
           </div>
         </div>
 
