@@ -104,7 +104,11 @@ export const OGNFTBanner = ({
         </defs>
       </svg>
 
-      {/* <Link href="/claim-megaeth-nft" className="banner-link" onClick={handleBannerClick}>
+      <Link
+        href="/claim-megaeth-nft"
+        className="banner-link"
+        onClick={handleBannerClick}
+      >
         <div
           className="banner-container"
           style={
@@ -137,7 +141,7 @@ export const OGNFTBanner = ({
                 Claim Your 9.5% Pass MegaETH NFT
               </span>
               <span className="banner-subtitle">
-                Top 279 Supporters • Exclusive 1.25x Multiplier
+                Top 279 Supporters • Exclusive 1.25x Multiplier + 9.5% Fee Rebates
               </span>
             </div>
 
@@ -147,7 +151,7 @@ export const OGNFTBanner = ({
             </button>
           </div>
         </div>
-      </Link> */}
+      </Link>
 
       <style jsx>{`
         .nft-banner-wrap {
@@ -157,6 +161,22 @@ export const OGNFTBanner = ({
           transform: translateX(-50%);
           z-index: 50;
           animation: slideDown 0.6s ease-out;
+        }
+
+        @media (max-width: 768px) {
+          .nft-banner-wrap {
+            top: 0.75rem;
+            width: 95%;
+            max-width: 420px;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .nft-banner-wrap {
+            top: 0.5rem;
+            width: 96%;
+            max-width: 360px;
+          }
         }
 
         @keyframes slideDown {
@@ -220,8 +240,8 @@ export const OGNFTBanner = ({
 
         .banner-card {
           width: auto;
-          min-width: 765px;
-          max-width: 1020px;
+          min-width: 900px;
+          max-width: 1200px;
           height: 80px;
           border-radius: 1rem;
           border: 1.5px solid var(--banner-color);
@@ -234,15 +254,25 @@ export const OGNFTBanner = ({
         /* Responsive sizing */
         @media (max-width: 1024px) {
           .banner-card {
-            min-width: 595px;
+            min-width: 700px;
             height: 80px;
           }
         }
 
         @media (max-width: 768px) {
           .banner-card {
-            min-width: 290px;
-            height: 100px;
+            min-width: 360px;
+            max-width: 95vw;
+            height: auto;
+            min-height: 140px;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .banner-card {
+            min-width: 320px;
+            max-width: 95vw;
+            min-height: 160px;
           }
         }
 
@@ -312,16 +342,24 @@ export const OGNFTBanner = ({
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0 2.5rem;
-          gap: 2rem;
+          padding: 0 2rem;
+          gap: 1.5rem;
         }
 
         @media (max-width: 768px) {
           .banner-content {
             flex-direction: column;
-            padding: 1rem 1.5rem;
-            gap: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            gap: 1rem;
             justify-content: center;
+            align-items: center;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .banner-content {
+            padding: 1.25rem 1.25rem;
+            gap: 0.875rem;
           }
         }
 
@@ -376,6 +414,21 @@ export const OGNFTBanner = ({
           }
         }
 
+        @media (max-width: 768px) {
+          .banner-badge {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.7rem;
+            gap: 0.4rem;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .banner-badge {
+            font-size: 0.65rem;
+            padding: 0.3rem 0.65rem;
+          }
+        }
+
         /* Text content */
         .banner-text {
           display: flex;
@@ -390,27 +443,43 @@ export const OGNFTBanner = ({
           font-weight: 600;
           color: white;
           white-space: nowrap;
+          line-height: 1.3;
         }
 
         @media (max-width: 768px) {
           .banner-title {
-            font-size: 0.95rem;
+            font-size: 1rem;
             white-space: normal;
             text-align: center;
+            line-height: 1.3;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .banner-title {
+            font-size: 0.9rem;
           }
         }
 
         .banner-subtitle {
-          font-size: 0.85rem;
+          font-size: 0.8rem;
           color: rgba(255, 255, 255, 0.6);
           white-space: nowrap;
+          line-height: 1.4;
         }
 
         @media (max-width: 768px) {
           .banner-subtitle {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             white-space: normal;
             text-align: center;
+            line-height: 1.4;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .banner-subtitle {
+            font-size: 0.75rem;
           }
         }
 
@@ -423,8 +492,8 @@ export const OGNFTBanner = ({
           color: white;
           border: none;
           border-radius: 0.75rem;
-          padding: 0.75rem 1.75rem;
-          font-size: 0.95rem;
+          padding: 0.75rem 1.5rem;
+          font-size: 0.9rem;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.2s ease;
@@ -444,7 +513,17 @@ export const OGNFTBanner = ({
 
         @media (max-width: 768px) {
           .banner-cta {
-            padding: 0.6rem 1.25rem;
+            padding: 0.7rem 1.5rem;
+            font-size: 0.9rem;
+            width: 100%;
+            max-width: 200px;
+            justify-content: center;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .banner-cta {
+            padding: 0.65rem 1.25rem;
             font-size: 0.85rem;
           }
         }

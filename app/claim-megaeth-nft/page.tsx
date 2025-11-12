@@ -9,12 +9,14 @@ import {
   useSignMessage,
   usePublicClient,
   useDisconnect,
+  useSwitchChain,
 } from "wagmi";
 import { decodeEventLog } from "viem";
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
 import { currentNetwork } from "@/lib/wagmi-config";
 import { createSupabaseClient } from "@/lib/supabase";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Check,
   X,
@@ -83,10 +85,11 @@ type Step = "start" | "twitter" | "eligibility" | "wallet" | "mint" | "success";
 
 export default function ClaimOGNFT() {
   const supabase = createSupabaseClient();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const publicClient = usePublicClient();
   const { disconnect } = useDisconnect();
+  const { switchChain, isPending: isSwitchingChain } = useSwitchChain();
 
   const [user, setUser] = useState<User | null>(null);
   const [twitterHandle, setTwitterHandle] = useState<string | null>(null);
@@ -381,7 +384,7 @@ export default function ClaimOGNFT() {
             return;
           }
           // If eligibility is still valid and wallet hasn't minted, proceed with whitelist check
-      checkWhitelistStatus(address);
+          checkWhitelistStatus(address);
         });
       });
     }
@@ -1119,7 +1122,7 @@ export default function ClaimOGNFT() {
                     <p className="text-gray-400/70 max-w-xl mx-auto">
                       An exclusive NFT for the top 279 MegaETH community
                       supporters. Holders receive a 1.25x multiplier on points
-                      when MegaFi launches.
+                      + 9.5% fee rebates when MegaFi launches.
                     </p>
 
                     <div className="space-y-4 text-left max-w-lg mx-auto">
@@ -1129,9 +1132,10 @@ export default function ClaimOGNFT() {
                         </h3>
                         <ul className="text-sm text-gray-400/70 space-y-1">
                           <li>• Exclusive OG supporter status</li>
-                          <li>• 1.25x points multiplier on MegaFi</li>
+                          <li>• 1.25x points multiplier on all MegaFi products</li>
+                          <li>• 9.5% fee rebates on all MegaFi products</li>
                           <li>• Limited to 279 MegaETH OGs</li>
-                          <li>• ERC-721 NFT on Ethereum</li>
+                          <li>• ERC-721 NFT on Arbitrum</li>
                         </ul>
                       </div>
 
@@ -1142,8 +1146,8 @@ export default function ClaimOGNFT() {
                         <ul className="text-sm text-gray-400/70 space-y-1">
                           <li>• X (Twitter) account verification</li>
                           <li>• Must be on eligible supporters list</li>
-                          <li>• Ethereum wallet (MetaMask, etc.)</li>
-                          <li>• ETH for gas fees</li>
+                          <li>• Arbitrum wallet (MetaMask, etc.)</li>
+                          <li>• ETH for gas fees on Arbitrum</li>
                         </ul>
                       </div>
                     </div>
@@ -1367,110 +1371,200 @@ export default function ClaimOGNFT() {
                           Connect Your Wallet
                         </h2>
                         <p className="text-gray-400/70">
-                          Connect your Ethereum wallet to mint your OG NFT
+                          Connect your Arbitrum wallet to mint your OG NFT
                         </p>
-                        <div className="flex justify-center pt-2">
+                        <div className="flex justify-center pt-2 connect-wallet-wrapper">
                           <ConnectButton />
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {/* Show error if wallet has already minted */}
-                        {hasMinted === true && address && (
-                          <div className="eligibility-card-outer">
-                            <div className="eligibility-dot"></div>
-                            <div className="eligibility-card">
-                              <div className="eligibility-ray"></div>
-                              <div className="relative z-20">
-                                <div className="flex items-center justify-center gap-3 mb-2">
-                                  <X className="text-red-400" size={24} />
-                                  <h3 className="eligibility-title text-red-400">
-                                    Already Minted
-                                  </h3>
+                        {/* Show warning if user is on wrong network */}
+                        {isConnected &&
+                          chainId &&
+                          chainId !== currentNetwork.chainId && (
+                            <div className="eligibility-card-outer">
+                              <div className="eligibility-dot"></div>
+                              <div className="eligibility-card">
+                                <div className="eligibility-ray"></div>
+                                <div className="relative z-20">
+                                  <div className="flex items-center justify-center gap-3 mb-2">
+                                    <X className="text-yellow-400" size={24} />
+                                    <h3 className="eligibility-title text-yellow-400">
+                                      Wrong Network
+                                    </h3>
+                                  </div>
+                                  <p className="eligibility-message mt-2 text-center">
+                                    Please switch to{" "}
+                                    <span className="font-semibold text-yellow-400">
+                                      {currentNetwork.name}
+                                    </span>{" "}
+                                    to continue.
+                                  </p>
+                                  <p className="text-xs text-gray-400/70 mt-3 text-center">
+                                    💡 Your wallet is currently connected to a
+                                    different network
+                                  </p>
                                 </div>
-                                <p className="eligibility-message mt-2 text-center">
-                                  This wallet has already minted an NFT. Each
-                                  wallet can only mint once.
-                                </p>
-                                <p className="text-xs text-gray-400/70 mt-3 text-center">
-                                  💡 Want to try with a different account or
-                                  wallet?
-                                </p>
+                                <div className="eligibility-line eligibility-topl"></div>
+                                <div className="eligibility-line eligibility-leftl"></div>
+                                <div className="eligibility-line eligibility-bottoml"></div>
+                                <div className="eligibility-line eligibility-rightl"></div>
                               </div>
-                              <div className="eligibility-line eligibility-topl"></div>
-                              <div className="eligibility-line eligibility-leftl"></div>
-                              <div className="eligibility-line eligibility-bottoml"></div>
-                              <div className="eligibility-line eligibility-rightl"></div>
+                              {/* Switch Network Button */}
+                              <div className="mt-4">
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      await switchChain({
+                                        chainId: currentNetwork.chainId,
+                                      });
+                                    } catch (error: any) {
+                                      console.error(
+                                        "Error switching chain:",
+                                        error
+                                      );
+                                      // User rejected the request
+                                      if (error?.code === 4001) {
+                                        toast.error(
+                                          "Network switch was rejected. Please switch manually in your wallet."
+                                        );
+                                      } else {
+                                        toast.error(
+                                          "Failed to switch network. Please switch manually in your wallet."
+                                        );
+                                      }
+                                    }
+                                  }}
+                                  disabled={isSwitchingChain}
+                                  className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer bg-gradient-to-r from-yellow-500/80 to-yellow-600/80 hover:from-yellow-600/90 hover:to-yellow-500/90 border-2 border-yellow-500/50 hover:border-yellow-500/80"
+                                  style={{
+                                    position: "relative",
+                                    zIndex: 1000,
+                                    boxShadow:
+                                      "0 0 20px rgba(234, 179, 8, 0.4), 0 0 40px rgba(234, 179, 8, 0.2)",
+                                  }}
+                                  type="button"
+                                >
+                                  {isSwitchingChain ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                      <Loader2
+                                        className="animate-spin"
+                                        size={16}
+                                      />
+                                      Switching...
+                                    </span>
+                                  ) : (
+                                    `Switch to ${currentNetwork.name}`
+                                  )}
+                                </button>
+                              </div>
                             </div>
-                            {/* Button positioned outside card to avoid stacking context issues */}
-                            <div className="mt-4">
-                              <button
-                                onClick={disconnectWallet}
-                                className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer bg-gradient-to-r from-[#FF3A1E]/80 to-[#FF6B3D]/80 hover:from-[#FF6B3D]/90 hover:to-[#FF3A1E]/90 border-2 border-[#FF6B3D]/50 hover:border-[#FF6B3D]/80"
-                                style={{
-                                  position: "relative",
-                                  zIndex: 1000,
-                                  boxShadow:
-                                    "0 0 20px rgba(255, 58, 30, 0.4), 0 0 40px rgba(255, 58, 30, 0.2)",
-                                }}
-                                type="button"
-                              >
-                                Go Back to Start
-                              </button>
+                          )}
+
+                        {/* Show error if wallet has already minted */}
+                        {hasMinted === true &&
+                          address &&
+                          chainId === currentNetwork.chainId && (
+                            <div className="eligibility-card-outer">
+                              <div className="eligibility-dot"></div>
+                              <div className="eligibility-card">
+                                <div className="eligibility-ray"></div>
+                                <div className="relative z-20">
+                                  <div className="flex items-center justify-center gap-3 mb-2">
+                                    <X className="text-red-400" size={24} />
+                                    <h3 className="eligibility-title text-red-400">
+                                      Already Minted
+                                    </h3>
+                                  </div>
+                                  <p className="eligibility-message mt-2 text-center">
+                                    This wallet has already minted an NFT. Each
+                                    wallet can only mint once.
+                                  </p>
+                                  <p className="text-xs text-gray-400/70 mt-3 text-center">
+                                    💡 Want to try with a different account or
+                                    wallet?
+                                  </p>
+                                </div>
+                                <div className="eligibility-line eligibility-topl"></div>
+                                <div className="eligibility-line eligibility-leftl"></div>
+                                <div className="eligibility-line eligibility-bottoml"></div>
+                                <div className="eligibility-line eligibility-rightl"></div>
+                              </div>
+                              {/* Button positioned outside card to avoid stacking context issues */}
+                              <div className="mt-4">
+                                <button
+                                  onClick={disconnectWallet}
+                                  className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer bg-gradient-to-r from-[#FF3A1E]/80 to-[#FF6B3D]/80 hover:from-[#FF6B3D]/90 hover:to-[#FF3A1E]/90 border-2 border-[#FF6B3D]/50 hover:border-[#FF6B3D]/80"
+                                  style={{
+                                    position: "relative",
+                                    zIndex: 1000,
+                                    boxShadow:
+                                      "0 0 20px rgba(255, 58, 30, 0.4), 0 0 40px rgba(255, 58, 30, 0.2)",
+                                  }}
+                                  type="button"
+                                >
+                                  Go Back to Start
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
                         {/* Wallet Ready Card - Show when whitelisted and not already minted */}
-                        {isWhitelisted && address && hasMinted !== true && (
-                          <>
-                            <div className="eligibility-card-outer">
-                              <WalletReadyCard walletAddress={address} />
-                            </div>
-                            {/* Mint Button */}
-                            <div className="max-w-[500px] mx-auto mt-4">
-                              <button
-                                onClick={handleMint}
-                                className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-gradient-to-r from-[#FF3A1E]/80 to-[#FF6B3D]/80 hover:from-[#FF6B3D]/90 hover:to-[#FF3A1E]/90 border-2 border-[#FF6B3D]/50 hover:border-[#FF6B3D]/80"
-                                style={{
-                                  boxShadow:
-                                    "0 0 20px rgba(255, 58, 30, 0.4), 0 0 40px rgba(255, 58, 30, 0.2)",
-                                }}
-                                disabled={
-                                  isMintPending ||
-                                  isConfirming ||
-                                  isWhitelisted !== true ||
-                                  isCheckingHasMinted
-                                }
-                              >
-                                {isMintPending || isConfirming
-                                  ? "Processing..."
-                                  : isCheckingHasMinted
-                                  ? "Checking..."
-                                  : "Mint NFT"}
-                              </button>
-                            </div>
-                          </>
-                        )}
+                        {isWhitelisted &&
+                          address &&
+                          hasMinted !== true &&
+                          chainId === currentNetwork.chainId && (
+                            <>
+                              <div className="eligibility-card-outer">
+                                <WalletReadyCard walletAddress={address} />
+                              </div>
+                              {/* Mint Button */}
+                              <div className="max-w-[500px] mx-auto mt-4">
+                                <button
+                                  onClick={handleMint}
+                                  className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-gradient-to-r from-[#FF3A1E]/80 to-[#FF6B3D]/80 hover:from-[#FF6B3D]/90 hover:to-[#FF3A1E]/90 border-2 border-[#FF6B3D]/50 hover:border-[#FF6B3D]/80"
+                                  style={{
+                                    boxShadow:
+                                      "0 0 20px rgba(255, 58, 30, 0.4), 0 0 40px rgba(255, 58, 30, 0.2)",
+                                  }}
+                                  disabled={
+                                    isMintPending ||
+                                    isConfirming ||
+                                    isWhitelisted !== true ||
+                                    isCheckingHasMinted
+                                  }
+                                >
+                                  {isMintPending || isConfirming
+                                    ? "Processing..."
+                                    : isCheckingHasMinted
+                                    ? "Checking..."
+                                    : "Mint NFT"}
+                                </button>
+                              </div>
+                            </>
+                          )}
 
                         {/* Wallet Prepare Card - Show when not whitelisted and not already minted */}
                         {isWhitelisted === false &&
                           address &&
-                          hasMinted !== true && (
-                          <WalletPrepareCard
-                            walletAddress={address}
-                            onContinue={() =>
-                              address && whitelistWallet(address)
-                            }
-                            isPreparing={isWhitelisting}
-                          />
-                        )}
+                          hasMinted !== true &&
+                          chainId === currentNetwork.chainId && (
+                            <WalletPrepareCard
+                              walletAddress={address}
+                              onContinue={() =>
+                                address && whitelistWallet(address)
+                              }
+                              isPreparing={isWhitelisting}
+                            />
+                          )}
 
                         {/* Checking Status - Show when status is unknown and not already minted */}
                         {isWhitelisted === null &&
                           !isWhitelisting &&
                           hasMinted !== true &&
-                          address && (
+                          address &&
+                          chainId === currentNetwork.chainId && (
                             <div className="eligibility-card-outer">
                               <div className="eligibility-dot"></div>
                               <div className="eligibility-card">
@@ -1534,8 +1628,7 @@ export default function ClaimOGNFT() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent hover:from-[#FF6B3D]/50 hover:to-[#FF3A1E]/50 underline transition-all"
                       >
-                        View on{" "}
-                        {currentNetwork.isTestnet ? "Arbiscan" : "Etherscan"}
+                        View on Arbiscan
                         <ExternalLink size={16} className="text-[#FF3A1E]/50" />
                       </a>
                     )}
@@ -1545,34 +1638,74 @@ export default function ClaimOGNFT() {
                 {/* Step 5: Success */}
                 {currentStep === "success" && (
                   <div className="text-center space-y-6">
-                    <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
-                      <PartyPopper className="text-green-500/80" size={40} />
-                    </div>
-                    <h2 className="text-3xl font-bold text-green-500/80">
-                      Success! 🎉
-                    </h2>
-                    <p className="text-gray-400/70">
-                      You&apos;ve successfully claimed your MegaETH OG NFT!
-                    </p>
+                    {/* Network Info Card - Green Neon Style */}
+                    <div
+                      className="eligibility-card-outer"
+                      style={{ maxWidth: "100%" }}
+                    >
+                      <div className="eligibility-card">
+                        <div className="eligibility-ray"></div>
 
-                    {/* Show connected Twitter account */}
-                    {twitterHandle && (
-                      <div className="p-4 rounded-lg bg-gray-800/30 border border-gray-700/30">
-                        <p className="text-sm text-gray-400/70 mb-1">
-                          Claimed with
-                        </p>
-                        <p className="font-semibold text-white/80 mb-2">
-                          @{twitterHandle}
-                        </p>
-                        <button
-                          onClick={disconnectTwitter}
-                          className="text-xs text-gray-400/70 hover:text-red-400/70 underline transition-colors"
-                        >
-                          Disconnect X Account
-                        </button>
+                        <div className="space-y-4">
+                          <h2 className="text-3xl font-bold text-green-500/80">
+                            Success!
+                          </h2>
+                          <p className="text-gray-400/70">
+                            You&apos;ve successfully claimed your MegaETH OG
+                            NFT!
+                          </p>
+
+                          {/* Show connected Twitter account */}
+                          {twitterHandle && (
+                            <div className="mt-4 p-4 rounded-lg bg-gray-800/30 border border-gray-700/30">
+                              <p className="text-sm text-gray-400/70 mb-1">
+                                Claimed with
+                              </p>
+                              <p className="font-semibold text-white/80 mb-2">
+                                @{twitterHandle}
+                              </p>
+                              <div className="flex flex-col gap-2">
+                                <button
+                                  onClick={disconnectTwitter}
+                                  className="text-xs text-gray-400/70 hover:text-red-400/70 underline transition-colors text-center"
+                                >
+                                  Disconnect X Account
+                                </button>
+                                {/* View NFT Link */}
+                                {mintedTokenId && (
+                                  <Link
+                                    href={`/nft/${mintedTokenId}`}
+                                    className="text-xs text-emerald-400 hover:text-emerald-300 underline transition-colors text-center"
+                                  >
+                                    View Your NFT
+                                  </Link>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* View NFT Link - Show even if no Twitter handle */}
+                          {!twitterHandle && mintedTokenId && (
+                            <div className="mt-4 text-center">
+                              <Link
+                                href={`/nft/${mintedTokenId}`}
+                                className="text-sm text-emerald-400 hover:text-emerald-300 underline transition-colors"
+                              >
+                                View Your NFT
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Animated borders */}
+                        <div className="eligibility-line eligibility-topl"></div>
+                        <div className="eligibility-line eligibility-leftl"></div>
+                        <div className="eligibility-line eligibility-bottoml"></div>
+                        <div className="eligibility-line eligibility-rightl"></div>
                       </div>
-                    )}
+                    </div>
 
+                    {/* Network, Transaction, Token ID - Outside the card
                     <div className="space-y-3 text-left rounded-lg p-6">
                       <div className="flex justify-between">
                         <span className="text-gray-400/70">Network:</span>
@@ -1605,7 +1738,7 @@ export default function ClaimOGNFT() {
                           </span>
                         </div>
                       )}
-                    </div>
+                    </div> */}
 
                     {claimRecordFailed && lastMintHash && (
                       <div className="p-4 border-2 border-yellow-500/30 bg-yellow-500/10 rounded-lg">
@@ -1638,11 +1771,11 @@ export default function ClaimOGNFT() {
                       }}
                     >
                       <h3 className="font-bold text-lg mb-2 text-white/80">
-                        Awarded to MegaETH OG Supporters
+                        Your Benefits
                       </h3>
                       <p className="text-gray-300/80">
                         <span className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent font-bold">
-                          1.25x Multiplier
+                          1.25x Multiplier on points + 9.5% Fee Rebates
                         </span>{" "}
                         when MegaFi launches!
                       </p>
@@ -1663,6 +1796,196 @@ export default function ClaimOGNFT() {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+
+        <style jsx global>{`
+          body {
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
+              Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji,
+              Segoe UI Emoji;
+          }
+        `}</style>
+        <style jsx>{`
+          .btn-primary {
+            @apply w-full max-w-xs mx-auto text-white font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+            padding: 16px 32px;
+            border-radius: 12px;
+            background: linear-gradient(
+              135deg,
+              rgba(255, 58, 30, 0.8) 0%,
+              rgba(255, 107, 61, 0.8) 100%
+            );
+            box-shadow: 0 0 20px rgba(255, 58, 30, 0.4),
+              0 0 40px rgba(255, 58, 30, 0.2);
+            border: 2px solid rgba(255, 107, 61, 0.5);
+          }
+          .btn-primary:hover {
+            background: linear-gradient(
+              135deg,
+              rgba(255, 107, 61, 0.9) 0%,
+              rgba(255, 58, 30, 0.9) 100%
+            );
+            box-shadow: 0 0 30px rgba(255, 58, 30, 0.6),
+              0 0 60px rgba(255, 58, 30, 0.3);
+            border-color: rgba(255, 107, 61, 0.8);
+            transform: translateY(-1px);
+          }
+          .btn-secondary {
+            @apply w-full max-w-xs mx-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2;
+          }
+
+          /* Connect Wallet Button Glow Effect */
+          .connect-wallet-wrapper :global button {
+            box-shadow: 0 0 20px rgba(255, 58, 30, 0.4),
+              0 0 40px rgba(255, 58, 30, 0.2) !important;
+            border: 2px solid rgba(255, 107, 61, 0.5) !important;
+            transition: all 0.2s ease !important;
+          }
+
+          .connect-wallet-wrapper :global button:hover {
+            box-shadow: 0 0 30px rgba(255, 58, 30, 0.6),
+              0 0 60px rgba(255, 58, 30, 0.3) !important;
+            border-color: rgba(255, 107, 61, 0.8) !important;
+            transform: translateY(-1px) !important;
+          }
+
+          .connect-wallet-wrapper :global button:active {
+            transform: translateY(0) !important;
+          }
+
+          /* Social Footer Section */
+          .social-footer-section {
+            padding: 2rem 1rem 3rem;
+          }
+
+          .social-footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+          }
+
+          .social-footer-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.5rem;
+          }
+
+          .social-footer-subtitle {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 1.5rem;
+          }
+
+          .social-footer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+          }
+
+          .social-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(
+              135deg,
+              rgba(255, 58, 30, 0.1) 0%,
+              rgba(255, 107, 61, 0.1) 100%
+            );
+            border: 2px solid rgba(255, 107, 61, 0.3);
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(255, 58, 30, 0.2);
+          }
+
+          .social-btn:hover {
+            background: linear-gradient(
+              135deg,
+              rgba(255, 58, 30, 0.2) 0%,
+              rgba(255, 107, 61, 0.2) 100%
+            );
+            border-color: rgba(255, 107, 61, 0.6);
+            box-shadow: 0 0 30px rgba(255, 58, 30, 0.4),
+              0 0 60px rgba(255, 58, 30, 0.2);
+            transform: translateY(-2px);
+          }
+
+          .social-btn:active {
+            transform: translateY(0);
+          }
+
+          @media (max-width: 640px) {
+            .social-footer-section {
+              margin-top: 3rem;
+              padding: 1.5rem 1rem 2rem;
+            }
+            .social-footer-title {
+              font-size: 1rem;
+            }
+            .social-footer-subtitle {
+              font-size: 0.8125rem;
+            }
+            .social-footer-buttons {
+              gap: 0.75rem;
+            }
+            .social-btn {
+              padding: 0.625rem 1.25rem;
+              font-size: 0.8125rem;
+            }
+          }
+        `}</style>
+
+        {/* Social Footer */}
+        <div className="social-footer-section">
+          <div className="social-footer-content">
+            <h3 className="social-footer-title">Join Our Community</h3>
+            <p className="social-footer-subtitle">
+              Stay updated with the latest news and connect with other holders
+            </p>
+            <div className="social-footer-buttons">
+              <a
+                href="https://discord.com/invite/EFTrPCREfZ"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-btn"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
+                </svg>
+                <span>Join Discord</span>
+              </a>
+              <a
+                href="https://x.com/megafi_app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-btn"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                <span>Follow on X</span>
+              </a>
             </div>
           </div>
         </div>

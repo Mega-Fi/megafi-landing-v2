@@ -1,36 +1,30 @@
 import { NextResponse } from "next/server";
 import { createPublicClient, http } from "viem";
-import { mainnet, arbitrum, arbitrumSepolia } from "viem/chains";
+import { arbitrum, base, arbitrumSepolia } from "viem/chains";
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
 
 export async function GET() {
   // Determine network from environment variable
-  // Options: 'testnet' | 'mainnet' | 'arbitrum'
+  // Options: 'testnet' | 'arbitrum' | 'base'
   const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
 
   // Get RPC URL from environment or use default public RPCs
   let rpcUrl: string | undefined;
 
-  if (network === "mainnet") {
-    rpcUrl =
-      process.env.NEXT_PUBLIC_MAINNET_RPC_URL ||
-      process.env.NEXT_PUBLIC_RPC_URL ||
-      "https://eth.llamarpc.com"; // Public fallback
-  } else if (network === "arbitrum") {
-    rpcUrl =
-      process.env.NEXT_PUBLIC_ARBITRUM_RPC_URL ||
-      process.env.NEXT_PUBLIC_RPC_URL ||
-      "https://arb1.arbitrum.io/rpc"; // Public Arbitrum RPC
+  if (network === "arbitrum") {
+    rpcUrl = "https://public-arb-mainnet.fastnode.io";
+  } else if (network === "base") {
+    rpcUrl = "https://mainnet.base.org"; // Public Base RPC
   } else {
     // testnet (Arbitrum Sepolia)
-    rpcUrl =
-      process.env.NEXT_PUBLIC_TESTNET_RPC_URL ||
-      process.env.NEXT_PUBLIC_RPC_URL ||
-      "https://sepolia-rollup.arbitrum.io/rpc"; // Public testnet RPC
+    rpcUrl = "https://arbitrum-sepolia.drpc.org"; // Public testnet RPC
   }
 
   // Validate contract address
-  if (!NFT_CONTRACT_ADDRESS || NFT_CONTRACT_ADDRESS === "0x0000000000000000000000000000000000000000") {
+  if (
+    !NFT_CONTRACT_ADDRESS ||
+    NFT_CONTRACT_ADDRESS === "0x0000000000000000000000000000000000000000"
+  ) {
     return NextResponse.json(
       {
         success: false,
@@ -45,10 +39,10 @@ export async function GET() {
 
   try {
     const selectedChain =
-      network === "mainnet"
-        ? mainnet
-        : network === "arbitrum"
+      network === "arbitrum"
         ? arbitrum
+        : network === "base"
+        ? base
         : arbitrumSepolia; // default to testnet
 
     // Create public client to read from contract

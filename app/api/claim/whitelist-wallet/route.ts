@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { isAddress, getAddress, createPublicClient, http } from "viem";
-import { mainnet, arbitrum, arbitrumSepolia } from "viem/chains";
+import { arbitrum, base, arbitrumSepolia } from "viem/chains";
 import { supabase } from "@/lib/supabase";
 import { isRateLimited } from "@/lib/rate-limit";
 import {
@@ -14,6 +14,12 @@ import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey);
+
+// Whitelist server URL - hardcoded for production
+const WHITELIST_SERVER_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://server.megafi.app"
+    : "http://localhost:3001";
 
 /**
  * Verify user is authenticated via Supabase session
@@ -200,27 +206,23 @@ export async function POST(request: Request) {
     // SECURITY: Check if wallet has already minted on-chain
     try {
       const network = process.env.NEXT_PUBLIC_NETWORK || "testnet";
-      const selectedChain = 
-        network === "mainnet" ? mainnet :
-        network === "arbitrum" ? arbitrum :
-        arbitrumSepolia; // default to testnet
+      const selectedChain =
+        network === "arbitrum"
+          ? arbitrum
+          : network === "base"
+          ? base
+          : arbitrumSepolia; // default to testnet
 
       // Get RPC URL from environment or use default public RPCs
       let rpcUrl: string | undefined;
-      
-      if (network === "mainnet") {
-        rpcUrl = process.env.NEXT_PUBLIC_MAINNET_RPC_URL || 
-                 process.env.NEXT_PUBLIC_RPC_URL ||
-                 "https://eth.llamarpc.com"; // Public fallback
-      } else if (network === "arbitrum") {
-        rpcUrl = process.env.NEXT_PUBLIC_ARBITRUM_RPC_URL || 
-                 process.env.NEXT_PUBLIC_RPC_URL ||
-                 "https://arb1.arbitrum.io/rpc"; // Public Arbitrum RPC
+
+      if (network === "arbitrum") {
+        rpcUrl = "https://public-arb-mainnet.fastnode.io";
+      } else if (network === "base") {
+        rpcUrl = "https://mainnet.base.org"; // Public Base RPC
       } else {
         // testnet (Arbitrum Sepolia)
-        rpcUrl = process.env.NEXT_PUBLIC_TESTNET_RPC_URL || 
-                 process.env.NEXT_PUBLIC_RPC_URL ||
-                 "https://sepolia-rollup.arbitrum.io/rpc"; // Public testnet RPC
+        rpcUrl = "https://arbitrum-sepolia.drpc.org"; // Public testnet RPC
       }
 
       const publicClient = createPublicClient({
@@ -286,26 +288,25 @@ export async function POST(request: Request) {
       }
 
       // Same wallet - check if already whitelisted on-chain
-      const whitelistServerUrl =
-        process.env.WHITELIST_SERVER_URL ||
-        process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-        (process.env.NODE_ENV === "production"
-          ? null
-          : "http://localhost:3001");
-
-      if (whitelistServerUrl) {
+      if (WHITELIST_SERVER_URL) {
         const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
+        // Create timeout controller (AbortSignal.timeout may not be available in all Node versions)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
         const statusResponse = await fetch(
-          `${whitelistServerUrl}/api/status/${normalizedAddress}`,
+          `${WHITELIST_SERVER_URL}/api/status/${normalizedAddress}`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
               ...(apiKey && { "X-API-Key": apiKey }),
             },
-            signal: AbortSignal.timeout(10000),
+            signal: controller.signal,
           }
         );
+
+        clearTimeout(timeoutId);
 
         if (statusResponse.ok) {
           const statusData = await statusResponse.json();
@@ -375,29 +376,13 @@ export async function POST(request: Request) {
       }
     }
 
-    // Get whitelist server URL from environment
-    // SECURITY: Require env var in production, fail if missing
-    const whitelistServerUrl =
-      process.env.WHITELIST_SERVER_URL ||
-      process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-      (process.env.NODE_ENV === "production" ? null : "http://localhost:3001");
-
-    if (!whitelistServerUrl) {
-      console.error("[Whitelist API] WHITELIST_SERVER_URL not configured");
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Server configuration error",
-        },
-        { status: 500 }
-      );
-    }
+    // Use hardcoded whitelist server URL
 
     // SECURITY: Get API key for whitelist-server authentication
     const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
 
     // Call the whitelist-server with API key authentication
-    const response = await fetch(`${whitelistServerUrl}/api/whitelist`, {
+    const response = await fetch(`${WHITELIST_SERVER_URL}/api/whitelist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -435,6 +420,13 @@ export async function POST(request: Request) {
           ignoreDuplicates: false,
         }
       );
+
+      // Log the actual error for debugging
+      console.error("[Whitelist API] Whitelist server error:", {
+        status: response.status,
+        error: errorMessage,
+        fullResponse: data,
+      });
 
       // SECURITY: Don't expose internal error details
       return NextResponse.json(
@@ -508,12 +500,27 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data, { status: 200 });
   } catch (error: any) {
-    console.error("[Whitelist API] Error:", error);
-    // SECURITY: Generic error message
+    console.error("[Whitelist API] POST Error:", error);
+    console.error("[Whitelist API] Error details:", {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+      cause: error?.cause,
+    });
+
+    // Log the actual error message in production (sanitized)
+    const errorMessage = error?.message || String(error) || "Unknown error";
+    console.error(`[Whitelist API] Error message: ${errorMessage}`);
+
+    // SECURITY: Generic error message for users, but log details
     return NextResponse.json(
       {
         success: false,
         error: "An error occurred. Please try again later.",
+        // Include error type for debugging (not the full message for security)
+        details: {
+          errorType: error?.name || "Unknown",
+        },
       },
       { status: 500 }
     );
@@ -551,42 +558,149 @@ export async function GET(request: Request) {
       );
     }
 
-    const whitelistServerUrl =
-      process.env.WHITELIST_SERVER_URL ||
-      process.env.NEXT_PUBLIC_WHITELIST_SERVER_URL ||
-      (process.env.NODE_ENV === "production" ? null : "http://localhost:3001");
-
-    if (!whitelistServerUrl) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Server configuration error",
-          whitelisted: false,
-        },
-        { status: 500 }
-      );
-    }
+    // Use hardcoded whitelist server URL
+    console.log(
+      "[Whitelist API] Using whitelist server:",
+      WHITELIST_SERVER_URL
+    );
 
     const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
 
-    const response = await fetch(
-      `${whitelistServerUrl}/api/status/${getAddress(wallet_address)}`,
-      {
+    // Normalize address (this can throw if address is invalid)
+    let normalizedAddress: string;
+    try {
+      normalizedAddress = getAddress(wallet_address);
+    } catch (addressError: any) {
+      console.error(
+        "[Whitelist API] Address normalization error:",
+        addressError
+      );
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Invalid Ethereum address: ${addressError.message}`,
+          whitelisted: false,
+        },
+        { status: 400 }
+      );
+    }
+
+    const statusUrl = `${WHITELIST_SERVER_URL}/api/status/${normalizedAddress}`;
+
+    console.log(
+      `[Whitelist API] Checking status for ${normalizedAddress} at ${WHITELIST_SERVER_URL}`
+    );
+    console.log(`[Whitelist API] Full URL: ${statusUrl}`);
+
+    let response: Response;
+    try {
+      // Create timeout controller (AbortSignal.timeout may not be available in all Node versions)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      response = await fetch(statusUrl, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           ...(apiKey && { "X-API-Key": apiKey }),
         },
-        signal: AbortSignal.timeout(10000), // 10 second timeout for GET
-      }
-    );
+        signal: controller.signal,
+      });
 
-    const data = await response.json();
+      clearTimeout(timeoutId);
+      console.log(
+        `[Whitelist API] Response status: ${response.status} ${response.statusText}`
+      );
+      console.log(
+        `[Whitelist API] Response headers:`,
+        Object.fromEntries(response.headers.entries())
+      );
+    } catch (fetchError: any) {
+      console.error("[Whitelist API] Fetch error:", fetchError);
+      console.error("[Whitelist API] Error details:", {
+        message: fetchError?.message,
+        name: fetchError?.name,
+        cause: fetchError?.cause,
+      });
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Failed to connect to whitelist server: ${
+            fetchError.message || String(fetchError)
+          }`,
+          whitelisted: false,
+          details:
+            process.env.NODE_ENV === "development"
+              ? {
+                  whitelistServerUrl: WHITELIST_SERVER_URL,
+                  statusUrl,
+                  error: String(fetchError),
+                  errorName: fetchError?.name,
+                }
+              : undefined,
+        },
+        { status: 200 } // Return 200 so frontend can handle it
+      );
+    }
+
+    let data: any;
+    try {
+      const responseText = await response.text();
+      console.log(
+        `[Whitelist API] Response body (first 500 chars):`,
+        responseText.substring(0, 500)
+      );
+
+      if (!responseText) {
+        throw new Error("Empty response from whitelist server");
+      }
+
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("[Whitelist API] JSON parse error:", parseError);
+        console.error("[Whitelist API] Response text:", responseText);
+        throw new Error(
+          `Invalid JSON response: ${
+            parseError instanceof Error
+              ? parseError.message
+              : String(parseError)
+          }`
+        );
+      }
+    } catch (jsonError: any) {
+      console.error("[Whitelist API] Response parsing error:", jsonError);
+      return NextResponse.json(
+        {
+          success: false,
+          error: jsonError.message || "Invalid response from whitelist server",
+          whitelisted: false,
+          details: {
+            status: response.status,
+            statusText: response.statusText,
+            error: jsonError.message || String(jsonError),
+          },
+        },
+        { status: 200 }
+      );
+    }
 
     if (!response.ok) {
+      console.error("[Whitelist API] Server error:", response.status, data);
       // If status check fails, assume not whitelisted
       return NextResponse.json(
-        { success: false, error: "Failed to check status", whitelisted: false },
+        {
+          success: false,
+          error: data.error || "Failed to check status",
+          whitelisted: false,
+          details:
+            process.env.NODE_ENV === "development"
+              ? {
+                  status: response.status,
+                  serverResponse: data,
+                }
+              : undefined,
+        },
         { status: 200 } // Return 200 so frontend can handle it
       );
     }
@@ -602,12 +716,33 @@ export async function GET(request: Request) {
     );
   } catch (error: any) {
     console.error("[Whitelist API] Status check error:", error);
+    console.error("[Whitelist API] Error details:", {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+      cause: error?.cause,
+    });
+
+    // Log the actual error message in production (sanitized)
+    const errorMessage = error?.message || String(error) || "Unknown error";
+    console.error(`[Whitelist API] Error message: ${errorMessage}`);
+
     // On error, return not whitelisted so user can proceed
     return NextResponse.json(
       {
         success: false,
-        error: "An error occurred. Please try again later.",
+        error: errorMessage.includes("Failed to connect")
+          ? errorMessage
+          : "An error occurred. Please try again later.",
         whitelisted: false,
+        // Always include error details for debugging (but sanitized)
+        details: {
+          errorType: error?.name || "Unknown",
+          // Only include message if it's a connection error
+          ...(errorMessage.includes("Failed to connect") && {
+            message: errorMessage,
+          }),
+        },
       },
       { status: 200 } // Return 200 so frontend can handle it
     );
