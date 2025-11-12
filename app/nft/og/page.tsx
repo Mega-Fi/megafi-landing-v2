@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 import { ElectricCard } from "@/components/ui/electric-card";
 import { FuturisticAlienBackground } from "@/components/ui/futuristic-alien-background";
 import { analytics } from "@/lib/mixpanel";
@@ -21,6 +22,17 @@ export default function OGCollectionPage() {
           <FuturisticAlienBackground />
         </div>
         <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+          {/* Back to Home Button - Top Left */}
+          <div className="mb-8">
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm"
+            >
+              <ArrowLeft size={18} />
+              <span>Back to Home</span>
+            </button>
+          </div>
+
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
@@ -101,14 +113,109 @@ export default function OGCollectionPage() {
                     </span>
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
 
-                {/* Back to Home Button */}
-                <button
-                  onClick={() => (window.location.href = "/")}
-                  className="w-full max-w-xs mx-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
-                >
-                  Back to Home
-                </button>
+          {/* Detailed Criteria Sections */}
+          <div className="mt-16 space-y-6">
+            {/* Eligibility Tiers */}
+            <div className="rounded-lg p-6 bg-gray-800/20 border border-gray-700/30">
+              <h3 className="font-bold text-2xl mb-6 text-white/90">
+                Eligibility Tiers
+              </h3>
+              <div className="space-y-6 text-gray-400/70">
+                <div>
+                  <p className="font-semibold text-lg text-white/80 mb-3">
+                    Tier 1: First 10 Discord Members (10 NFTs)
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
+                    <li>Guaranteed NFT by Discord join timestamp</li>
+                    <li>Rewards earliest believers</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-lg text-white/80 mb-3">
+                    Tier 2: Top 50 X Engagement (50 NFTs)
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
+                    <li>Must be Discord member</li>
+                    <li>Ranked by X Engagement Score</li>
+                    <li>Scoring Period: Nov 12–25, 23:59 UTC</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* High-Value Activities */}
+            <div className="rounded-lg p-6 bg-gray-800/20 border border-gray-700/30">
+              <h3 className="font-bold text-2xl mb-6 text-white/90">
+                High-Value Activities
+              </h3>
+              <div className="space-y-6 text-gray-400/70">
+                <div>
+                  <p className="font-semibold text-lg text-white/80 mb-3">
+                    Original Content (Highest Points)
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
+                    <li>Educational posts explaining MegaFi products (Hedge, Earn, Swap)</li>
+                    <li>Posts about MegaETH speed/technology</li>
+                    <li>Use case examples and strategy guides</li>
+                    <li>Tag @megafi_app and use #MegaFi</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-lg text-white/80 mb-3">
+                    Engagement Actions
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
+                    <li>Quote posts with added commentary and analysis</li>
+                    <li>Thoughtful replies to @megafi_app (not just "gm 🔥")</li>
+                    <li>Repost official content (quote posts score higher)</li>
+                    <li>Answer community questions helpfully</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-lg text-white/80 mb-3">
+                    Creative Content
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
+                    <li>Infographics, comparisons, memes</li>
+                    <li>Visual explanations of features</li>
+                    <li>Technical deep dives</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Best Practices & Red Flags */}
+            <div className="rounded-lg p-6 bg-gray-800/20 border border-gray-700/30">
+              <h3 className="font-bold text-2xl mb-6 text-white/90">
+                Best Practices & Red Flags
+              </h3>
+              <div className="grid md:grid-cols-2 gap-8 text-gray-400/70">
+                <div>
+                  <p className="font-semibold text-lg text-green-400/90 mb-3">
+                    ✅ Best Practices
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
+                    <li>Post 1-2 quality posts per day (spread across campaign period)</li>
+                    <li>Mix content types (originals, quotes, replies)</li>
+                    <li>Ask questions to drive engagement</li>
+                    <li>Be original and add value</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-lg text-red-400/90 mb-3">
+                    ❌ Red Flags
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
+                    <li>Posting &gt;10 times in 1 hour (spam)</li>
+                    <li>Copy-pasting content (0.1x multiplier)</li>
+                    <li>Buying fake engagement (disqualification)</li>
+                    <li>Generic replies without substance</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
