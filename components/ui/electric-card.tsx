@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Image from "next/image";
 
 type Variant = "swirl" | "hue";
 
@@ -142,7 +143,7 @@ const ElectricCard = ({
           {centerImage && (
             <div className="center-content">
               <div className="center-image-container">
-                <img src={centerImage} alt="NFT" className="center-image" />
+                <Image src={centerImage} alt="NFT" width={120} height={120} className="center-image" />
               </div>
               <p className="title">{title}</p>
             </div>
