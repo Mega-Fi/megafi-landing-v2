@@ -27,7 +27,7 @@ import {
   PartyPopper,
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
-import { FuturisticAlienBackground } from "@/components/ui/futuristic-alien-background";
+import { GridBackground } from "@/components/ui/grid-background";
 import { ElectricCard } from "@/components/ui/electric-card";
 import {
   Stepper,
@@ -940,12 +940,19 @@ export default function ClaimOGNFT() {
 
   if (loading) {
     return (
-      <>
-        <div className="relative min-h-screen text-white overflow-hidden bg-black">
-          <div className="fixed inset-0 z-0">
-            <FuturisticAlienBackground />
+      <GridBackground variant="black" className="text-white overflow-hidden">
+        <div className="relative z-10 container mx-auto px-4 py-12">
+          {/* Back Button - Top Left */}
+          <div className="mb-8">
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all backdrop-blur-sm"
+            >
+              Home
+            </button>
           </div>
-          <div className="relative z-10 flex items-center justify-center min-h-screen">
+          
+          <div className="flex items-center justify-center min-h-[70vh]">
             <Loader2
               className="animate-spin text-[#FF3A1E]/50"
               size={60}
@@ -953,14 +960,7 @@ export default function ClaimOGNFT() {
             />
           </div>
         </div>
-        <style jsx global>{`
-          body {
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-              Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji,
-              Segoe UI Emoji;
-          }
-        `}</style>
-      </>
+      </GridBackground>
     );
   }
 
@@ -977,11 +977,18 @@ export default function ClaimOGNFT() {
           },
         }}
       />
-      <div className="relative min-h-screen text-white overflow-hidden bg-black">
-        <div className="fixed inset-0 z-0">
-          <FuturisticAlienBackground />
-        </div>
+      <GridBackground variant="black" className="text-white overflow-hidden">
         <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+          {/* Back Button - Top Left */}
+          <div className="mb-8">
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all backdrop-blur-sm"
+            >
+              Home
+            </button>
+          </div>
+
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
@@ -2004,7 +2011,7 @@ export default function ClaimOGNFT() {
             </div>
           </div>
         </div>
-      </div>
+      </GridBackground>
     </>
   );
 }

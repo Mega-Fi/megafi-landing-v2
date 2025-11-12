@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 import Image from 'next/image';
-import { FileText } from 'lucide-react';
+import Link from 'next/link';
+import { FileText, Sparkles } from 'lucide-react';
 import { Waitlist } from './waitlist';
 import { OGNFTBanner } from './og-nft-banner';
 
@@ -96,6 +97,10 @@ function WordHeroPage({
       )}
       {links && (
         <nav className="nav-links">
+          <Link href="/nft" className="nav-link nav-link-text">
+            <Sparkles size={18} />
+            <span>NFTs</span>
+          </Link>
           {links.twitter && (
             <a
               href={links.twitter}
