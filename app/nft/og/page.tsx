@@ -46,7 +46,7 @@ export default function OGCollectionPage() {
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-              Duration: Nov 12–25 (Scoring), Nov 26 (Announcement)
+              Duration: Nov 1–25 (Scoring), Nov 26 (Winners Announcement)
             </p>
           </div>
 
@@ -69,29 +69,6 @@ export default function OGCollectionPage() {
             {/* Right column: Details */}
             <div className="w-full lg:w-auto lg:flex-1 max-w-2xl order-2">
               <div className="rounded-2xl p-8 md:p-12 space-y-6">
-                {/* NFT Details */}
-                <div className="space-y-4">
-                  <h2 className="text-2xl font-bold text-white/80 mb-6">
-                    NFT Details
-                  </h2>
-
-                  <div className="space-y-3 text-left rounded-lg p-6 bg-gray-800/20 border border-gray-700/30">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400/70">Network:</span>
-                      <span className="font-medium text-white/80">
-                        {currentNetwork.name}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400/70">Contract:</span>
-                      <span className="font-mono text-white/80">
-                        {CONTRACT_ADDRESS_TBA}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Benefits Section */}
                 <div className="og-benefits-card-outer">
                   <div className="og-benefits-dot"></div>
@@ -103,7 +80,11 @@ export default function OGCollectionPage() {
                     </h3>
                     <p className="og-benefits-message">
                       <span className="og-benefits-highlight">
-                        1.5x Multiplier (lifetime) + Fee Refunds (1 year after launch)
+                      1.5× Points Multiplier on all products (lifetime)
+                      <br />
+                      100% Fee Rebates on all products for 1 year
+                      <br />
+                      Exclusive & early-access to the next phase of the MegaFi ecosystem
                       </span>
                     </p>
 
@@ -114,46 +95,40 @@ export default function OGCollectionPage() {
                     <div className="og-benefits-line og-benefits-rightl"></div>
                   </div>
                 </div>
+
+                {/* Eligibility Criteria */}
+                <div className="rounded-lg p-6 bg-gray-800/20 border border-gray-700/30 mt-8">
+                  <h3 className="font-bold text-2xl mb-6 text-white/90">
+                    Eligibility Criteria for 50 NFTs
+                  </h3>
+                  <div className="space-y-6 text-gray-400/70">
+                    <div>
+                      <p className="font-semibold text-lg text-white/80 mb-3">
+                        Ranked by Conviction Score
+                      </p>
+                      <div className="space-y-3 text-sm">
+                        <p>From Nov 1–25, 50 community members will be chosen based on conviction, contribution, and engagement across X.</p>
+                        <p>Engagement: Meaningful discussions and activity across X</p>
+                        <p>Contribution: Help shape conversations, build community energy, and spread awareness</p>
+                        <p>Consistency: Show up early, stay active, and lead from the front</p>
+                        <p>Every action builds your Conviction Score.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Detailed Criteria Sections */}
           <div className="mt-16 space-y-6">
-            {/* Eligibility Tiers */}
-            <div className="rounded-lg p-6 bg-gray-800/20 border border-gray-700/30">
-              <h3 className="font-bold text-2xl mb-6 text-white/90">
-                Eligibility Tiers
-              </h3>
-              <div className="space-y-6 text-gray-400/70">
-                <div>
-                  <p className="font-semibold text-lg text-white/80 mb-3">
-                    Tier 1: First 10 Discord Members (10 NFTs)
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
-                    <li>Guaranteed NFT by Discord join timestamp</li>
-                    <li>Rewards earliest believers</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-lg text-white/80 mb-3">
-                    Tier 2: Top 50 X Engagement (50 NFTs)
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
-                    <li>Must be Discord member</li>
-                    <li>Ranked by X Engagement Score</li>
-                    <li>Scoring Period: Nov 12–25, 23:59 UTC</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
 
             {/* High-Value Activities */}
             <div className="rounded-lg p-6 bg-gray-800/20 border border-gray-700/30">
               <h3 className="font-bold text-2xl mb-6 text-white/90">
                 High-Value Activities
               </h3>
-              <div className="space-y-6 text-gray-400/70">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 text-gray-400/70">
                 <div>
                   <p className="font-semibold text-lg text-white/80 mb-3">
                     Original Content (Highest Points)
@@ -197,9 +172,10 @@ export default function OGCollectionPage() {
               <div className="grid md:grid-cols-2 gap-8 text-gray-400/70">
                 <div>
                   <p className="font-semibold text-lg text-green-400/90 mb-3">
-                    ✅ Best Practices
+                    ✅ DOs
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
+                    <li>Tag @megafi_app or use #MegaFi in every post</li>
                     <li>Post 1-2 quality posts per day (spread across campaign period)</li>
                     <li>Mix content types (originals, quotes, replies)</li>
                     <li>Ask questions to drive engagement</li>
@@ -208,11 +184,11 @@ export default function OGCollectionPage() {
                 </div>
                 <div>
                   <p className="font-semibold text-lg text-red-400/90 mb-3">
-                    ❌ Red Flags
+                    ❌ DON&apos;Ts
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
-                    <li>Posting &gt;10 times in 1 hour (spam)</li>
-                    <li>Copy-pasting content (0.1x multiplier)</li>
+                    <li>Posting {'>'}10 times in 1 hour (spam)</li>
+                    <li>Copy-pasting content</li>
                     <li>Buying fake engagement (disqualification)</li>
                     <li>Generic replies without substance</li>
                   </ul>
