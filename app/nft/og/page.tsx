@@ -171,7 +171,7 @@ export default function OGCollectionPage() {
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
                     <li>Quote posts with added commentary and analysis</li>
-                    <li>Thoughtful replies to @megafi_app (not just "gm 🔥")</li>
+                    <li>Thoughtful replies to @megafi_app (not just &quot;gm 🔥&quot;)</li>
                     <li>Repost official content (quote posts score higher)</li>
                     <li>Answer community questions helpfully</li>
                   </ul>
