@@ -91,7 +91,7 @@ export default function OGNFTDetailPage() {
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-              Duration: Nov 12–25 (Scoring), Nov 26 (Announcement)
+              Duration: Nov 1–25 (Scoring), Nov 26 (Announcement)
             </p>
           </div>
 

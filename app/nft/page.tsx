@@ -42,7 +42,7 @@ export default function NFTCollectionsPage() {
               MegaFi NFT Collections
             </h1>
             <p className="text-gray-400/70 text-lg">
-              Exclusive NFTs for MegaETH community supporters and early testers
+              Exclusive NFTs for community supporters and early testers
             </p>
           </div>
 
@@ -55,7 +55,7 @@ export default function NFTCollectionsPage() {
                 color="#FF3A1E"
                 badge="279"
                 title="The 9.5% Pass"
-                description="Exclusive for top 279 supporters"
+                description="For top 279 MegaETH supporters"
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"
@@ -69,7 +69,7 @@ export default function NFTCollectionsPage() {
                 color="#FFD700"
                 badge="60"
                 title="MegaFi OG NFT"
-                description="Duration: Nov 12–25 (Scoring)"
+                description="Duration: Nov 1–25 (Scoring)"
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"
