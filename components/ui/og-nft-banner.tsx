@@ -29,6 +29,11 @@ export const OGNFTBanner = ({
     return `banner-swirl-${Math.random().toString(36).slice(2, 8)}`;
   }, []);
 
+  // Unique filter ID for bottom border animation
+  const bottomFilterId = useMemo(() => {
+    return `banner-bottom-swirl-${Math.random().toString(36).slice(2, 8)}`;
+  }, []);
+
   if (!visible) return null;
 
   const handleBannerClick = () => {
@@ -148,6 +153,109 @@ export const OGNFTBanner = ({
               yChannelSelector="B"
             />
           </filter>
+
+          {/* Bottom border animation filter - more intense */}
+          <filter
+            id={bottomFilterId}
+            colorInterpolationFilters="sRGB"
+            x="-20%"
+            y="-20%"
+            width="140%"
+            height="140%"
+          >
+            <feTurbulence
+              type="turbulence"
+              baseFrequency="0.025"
+              numOctaves="12"
+              result="noise1"
+              seed="3"
+            />
+            <feOffset in="noise1" dx="0" dy="0" result="offsetNoise1">
+              <animate
+                attributeName="dy"
+                values="800; 0"
+                dur="5s"
+                repeatCount="indefinite"
+                calcMode="linear"
+              />
+            </feOffset>
+
+            <feTurbulence
+              type="turbulence"
+              baseFrequency="0.025"
+              numOctaves="12"
+              result="noise2"
+              seed="3"
+            />
+            <feOffset in="noise2" dx="0" dy="0" result="offsetNoise2">
+              <animate
+                attributeName="dy"
+                values="0; -800"
+                dur="5s"
+                repeatCount="indefinite"
+                calcMode="linear"
+              />
+            </feOffset>
+
+            <feTurbulence
+              type="turbulence"
+              baseFrequency="0.025"
+              numOctaves="12"
+              result="noise3"
+              seed="4"
+            />
+            <feOffset in="noise3" dx="0" dy="0" result="offsetNoise3">
+              <animate
+                attributeName="dx"
+                values="600; 0"
+                dur="5s"
+                repeatCount="indefinite"
+                calcMode="linear"
+              />
+            </feOffset>
+
+            <feTurbulence
+              type="turbulence"
+              baseFrequency="0.025"
+              numOctaves="12"
+              result="noise4"
+              seed="4"
+            />
+            <feOffset in="noise4" dx="0" dy="0" result="offsetNoise4">
+              <animate
+                attributeName="dx"
+                values="0; -600"
+                dur="5s"
+                repeatCount="indefinite"
+                calcMode="linear"
+              />
+            </feOffset>
+
+            <feComposite
+              in="offsetNoise1"
+              in2="offsetNoise2"
+              result="part1"
+            />
+            <feComposite
+              in="offsetNoise3"
+              in2="offsetNoise4"
+              result="part2"
+            />
+            <feBlend
+              in="part1"
+              in2="part2"
+              mode="color-dodge"
+              result="combinedNoise"
+            />
+
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="combinedNoise"
+              scale="40"
+              xChannelSelector="R"
+              yChannelSelector="B"
+            />
+          </filter>
         </defs>
       </svg>
 
@@ -162,6 +270,7 @@ export const OGNFTBanner = ({
             {
               "--banner-color": color,
               "--banner-filter": `url(#${filterId})`,
+              "--banner-bottom-filter": `url(#${bottomFilterId})`,
             } as React.CSSProperties
           }
         >
@@ -171,6 +280,7 @@ export const OGNFTBanner = ({
             </div>
             <div className="banner-glow-1" />
             <div className="banner-glow-2" />
+            <div className="banner-bottom-border-animation" />
           </div>
 
           <div className="banner-overlay-1" />
@@ -352,7 +462,7 @@ export const OGNFTBanner = ({
             width: 100%;
             max-width: 100%;
             height: auto;
-            min-height: 140px;
+            min-height: 190px;
           }
         }
 
@@ -361,7 +471,7 @@ export const OGNFTBanner = ({
             min-width: 0;
             width: 100%;
             max-width: 100%;
-            min-height: 160px;
+            min-height: 210px;
           }
         }
 
@@ -388,6 +498,20 @@ export const OGNFTBanner = ({
         .banner-glow-2 {
           border: 1.5px solid var(--banner-light-color);
           filter: blur(3px);
+        }
+
+        .banner-bottom-border-animation {
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          right: 0;
+          height: 8px;
+          border-radius: 0 0 1rem 1rem;
+          border: 2px solid var(--banner-color);
+          filter: var(--banner-bottom-filter);
+          pointer-events: none;
+          z-index: 3;
+          opacity: 0.9;
         }
 
         .banner-overlay-1,
@@ -446,19 +570,21 @@ export const OGNFTBanner = ({
         @media (max-width: 768px) {
           .banner-content {
             flex-direction: column;
-            padding: 1.25rem 1.5rem;
-            gap: 1rem;
-            justify-content: center;
+            padding: 1rem 1.25rem 1.5rem;
+            gap: 0.875rem;
+            justify-content: flex-start;
             align-items: center;
             width: 100%;
+            overflow: visible;
           }
         }
 
         @media (max-width: 420px) {
           .banner-content {
-            padding: 1.25rem 1.25rem;
-            gap: 0.875rem;
+            padding: 0.875rem 1rem 1.25rem;
+            gap: 0.75rem;
             width: 100%;
+            overflow: visible;
           }
         }
 
@@ -519,19 +645,21 @@ export const OGNFTBanner = ({
 
         @media (max-width: 768px) {
           .banner-badge {
-            padding: 0.35rem 0.75rem;
+            padding: 0.35rem 0.7rem;
             font-size: 0.7rem;
             gap: 0.4rem;
-            max-width: calc(100% - 1rem);
+            max-width: calc(100% - 2.5rem);
+            width: auto;
           }
         }
 
         @media (max-width: 420px) {
           .banner-badge {
             font-size: 0.65rem;
-            padding: 0.3rem 0.65rem;
+            padding: 0.3rem 0.6rem;
             gap: 0.35rem;
-            max-width: calc(100% - 0.5rem);
+            max-width: calc(100% - 2rem);
+            width: auto;
           }
           
           .banner-badge svg {
@@ -625,18 +753,22 @@ export const OGNFTBanner = ({
 
         @media (max-width: 768px) {
           .banner-cta {
-            padding: 0.7rem 1.5rem;
-            font-size: 0.9rem;
-            width: 100%;
-            max-width: 200px;
+            padding: 0.7rem 1.25rem;
+            font-size: 0.85rem;
+            width: auto;
+            max-width: calc(100% - 2.5rem);
+            min-width: 0;
             justify-content: center;
           }
         }
 
         @media (max-width: 420px) {
           .banner-cta {
-            padding: 0.65rem 1.25rem;
-            font-size: 0.85rem;
+            padding: 0.6rem 1rem;
+            font-size: 0.8rem;
+            max-width: calc(100% - 2rem);
+            width: auto;
+            min-width: 0;
           }
         }
       `}</style>
