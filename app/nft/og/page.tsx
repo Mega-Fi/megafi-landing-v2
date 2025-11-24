@@ -22,7 +22,8 @@ export default function OGCollectionPage() {
           <div className="mb-8">
             <button
               onClick={() => (window.location.href = "/nft")}
-              className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm"
+              className="social-btn"
+              // className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm"
             >
               <ArrowLeft size={18} />
               <span>Back</span>

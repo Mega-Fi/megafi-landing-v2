@@ -16,13 +16,6 @@ export default function Home() {
       theme="system"
       animate
       accentColor="#FF3A1E"
-      logoSrc="/megafi-logo.png"
-      logoAlt="MegaFi Logo"
-      links={{
-        twitter: "https://x.com/megafi_app",
-        discord: "https://discord.com/invite/EFTrPCREfZ",
-        docs: "https://docs.megafi.app/",
-      }}
       startVh={40}
       spaceVh={40}
       debug={false}
@@ -31,3 +24,4 @@ export default function Home() {
     />
   );
 }
+ 
