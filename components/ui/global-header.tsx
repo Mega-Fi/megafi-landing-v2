@@ -94,7 +94,7 @@ export function GlobalHeader({
       <style jsx global>{`
         /* Global Logo */
         .global-logo-container {
-          position: fixed !important;
+          position: absolute !important;
           top: 1rem !important;
           left: 1rem !important;
           z-index: 9999 !important;
@@ -147,7 +147,7 @@ export function GlobalHeader({
 
         /* Global Navigation Links */
         .global-nav-links {
-          position: fixed !important;
+          position: absolute !important;
           top: 1rem !important;
           right: 1rem !important;
           z-index: 9999 !important;

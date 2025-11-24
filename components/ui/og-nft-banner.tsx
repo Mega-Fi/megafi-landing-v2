@@ -155,7 +155,7 @@ export const OGNFTBanner = ({
 
       <style jsx>{`
         .nft-banner-wrap {
-          position: fixed;
+          position: absolute;
           top: 1rem;
           left: 50%;
           transform: translateX(-50%);
@@ -163,17 +163,44 @@ export const OGNFTBanner = ({
           animation: slideDown 0.6s ease-out;
         }
 
+          @media (max-width: 1500px) {
+          .nft-banner-wrap {
+            // top: 6rem;
+            // width: 70%;
+            left: 45%;
+            // max-width: 420px;
+          }
+        }
+
+         @media (max-width: 1200px) {
+          .nft-banner-wrap {
+            top: 6rem;
+            // width: 70%;
+            // left: 40%;
+            // max-width: 420px;
+          }
+        }
+
         @media (max-width: 768px) {
           .nft-banner-wrap {
-            top: 0.75rem;
+            top: 6rem;
             width: 95%;
             max-width: 420px;
           }
         }
 
+        @media (max-width: 640px) {
+          .nft-banner-wrap {
+            top: 5rem;
+            width: 95%;
+            max-width: 420px;
+            left: 50%;
+          }
+        }
+
         @media (max-width: 420px) {
           .nft-banner-wrap {
-            top: 0.5rem;
+            top: 4.5rem;
             width: 96%;
             max-width: 360px;
           }

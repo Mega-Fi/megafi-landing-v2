@@ -19,7 +19,7 @@ export default function OGCollectionPage() {
     <GridBackground variant="black" className="text-white overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
           {/* Back Button - Top Left */}
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <button
               onClick={() => (window.location.href = "/nft")}
               className="social-btn"
@@ -28,7 +28,7 @@ export default function OGCollectionPage() {
               <ArrowLeft size={18} />
               <span>Back</span>
             </button>
-          </div>
+          </div> */}
 
           {/* Header */}
           <div className="text-center mb-12">
