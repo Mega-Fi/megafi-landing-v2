@@ -50,10 +50,10 @@ export const OGNFTBanner = ({
           <filter
             id={filterId}
             colorInterpolationFilters="sRGB"
-            x="-20%"
-            y="-20%"
-            width="140%"
-            height="140%"
+            x="-50%"
+            y="-50%"
+            width="200%"
+            height="200%"
           >
             <feTurbulence
               type="turbulence"
@@ -90,15 +90,15 @@ export const OGNFTBanner = ({
             <feBlend
               in="offsetNoise1"
               in2="offsetNoise2"
-              mode="color-dodge"
+              mode="screen"
               result="combinedNoise"
             />
             <feDisplacementMap
               in="SourceGraphic"
               in2="combinedNoise"
-              scale="20"
+              scale="18"
               xChannelSelector="R"
-              yChannelSelector="B"
+              yChannelSelector="G"
             />
           </filter>
         </defs>
@@ -155,7 +155,7 @@ export const OGNFTBanner = ({
 
       <style jsx>{`
         .nft-banner-wrap {
-          position: fixed;
+          position: absolute;
           top: 1rem;
           left: 50%;
           transform: translateX(-50%);
@@ -163,17 +163,44 @@ export const OGNFTBanner = ({
           animation: slideDown 0.6s ease-out;
         }
 
+          @media (max-width: 1500px) {
+          .nft-banner-wrap {
+            // top: 6rem;
+            // width: 70%;
+            left: 45%;
+            // max-width: 420px;
+          }
+        }
+
+         @media (max-width: 1200px) {
+          .nft-banner-wrap {
+            top: 6rem;
+            // width: 70%;
+            // left: 40%;
+            // max-width: 420px;
+          }
+        }
+
         @media (max-width: 768px) {
           .nft-banner-wrap {
-            top: 0.75rem;
+            top: 6rem;
             width: 95%;
             max-width: 420px;
           }
         }
 
+        @media (max-width: 640px) {
+          .nft-banner-wrap {
+            top: 5rem;
+            width: 95%;
+            max-width: 420px;
+            left: 50%;
+          }
+        }
+
         @media (max-width: 420px) {
           .nft-banner-wrap {
-            top: 0.5rem;
+            top: 4.5rem;
             width: 96%;
             max-width: 360px;
           }
@@ -229,26 +256,34 @@ export const OGNFTBanner = ({
 
         .banner-inner {
           position: relative;
+          z-index: 1;
         }
 
         .banner-border {
           border: 1.5px solid oklch(from var(--banner-color) l c h / 0.5);
           border-radius: 1rem;
-          padding-right: 0.1em;
-          padding-bottom: 0.1em;
+          padding: 0;
+          position: relative;
+        }
+        .banner-border::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          border: 1.5px solid var(--banner-color);
+          filter: var(--banner-filter);
+          pointer-events: none;
         }
 
         .banner-card {
-          width: auto;
+          width: 100%;
           min-width: 900px;
           max-width: 1200px;
           height: 80px;
-          border-radius: 1rem;
-          border: 1.5px solid var(--banner-color);
-          margin-top: -3px;
-          margin-left: -3px;
-          filter: var(--banner-filter);
+          border-radius: calc(1rem - 2px);
+          border: none;
           background: oklch(0.145 0 0);
+          box-sizing: border-box;
         }
 
         /* Responsive sizing */
@@ -344,6 +379,12 @@ export const OGNFTBanner = ({
           justify-content: space-between;
           padding: 0 2rem;
           gap: 1.5rem;
+          z-index: 2;
+          pointer-events: none;
+        }
+        
+        .banner-content > * {
+          pointer-events: auto;
         }
 
         @media (max-width: 768px) {
@@ -384,6 +425,7 @@ export const OGNFTBanner = ({
           white-space: nowrap;
           position: relative;
           animation: pulse 2s ease-in-out infinite;
+          isolation: isolate;
         }
 
         .banner-badge::before {
