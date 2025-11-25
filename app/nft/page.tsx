@@ -69,7 +69,7 @@ export default function NFTCollectionsPage() {
                 color="#FFD700"
                 badge="60"
                 title="MegaFi OG NFT"
-                description="Duration: Nov 1–25 (Scoring)"
+                description="For early MegaFi supporters"
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"
@@ -137,91 +137,6 @@ export default function NFTCollectionsPage() {
             </div>
           </div>
         </div>
-
-        <style jsx>{`
-          .social-footer-section {
-            padding: 2rem 1rem 3rem;
-          }
-
-          .social-footer-content {
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: center;
-          }
-
-          .social-footer-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 0.5rem;
-          }
-
-          .social-footer-subtitle {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 1.5rem;
-          }
-
-          .social-footer-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-          }
-
-          .social-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(
-              135deg,
-              rgba(255, 58, 30, 0.1) 0%,
-              rgba(255, 107, 61, 0.1) 100%
-            );
-            border: 2px solid rgba(255, 107, 61, 0.3);
-            border-radius: 12px;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
-            font-size: 0.875rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(255, 58, 30, 0.2);
-          }
-
-          .social-btn:hover {
-            background: linear-gradient(
-              135deg,
-              rgba(255, 58, 30, 0.2) 0%,
-              rgba(255, 107, 61, 0.2) 100%
-            );
-            border-color: rgba(255, 107, 61, 0.6);
-            box-shadow: 0 0 30px rgba(255, 58, 30, 0.4),
-              0 0 60px rgba(255, 58, 30, 0.2);
-            transform: translateY(-1px);
-          }
-
-          @media (max-width: 640px) {
-            .social-footer-section {
-              margin-top: 3rem;
-              padding: 1.5rem 1rem 2rem;
-            }
-            .social-footer-title {
-              font-size: 1rem;
-            }
-            .social-footer-subtitle {
-              font-size: 0.8125rem;
-            }
-            .social-footer-buttons {
-              gap: 0.75rem;
-            }
-            .social-btn {
-              padding: 0.625rem 1.25rem;
-              font-size: 0.8125rem;
-            }
-          }
-        `}</style>
     </GridBackground>
   );
 }

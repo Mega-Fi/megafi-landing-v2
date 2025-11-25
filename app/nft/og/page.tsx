@@ -60,7 +60,7 @@ export default function OGCollectionPage() {
                 color="#FFD700"
                 badge="60"
                 title="MegaFi OG NFT"
-                description="Exclusive OG supporter reward"
+                description="For early MegaFi supporters"
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"
@@ -115,7 +115,7 @@ export default function OGCollectionPage() {
                         <p>Every action builds your Conviction Score.</p>
                       </div>
                     </div>
-                    <div className="mt-6 flex justify-center">
+                    {/* <div className="mt-6 flex justify-center">
                   <button
                     onClick={() => (window.location.href = "/claim-og-nft")}
                     className="text-white font-semibold transition-all flex items-center justify-center gap-2"
@@ -141,7 +141,7 @@ export default function OGCollectionPage() {
                   >
                     Claim Now
                   </button>
-                </div>
+                </div> */}
                   </div>
                 </div>
               </div>

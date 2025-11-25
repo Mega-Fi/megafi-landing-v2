@@ -348,7 +348,7 @@ export default function ClaimOGNFT() {
       const recheckEligibility = async () => {
         try {
           const response = await fetch(
-            `/api/claim/check-eligibility?twitter_handle=${encodeURIComponent(
+            `/api/claim/check-eligibility-og-nft?twitter_handle=${encodeURIComponent(
               twitterHandle
             )}`
           );
@@ -583,10 +583,10 @@ export default function ClaimOGNFT() {
     analytics.track(MIXPANEL_EVENTS.ELIGIBILITY_CHECK_STARTED, {
       twitter_handle: handle,
     });
-
+ 
     try {
       const response = await fetch(
-        `/api/claim/check-eligibility?twitter_handle=${encodeURIComponent(
+        `/api/claim/check-eligibility-og-nft?twitter_handle=${encodeURIComponent(
           handle
         )}`
       );
@@ -641,7 +641,7 @@ export default function ClaimOGNFT() {
         setIsWhitelisted(true);
         return true;
       } else {
-        // Wallet is not whitelisted - show Continue button
+        // Wallet is not whitelisted - show Continue button 
         setIsWhitelisted(false);
         return false;
       }
@@ -674,7 +674,7 @@ export default function ClaimOGNFT() {
       toast.info("Please sign the message in your wallet to verify ownership");
       const signature = await signMessageAsync({ message });
 
-      const response = await fetch("/api/claim/whitelist-wallet", {
+      const response = await fetch("/api/claim/whitelist-wallet-og-nft", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -733,7 +733,7 @@ export default function ClaimOGNFT() {
     // SECURITY: Re-check if Twitter handle has already claimed (prevents double claiming with different wallet)
     try {
       const eligibilityResponse = await fetch(
-        `/api/claim/check-eligibility?twitter_handle=${encodeURIComponent(
+        `/api/claim/check-eligibility-og-nft?twitter_handle=${encodeURIComponent(
           twitterHandle
         )}`
       );
