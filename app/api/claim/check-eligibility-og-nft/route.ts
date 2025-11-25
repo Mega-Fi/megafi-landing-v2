@@ -45,7 +45,7 @@ export async function GET(request: Request) {
       return NextResponse.json(
         { eligible: false, reason: 'This X handle is not in the eligible list' },
         { status: 200 }
-      );
+      ); 
     }
 
     // Check if handle has already claimed (only if token_id is set)
