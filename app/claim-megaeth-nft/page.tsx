@@ -1051,7 +1051,7 @@ export default function ClaimOGNFT() {
                 return (
                   <StepperItem
                     key={key}
-                    step={step}
+                    step={step} 
                     completed={status === "complete"}
                     className={!isLast ? "flex-1" : ""}
                   >
@@ -1066,8 +1066,8 @@ export default function ClaimOGNFT() {
                               ? "bg-white/90 text-gray-900 ring-3 ring-white/20"
                               : "bg-gray-700/40 text-gray-400"
                           }`}
-                        >
-                          <Icon size={15} />
+                        >                          
+                          <Icon size={label === "Start" ? 30 : 15} />
                         </StepperIndicator>
                         <StepperTitle
                           className={`text-[10px] md:text-xs font-medium ${

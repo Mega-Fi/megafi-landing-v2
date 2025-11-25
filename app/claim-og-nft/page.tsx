@@ -1077,7 +1077,7 @@ export default function ClaimOGNFT() {
                               : "bg-gray-700/40 text-gray-400"
                           }`}
                         >
-                          <Icon size={15} />
+                          <Icon size={label === "Start" ? 30 : 15} />
                         </StepperIndicator>
                         <StepperTitle
                           className={`text-[10px] md:text-xs font-medium ${
@@ -1119,7 +1119,7 @@ export default function ClaimOGNFT() {
                     ? "..."
                     : String(nextTokenId).padStart(3, "0")
                 }
-                title="The 9.5% Pass"
+                title="OG NFT"
                 description="Exclusive for top 279 supporters"
                 centerImage="/favicon.png"
                 width="22rem"
