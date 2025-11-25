@@ -40,7 +40,7 @@ const ElectricCard = ({
   color = "#dd8448", // original orange tone
   badge = "Dramatic",
   title = "Original",
-  description = "In case you'd like to emphasize something very dramatically.",
+  description = "MegaFi",
   width = "22rem",
   aspectRatio = "7 / 10",
   centerImage,
@@ -125,7 +125,13 @@ const ElectricCard = ({
         <div className="inner-container">
           <div className="border-outer">
             {/* this is the element that gets the SVG filter */}
-            <div className="main-card" />
+            <div 
+              className="main-card" 
+              style={{ 
+                width: width,
+                aspectRatio: aspectRatio,
+              }}
+            />
           </div>
           <div className="glow-layer-1" />
           <div className="glow-layer-2" />
@@ -156,228 +162,6 @@ const ElectricCard = ({
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        :root {
-          --color-neutral-900: oklch(0.185 0 0);
-        }
-
-        .ec-wrap {
-          position: relative;
-          display: inline-block;
-          color-scheme: light dark;
-        } 
-
-        .svg-container {
-          position: absolute;
-          width: 0;
-          height: 0;
-          overflow: hidden;
-        }
-
-        .card-container {
-          padding: 2px;
-          border-radius: 1.5em;
-          position: relative;
-          /* gradient background uses accent color; fallback if invalid */
-          --electric-light-color: oklch(from var(--electric-border-color) l c h);
-          --gradient-color: oklch(from var(--electric-border-color) 0.3 calc(c / 2) h / 0.4);
-
-          background: linear-gradient(-30deg, var(--gradient-color), transparent, var(--gradient-color)),
-            linear-gradient(to bottom, var(--color-neutral-900), var(--color-neutral-900));
-          color: oklch(0.985 0 0);
-        }
-
-        .inner-container {
-          position: relative;
-        }
-
-        .border-outer {
-          border: 2px solid oklch(from var(--electric-border-color) l c h / 0.5);
-          border-radius: 1.5em;
-          padding-right: 0.15em;
-          padding-bottom: 0.15em;
-        }
-
-        .main-card {
-          width: ${width};
-          aspect-ratio: ${aspectRatio};
-          border-radius: 1.5em;
-          border: 2px solid var(--electric-border-color);
-          margin-top: -4px;
-          margin-left: -4px;
-          filter: var(--f);
-          /* gives subtle dark base so displacement reads nicely */
-          background: oklch(0.145 0 0);
-        }
-
-        /* Glow effects */
-        .glow-layer-1,
-        .glow-layer-2,
-        .overlay-1,
-        .overlay-2,
-        .background-glow {
-          border-radius: 24px;
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-        }
-
-        .glow-layer-1 {
-          border: 2px solid oklch(from var(--electric-border-color) l c h / 0.6);
-          filter: blur(1px);
-        }
-
-        .glow-layer-2 {
-          border: 2px solid var(--electric-light-color);
-          filter: blur(4px);
-        }
-
-        .overlay-1,
-        .overlay-2 {
-          mix-blend-mode: overlay;
-          transform: scale(1.1);
-          filter: blur(16px);
-          background: linear-gradient(-30deg, white, transparent 30%, transparent 70%, white);
-        }
-
-        .overlay-1 {
-          opacity: 0.3;
-        }
-        .overlay-2 {
-          opacity: 0.15;
-        }
-
-        .background-glow {
-          filter: blur(32px);
-          transform: scale(1.1);
-          opacity: 0.1;
-          z-index: -1;
-          background: linear-gradient(
-            -30deg,
-            var(--electric-light-color),
-            transparent,
-            var(--electric-border-color)
-          );
-        }
-
-        .content-container {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .content-top {
-          display: flex;
-          flex-direction: column;
-          padding: 48px;
-          padding-bottom: 16px;
-        }
-
-        .center-content {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 24px;
-          z-index: 5;
-        }
-
-        .center-image-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .center-image {
-          width: 120px;
-          height: 120px;
-          object-fit: contain;
-          filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
-        }
-
-        .content-bottom {
-          display: flex;
-          flex-direction: column;
-          padding: 48px;
-          padding-top: 16px;
-        }
-
-        .scrollbar-glass {
-          background: radial-gradient(
-              47.2% 50% at 50.39% 88.37%,
-              rgba(255, 255, 255, 0.12) 0%,
-              rgba(255, 255, 255, 0) 100%
-            ),
-            rgba(255, 255, 255, 0.04);
-          position: relative;
-          transition: background 0.3s ease;
-          border-radius: 14px;
-          width: fit-content;
-          height: fit-content;
-          padding: 0.5em 1em;
-          text-transform: uppercase;
-          font-weight: bold;
-          font-size: 0.85em;
-          color: rgba(255, 255, 255, 0.8);
-        }
-        .scrollbar-glass:hover {
-          background: radial-gradient(
-              47.2% 50% at 50.39% 88.37%,
-              rgba(255, 255, 255, 0.12) 0%,
-              rgba(255, 255, 255, 0) 100%
-            ),
-            rgba(255, 255, 255, 0.08);
-        }
-        .scrollbar-glass::before {
-          content: "";
-          position: absolute;
-          inset: 0;
-          padding: 1px;
-          background: linear-gradient(
-            150deg,
-            rgba(255, 255, 255, 0.48) 16.73%,
-            rgba(255, 255, 255, 0.08) 30.2%,
-            rgba(255, 255, 255, 0.08) 68.2%,
-            rgba(255, 255, 255, 0.6) 81.89%
-          );
-          border-radius: inherit;
-          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          mask-composite: xor;
-          -webkit-mask-composite: xor;
-          pointer-events: none;
-        }
-
-        .title {
-          font-size: 1.75em;
-          font-weight: 500;
-          margin: 0;
-          text-align: center;
-          white-space: nowrap;
-        }
-
-        .description {
-          opacity: 0.5;
-        }
-
-        .divider {
-          margin-top: auto;
-          border: none;
-          height: 1px;
-          background-color: currentColor;
-          opacity: 0.1;
-          mask-image: linear-gradient(to right, transparent, black, transparent);
-          -webkit-mask-image: linear-gradient(to right, transparent, black, transparent);
-        }
-      `}</style>
     </div>
   );
 };

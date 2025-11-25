@@ -105,7 +105,7 @@ export default function OGNFTDetailPage() {
                   color="#FFD700"
                   badge={String(tokenId).padStart(2, "0")}
                   title="MegaFi OG NFT"
-                  description="Exclusive OG supporter reward"
+                  description="For early MegaFi supporters"
                   centerImage="/favicon.png"
                   width="22rem"
                   aspectRatio="7 / 10"

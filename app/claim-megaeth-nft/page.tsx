@@ -159,7 +159,7 @@ export default function ClaimOGNFT() {
 
   // Check auth status on mount and handle OAuth callback
   useEffect(() => {
-    const checkUser = async () => {
+    const checkUser = async  () => {
       try {
         // First, check if we're coming back from OAuth
         const {
@@ -943,14 +943,14 @@ export default function ClaimOGNFT() {
       <GridBackground variant="black" className="text-white overflow-hidden">
         <div className="relative z-10 container mx-auto px-4 py-12">
           {/* Back Button - Top Left */}
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <button
               onClick={() => (window.location.href = "/")}
               className="px-4 py-2 bg-gray-800/80 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all backdrop-blur-sm"
             >
               Home
             </button>
-          </div>
+          </div> */}
           
           <div className="flex items-center justify-center min-h-[70vh]">
             <Loader2

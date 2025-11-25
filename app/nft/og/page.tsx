@@ -60,7 +60,7 @@ export default function OGCollectionPage() {
                 color="#FFD700"
                 badge="60"
                 title="MegaFi OG NFT"
-                description="Exclusive OG supporter reward"
+                description="For early MegaFi supporters"
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"
