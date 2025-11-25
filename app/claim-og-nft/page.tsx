@@ -973,16 +973,6 @@ export default function ClaimOGNFT() {
     "success",
   ];
 
-  const nextStep = () => {
-    const currentIndex = steps.indexOf(currentStep);
-    setCurrentStep(steps[currentIndex + 1]);
-  };
-
-  const prevStep = () => {
-    const currentIndex = steps.indexOf(currentStep);
-    setCurrentStep(steps[currentIndex - 1]);
-  };
-
   return (
     <>
       <Toaster
@@ -1007,11 +997,6 @@ export default function ClaimOGNFT() {
               Home
             </button>
           </div> */}
-
-        <button onClick={prevStep}>Prev step</button>
-        <br />
-        <button onClick={nextStep}>Next step</button>
-
 
           {/* Header */}
           <div className="text-center mb-12">
