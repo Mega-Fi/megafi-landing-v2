@@ -47,7 +47,8 @@ export default function OGCollectionPage() {
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-              Duration: Nov 1–25 (Scoring), Nov 26 (Winners Announcement)
+            For top 60 MegaFi early supporters
+
             </p>
           </div>
 
@@ -60,7 +61,7 @@ export default function OGCollectionPage() {
                 color="#FFD700"
                 badge="60"
                 title="MegaFi OG NFT"
-                description="For early MegaFi supporters"
+                description="For top 60 MegaFi early supporters"
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"
@@ -100,7 +101,7 @@ export default function OGCollectionPage() {
                 {/* Eligibility Criteria */}
                 <div className="rounded-lg p-6 bg-gray-800/20 border border-gray-700/30 mt-8">
                   <h3 className="font-bold text-2xl mb-6 text-white/90">
-                    Eligibility Criteria for 50 NFTs
+                    Eligibility Criteria for 60 NFTs
                   </h3>
                   <div className="space-y-6 text-gray-400/70">
                     <div>
@@ -108,7 +109,7 @@ export default function OGCollectionPage() {
                         Ranked by Conviction Score
                       </p>
                       <div className="space-y-3 text-sm">
-                        <p>From Nov 1–25, 50 community members will be chosen based on conviction, contribution, and engagement across X.</p>
+                        <p>From Nov 1–25, 60 community members will be chosen based on conviction, contribution, and engagement across X.</p>
                         <p>Engagement: Meaningful discussions and activity across X</p>
                         <p>Contribution: Help shape conversations, build community energy, and spread awareness</p>
                         <p>Consistency: Show up early, stay active, and lead from the front</p>

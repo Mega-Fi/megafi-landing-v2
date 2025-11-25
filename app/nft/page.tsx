@@ -69,7 +69,7 @@ export default function NFTCollectionsPage() {
                 color="#FFD700"
                 badge="60"
                 title="MegaFi OG NFT"
-                description="For early MegaFi supporters"
+                description="For top 60 MegaFi early supporters"
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"

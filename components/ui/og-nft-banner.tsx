@@ -260,7 +260,7 @@ export const OGNFTBanner = ({
       </svg>
 
       <Link
-        href="/claim-megaeth-nft"
+        href="/nft/og"
         className="banner-link"
         onClick={handleBannerClick}
       > 
@@ -295,10 +295,10 @@ export const OGNFTBanner = ({
 
             <div className="banner-text">
               <span className="banner-title">
-                Claim Your Mega OG NFT
+                Claim Your MegaFi OG NFT
               </span>
               <span className="banner-subtitle">
-                Top 279 Supporters • Exclusive 1.25x Multiplier
+                Top 60 MegaFi OGs • 100% Fee Rebates • Exclusive 1.5x Multiplier
               </span>
             </div>
 

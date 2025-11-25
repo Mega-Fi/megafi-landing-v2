@@ -91,7 +91,8 @@ export default function OGNFTDetailPage() {
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-              Duration: Nov 1–25 (Scoring), Nov 26 (Announcement)
+            For top 60 MegaFi early supporters
+
             </p>
           </div>
 
@@ -105,7 +106,7 @@ export default function OGNFTDetailPage() {
                   color="#FFD700"
                   badge={String(tokenId).padStart(2, "0")}
                   title="MegaFi OG NFT"
-                  description="For early MegaFi supporters"
+                  description="For top 60 MegaFi early supporters"
                   centerImage="/favicon.png"
                   width="22rem"
                   aspectRatio="7 / 10"

@@ -1015,22 +1015,22 @@ export default function ClaimOGNFT() {
                 className="rounded-full opacity-80"
               />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white/90">
-              MegaFi × MegaETH –{" "}
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white/90 bg-gradient-to-r from-[#FFD700]/80 to-[#FFA500]/80 bg-clip-text text-transparent">
+              {/* MegaFi – OG NFT{" "} */}
               <span className="bg-gradient-to-r from-[#FFD700]/80 to-[#FFA500]/80 bg-clip-text text-transparent">
-                OG NFT
+               MegaFi OG NFT
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-              Exclusive NFT for top 279 MegaETH community supporters{" "}
-              <a
+            For top 60 MegaFi early supporters{" "}
+              {/* <a
                 href="https://x.com/NamikMuduroglu/status/1986055902131315056"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-gradient-to-r from-[#FFD700]/80 to-[#FFA500]/80 bg-clip-text text-transparent hover:from-[#FF6B3D]/50 hover:to-[#FF3A1E]/50 underline transition-all"
               >
                 here
-              </a>
+              </a> */}
             </p>
           </div>
           
@@ -1125,8 +1125,8 @@ export default function ClaimOGNFT() {
                     ? "..."
                     : String(nextTokenId).padStart(3, "0")
                 }
-                title="OG NFT"
-                description="Exclusive for top 279 supporters"
+                title="MegaFi OG NFT"
+                description="For top 60 MegaFi early supporters"
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"
@@ -1158,9 +1158,9 @@ export default function ClaimOGNFT() {
                       OG NFT
                     </h2>
                     <p className="text-gray-400/70 max-w-xl mx-auto">
-                      An exclusive NFT for the top 279 MegaETH community
-                      supporters. Holders receive a 1.25x multiplier on points
-                      + 9.5% fee rebates when MegaFi launches.
+                        An exclusive NFT for the top 279 MegaETH community
+                        supporters. Holders receive a 1.25x multiplier on points
+                        + 9.5% fee rebates when MegaFi launches.
                     </p>
 
                     <div className="space-y-4 text-left max-w-lg mx-auto">
