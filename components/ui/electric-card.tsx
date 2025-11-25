@@ -54,12 +54,12 @@ const ElectricCard = ({
       hue: `hue-${key}`,
     };
   }, []);
-
+ 
   // Map variant -> CSS var that points to the proper filter url(#...)
   const filterURL = variant === "hue" ? `url(#${ids.hue})` : `url(#${ids.swirl})`;
-
+  console.log('class name', className);
   return (
-    <div className={`ec-wrap ${className}`}>
+    <div className={`ec-wrap ${className} lg:pb-20`}>
       {/* Inline SVG defs with animated filters (unique IDs per instance) */}
       <svg className="svg-container" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
@@ -166,7 +166,7 @@ const ElectricCard = ({
           position: relative;
           display: inline-block;
           color-scheme: light dark;
-        }
+        } 
 
         .svg-container {
           position: absolute;

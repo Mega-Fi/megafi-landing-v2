@@ -295,10 +295,10 @@ export const OGNFTBanner = ({
 
             <div className="banner-text">
               <span className="banner-title">
-                Claim Your 9.5% Pass MegaETH NFT
+                Claim Your Mega OG NFT
               </span>
               <span className="banner-subtitle">
-                Top 279 Supporters • Exclusive 1.25x Multiplier + 9.5% Fee Rebates
+                Top 279 Supporters • Exclusive 1.25x Multiplier
               </span>
             </div>
 
