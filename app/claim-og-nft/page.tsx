@@ -12,13 +12,15 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { decodeEventLog } from "viem";
-import { MEGAFI_OG_CONTRACT_ADDRESS, MEGAFI_OG_CONTRACT_ABI } from "@/lib/contract-abi";
+
+import { MEGAFI_OG_CONTRACT_ADDRESS, MEGAFI_OG_CONTRACT_ABI, NFT_CONTRACT_ABI, OG_NFT_CONTRACT_ADDRESS} from "@/lib/contract-abi";
+
 import { currentNetwork } from "@/lib/wagmi-config";
 import { createSupabaseClient } from "@/lib/supabase";
 
 // Use OG NFT contract for this page
-const NFT_CONTRACT_ADDRESS = MEGAFI_OG_CONTRACT_ADDRESS;
-const NFT_CONTRACT_ABI = MEGAFI_OG_CONTRACT_ABI;
+// const NFT_CONTRACT_ADDRESS = MEGAFI_OG_CONTRACT_ADDRESS;
+// const NFT_CONTRACT_ABI = MEGAFI_OG_CONTRACT_ABI;
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -302,7 +304,7 @@ export default function ClaimOGNFT() {
     setIsCheckingHasMinted(true);
     try {
       const result = await publicClient.readContract({
-        address: NFT_CONTRACT_ADDRESS,
+        address: OG_NFT_CONTRACT_ADDRESS,
         abi: NFT_CONTRACT_ABI,
         functionName: "hasMinted",
         args: [walletAddress as `0x${string}`],
@@ -640,7 +642,8 @@ export default function ClaimOGNFT() {
       // Use OG NFT endpoint to check the correct contract
       const response = await fetch(
         `/api/claim/whitelist-wallet-og-nft?address=${walletAddress}`
-      );
+
+      );       
       const data = await response.json();
 
       if (data.success && data.whitelisted) {
@@ -787,14 +790,14 @@ export default function ClaimOGNFT() {
       twitter_handle: twitterHandle,
       wallet_address: address,
       network: currentNetwork.name,
-      contract_address: NFT_CONTRACT_ADDRESS,
+      contract_address: OG_NFT_CONTRACT_ADDRESS,
     });
 
     try {
       // Call the mint function on the contract
       // Note: The95Pass contract mint() takes no parameters - it mints to msg.sender
       writeContract({
-        address: NFT_CONTRACT_ADDRESS,
+        address: OG_NFT_CONTRACT_ADDRESS,
         abi: NFT_CONTRACT_ABI,
         functionName: "mint",
         args: [], // No args needed - contract mints to msg.sender

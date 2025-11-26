@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, X } from "lucide-react";
 import { ElectricCard } from "@/components/ui/electric-card";
 import { GridBackground } from "@/components/ui/grid-background";
 import { currentNetwork } from "@/lib/wagmi-config";
@@ -56,14 +56,35 @@ export default function OGNFTDetailPage() {
   if (error) {
     return (
       <GridBackground variant="black" className="text-white overflow-hidden">
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <p className="text-red-400 text-xl mb-4">{error}</p>
-            <button
-              onClick={() => (window.location.href = "/nft/og")}
-              className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all"
+        <div className="relative z-10 container mx-auto px-4 py-12 max-w-3xl min-h-screen flex flex-col items-center justify-center text-center">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/40 flex items-center justify-center">
+              <X className="text-red-400" size={32} />
+            </div>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white/90">
+            Token ID Not Found
+          </h1>
+          <p className="text-gray-400/80 mb-6 max-w-xl">
+            {error || "The token ID you entered is not valid for this collection."}
+          </p>
+          {/* <p className="text-sm text-gray-500/80 mb-8">
+            Valid token IDs are between <span className="font-semibold">1</span> and{" "}
+            <span className="font-semibold">{MAX_TOKEN_ID}</span>.
+          </p> */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            {/* <button
+              onClick={() => (window.location.href = "/nft-og")}
+              className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#FF3A1E]/80 to-[#FF6B3D]/80 text-white font-semibold shadow-lg hover:from-[#FF6B3D]/90 hover:to-[#FF3A1E]/90 transition-all border border-[#FF6B3D]/60"
             >
               Back to OG Collection
+            </button> */}
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="px-6 py-3 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-white font-semibold border border-gray-700/60 transition-all flex items-center justify-center gap-2"
+            >
+              <ArrowLeft size={16} />
+              Back to Collections page
             </button>
           </div>
         </div>

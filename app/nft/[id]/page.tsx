@@ -21,7 +21,7 @@ export default function NFTDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [ownerAddress, setOwnerAddress] = useState<string | null>(null);
   const [currentTokenId, setCurrentTokenId] = useState<number | null>(null);
-
+ 
   // Validate and parse token ID from URL
   useEffect(() => {
     const id = params.id as string;
@@ -32,6 +32,8 @@ export default function NFTDetailPage() {
       setLoading(false);
       return;
     }
+
+    console.log('max token id', MAX_TOKEN_ID);
 
     if (parsedId < 1 || parsedId > MAX_TOKEN_ID) {
       setError(`Invalid Token ID. Must be between 1 and ${MAX_TOKEN_ID}.`);
@@ -108,6 +110,46 @@ export default function NFTDetailPage() {
       window.location.reload();
     }
   };
+
+  // Error / not-found screen for invalid or out-of-range token IDs
+  if (!loading && error) {
+    return (
+      <GridBackground variant="black" className="text-white overflow-hidden">
+        <div className="relative z-10 container mx-auto px-4 py-12 max-w-3xl min-h-screen flex flex-col items-center justify-center text-center">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/40 flex items-center justify-center">
+              <X className="text-red-400" size={32} />
+            </div>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white/90">
+            Token ID Not Found
+          </h1>
+          <p className="text-gray-400/80 mb-6 max-w-xl">
+            {error || "The token ID you entered is not valid for this collection."}
+          </p>
+          {/* <p className="text-sm text-gray-500/80 mb-8">
+            Valid token IDs are between <span className="font-semibold">1</span> and{" "}
+            <span className="font-semibold">{MAX_TOKEN_ID}</span>.
+          </p> */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            {/* <button
+              onClick={() => (window.location.href = "/claim-megaeth-nft")}
+              className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#FF3A1E]/80 to-[#FF6B3D]/80 text-white font-semibold shadow-lg hover:from-[#FF6B3D]/90 hover:to-[#FF3A1E]/90 transition-all border border-[#FF6B3D]/60"
+            >
+              Go to Claim Page
+            </button> */}
+            <button
+              onClick={() => (window.location.href = "/nft")}
+              className="px-6 py-3 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-white font-semibold border border-gray-700/60 transition-all flex items-center justify-center gap-2"
+            >
+              <ArrowLeft size={16} />
+              Back to Collections page
+            </button>
+          </div>
+        </div>
+      </GridBackground>
+    );
+  }
 
   if (loading) {
     return (
