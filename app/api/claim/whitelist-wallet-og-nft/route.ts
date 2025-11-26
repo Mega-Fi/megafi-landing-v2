@@ -8,7 +8,11 @@ import {
   verifyWalletSignature,
   isSignatureTimestampValid,
 } from "@/lib/signature-verification";
-import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
+import { MEGAFI_OG_CONTRACT_ADDRESS, MEGAFI_OG_CONTRACT_ABI } from "@/lib/contract-abi";
+
+// Use OG NFT contract for this API route
+const NFT_CONTRACT_ADDRESS = MEGAFI_OG_CONTRACT_ADDRESS;
+const NFT_CONTRACT_ABI = MEGAFI_OG_CONTRACT_ABI;
 
 // Server-side Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";

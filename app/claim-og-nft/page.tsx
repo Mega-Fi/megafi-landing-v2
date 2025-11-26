@@ -12,9 +12,13 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { decodeEventLog } from "viem";
-import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/lib/contract-abi";
+import { MEGAFI_OG_CONTRACT_ADDRESS, MEGAFI_OG_CONTRACT_ABI } from "@/lib/contract-abi";
 import { currentNetwork } from "@/lib/wagmi-config";
 import { createSupabaseClient } from "@/lib/supabase";
+
+// Use OG NFT contract for this page
+const NFT_CONTRACT_ADDRESS = MEGAFI_OG_CONTRACT_ADDRESS;
+const NFT_CONTRACT_ABI = MEGAFI_OG_CONTRACT_ABI;
 import Image from "next/image";
 import Link from "next/link";
 import {
