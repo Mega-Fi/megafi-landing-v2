@@ -188,17 +188,36 @@ export default function ClaimOGNFT() {
 
         if (session?.user) {
           setUser(session.user);
+
           // Extract Twitter handle from user metadata
+          // Try multiple possible fields where Twitter username might be stored
           const handle =
             session.user.user_metadata?.user_name ||
             session.user.user_metadata?.preferred_username ||
-            session.user.user_metadata?.name;
+            session.user.user_metadata?.name ||
+            session.user.user_metadata?.custom_claims?.user_name ||
+            session.user.identities?.[0]?.identity_data?.user_name ||
+            session.user.identities?.[0]?.identity_data?.preferred_username;
+
+          console.log("🔍 DEBUG - User metadata structure:", {
+            user_metadata: session.user.user_metadata,
+            identities: session.user.identities,
+            extractedHandle: handle,
+          });
+
+          // Validate handle exists before proceeding
+          if (!handle) {
+            console.error("❌ Twitter handle not found in user metadata");
+            setError("Failed to get Twitter username. Please try logging in again.");
+            setLoading(false);
+            return;
+          }
+
           setTwitterHandle(handle);
           // Skip start step if already authenticated
           setCurrentStep("twitter");
-          console.log("User authenticated:", {
+          console.log("✅ User authenticated:", {
             handle,
-            metadata: session.user.user_metadata,
           });
 
           // Track successful auth

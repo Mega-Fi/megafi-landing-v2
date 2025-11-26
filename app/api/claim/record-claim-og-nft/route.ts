@@ -165,9 +165,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if handle is eligible
+    // Check if handle is eligible (use OG NFT eligible handles table)
     const { data: eligibleData, error: eligibleError } = await supabase
-      .from("og_eligible_handles")
+      .from("megafi_og_eligible_handles")
       .select("twitter_handle")
       .ilike("twitter_handle", normalizedHandle)
       .single();
