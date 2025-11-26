@@ -49,6 +49,7 @@ import { WalletPrepareCard } from "@/components/ui/wallet-prepare-card";
 import { analytics, MIXPANEL_EVENTS } from "@/lib/mixpanel";
 import { toast, Toaster } from "sonner";
 import { generateSignatureMessage } from "@/lib/signature-verification";
+import { OG_NFT_LIMIT } from "@/lib/utils";
 
 // X (Twitter) Logo Component
 const XLogo = ({
@@ -1025,7 +1026,7 @@ export default function ClaimOGNFT() {
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-            For top 60 MegaFi early supporters{" "}
+            For top {OG_NFT_LIMIT} MegaFi early supporters{" "}
               {/* <a
                 href="https://x.com/NamikMuduroglu/status/1986055902131315056"
                 target="_blank"
@@ -1121,21 +1122,22 @@ export default function ClaimOGNFT() {
               <ElectricCard
                 variant="swirl" 
                 color="yellow"
-                badge={
-                  mintedTokenId
-                    ? String(parseInt(mintedTokenId)).padStart(3, "0")
-                    : isLoadingTokenId
-                    ? "..."
-                    : String(nextTokenId).padStart(3, "0")
-                }
+                badge="60"
+                // badge={
+                //   mintedTokenId
+                //     ? String(parseInt(mintedTokenId)).padStart(3, "0")
+                //     : isLoadingTokenId
+                //     ? "..."
+                //     : String(nextTokenId).padStart(3, "0")
+                // }
                 title="MegaFi OG NFT"
-                description="For top 60 MegaFi early supporters"
+                description={`For top ${OG_NFT_LIMIT} MegaFi early supporters`}
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"
               />
             </div>
-
+ 
             {/* Right column: Claim form */}
             <div className="w-full lg:w-auto lg:flex-1 max-w-2xl order-2">
               {/* Error Display */}
@@ -1161,9 +1163,7 @@ export default function ClaimOGNFT() {
                       OG NFT
                     </h2>
                     <p className="text-gray-400/70 max-w-xl mx-auto">
-                        An exclusive NFT for the top 279 MegaETH community
-                        supporters. Holders receive a 1.25x multiplier on points
-                        + 9.5% fee rebates when MegaFi launches.
+                        An exclusive NFT for the top {OG_NFT_LIMIT} MegaFi early supporters
                     </p>
 
                     <div className="space-y-4 text-left max-w-lg mx-auto">

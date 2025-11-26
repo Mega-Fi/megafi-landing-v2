@@ -7,9 +7,16 @@ import { ArrowLeft, Loader2, X } from "lucide-react";
 import { ElectricCard } from "@/components/ui/electric-card";
 import { GridBackground } from "@/components/ui/grid-background";
 import { currentNetwork } from "@/lib/wagmi-config";
+import { OG_NFT_LIMIT } from "@/lib/utils";
+import { OG_NFT_CONTRACT_ADDRESS } from "@/lib/contract-abi";
 
 const MAX_TOKEN_ID = 60;
 const CONTRACT_ADDRESS_TBA = "TBA";
+
+const formatAddress = (address: string) => {
+  if (!address) return "";
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}; 
 
 export default function OGNFTDetailPage() {
   const params = useParams();
@@ -30,7 +37,7 @@ export default function OGNFTDetailPage() {
     }
 
     if (parsedId < 1 || parsedId > MAX_TOKEN_ID) {
-      setError(`Invalid Token ID. Must be between 1 and ${MAX_TOKEN_ID}.`);
+      setError(`This token ID exceedes the total number of NTFs that exist`);
       setLoading(false);
       return;
     }
@@ -112,7 +119,7 @@ export default function OGNFTDetailPage() {
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-            For top 60 MegaFi early supporters
+            For top {OG_NFT_LIMIT} MegaFi early supporters
 
             </p>
           </div>
@@ -127,7 +134,7 @@ export default function OGNFTDetailPage() {
                   color="#FFD700"
                   badge={String(tokenId).padStart(2, "0")}
                   title="MegaFi OG NFT"
-                  description="For top 60 MegaFi early supporters"
+                  description={`For top ${OG_NFT_LIMIT} MegaFi early supporters`}
                   centerImage="/favicon.png"
                   width="22rem"
                   aspectRatio="7 / 10"
@@ -154,7 +161,7 @@ export default function OGNFTDetailPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400/70">Contract:</span>
                         <span className="font-mono text-white/80">
-                          {CONTRACT_ADDRESS_TBA}
+                          {formatAddress(OG_NFT_CONTRACT_ADDRESS)}
                         </span>
                       </div>
                     </div>

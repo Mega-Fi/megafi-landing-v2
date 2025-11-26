@@ -650,6 +650,137 @@
   animation: shimmer-vertical 2s linear infinite reverse;
 }
 
+/* OG NFT Yellow Benefits Card Styles */
+.pass-benefits-card-outer-og {
+  position: relative;
+  width: 100%;
+  perspective: 1000px;
+}
+
+.pass-benefits-dot-og {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background: radial-gradient(circle, #FFD700 0%, #FFA500 100%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 20px rgba(255, 215, 0, 0.8),
+    0 0 40px rgba(255, 215, 0, 0.4),
+    inset 0 0 10px rgba(255, 165, 0, 0.6);
+  z-index: 10;
+  animation: moveDot 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.pass-benefits-card-og {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.05) 0%,
+    rgba(255, 165, 0, 0.1) 100%
+  );
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 16px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  box-shadow:
+    0 8px 32px rgba(255, 215, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.pass-benefits-card-og:hover {
+  border-color: rgba(255, 215, 0, 0.5);
+  box-shadow:
+    0 12px 48px rgba(255, 215, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.pass-benefits-ray-og {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 215, 0, 0.15) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.pass-benefits-title-og {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #FFD700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  margin-bottom: 0.5rem;
+}
+
+.pass-benefits-message-og {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  position: relative;
+  z-index: 10;
+}
+
+.pass-benefits-highlight-og {
+  background: linear-gradient(to right, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.pass-benefits-line-og {
+  position: absolute;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #FFD700 50%,
+    transparent 100%
+  );
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pass-benefits-topl-og {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  animation: shimmer-horizontal 2s linear infinite;
+}
+
+.pass-benefits-bottoml-og {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  animation: shimmer-horizontal 2s linear infinite reverse;
+}
+
+.pass-benefits-leftl-og {
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  animation: shimmer-vertical 2s linear infinite;
+}
+
+.pass-benefits-rightl-og {
+  right: 0;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  animation: shimmer-vertical 2s linear infinite reverse;
+}
+
 
 /* Scroll Hero Section Styles - Moved from styled-jsx to fix FOUC */
 @layer base, stick, demo, debug;

@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { analytics, MIXPANEL_EVENTS } from "@/lib/mixpanel";
+import { OG_NFT_LIMIT } from "@/lib/utils";
 
 export type OGNFTBannerProps = {
   /** Accent color for the banner */
@@ -260,7 +261,7 @@ export const OGNFTBanner = ({
       </svg>
 
       <Link
-        href="/nft/og"
+        href="/claim-megaeth-nft"
         className="banner-link"
         onClick={handleBannerClick}
       > 
@@ -298,7 +299,7 @@ export const OGNFTBanner = ({
                 Claim Your MegaFi OG NFT
               </span>
               <span className="banner-subtitle">
-                Top 60 MegaFi OGs • 100% Fee Rebates • Exclusive 1.5x Multiplier
+                Top {OG_NFT_LIMIT} MegaFi OGs • 100% Fee Rebates • Exclusive 1.5x Multiplier
               </span>
             </div>
 

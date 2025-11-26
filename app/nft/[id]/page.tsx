@@ -36,7 +36,7 @@ export default function NFTDetailPage() {
     console.log('max token id', MAX_TOKEN_ID);
 
     if (parsedId < 1 || parsedId > MAX_TOKEN_ID) {
-      setError(`Invalid Token ID. Must be between 1 and ${MAX_TOKEN_ID}.`);
+      setError(`This token ID exceedes the total number of NTFs that exist`);
       setLoading(false);
       return;
     }

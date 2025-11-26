@@ -73,6 +73,8 @@ export function getContractConfig(type: ContractType) {
 // ====================================
 // Contract Features (Both Contracts)
 // ====================================
+
+// Contract Features: 
 // ✅ Whitelist-based minting
 // ✅ One NFT per wallet (enforced by hasMinted mapping)
 // ✅ No parameters needed for mint() - mints to msg.sender
