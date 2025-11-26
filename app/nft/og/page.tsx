@@ -123,9 +123,10 @@ export default function OGCollectionPage() {
                     </h3>
                     <p className="pass-benefits-message-og">
                       <span className="pass-benefits-highlight-og">
-                        For top {OG_NFT_LIMIT} MegaFi
+                        {/* For top {OG_NFT_LIMIT} MegaFi */}
+                        100% Fee Rebates + 1.5x Multiplier
                       </span>{" "}
-                      early supporters
+                      on points when MegaFi launches
                     </p>
 
                     {/* Animated borders */}
