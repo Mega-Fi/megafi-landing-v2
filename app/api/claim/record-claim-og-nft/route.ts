@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     // SECURITY: Rate limiting
     const clientIp = request.headers.get("x-forwarded-for") || "unknown";
     if (
-      isRateLimited(`record-claim:${clientIp}`, {
+      isRateLimited(`record-claim-og-nft:${clientIp}`, {
         windowMs: 60000,
         maxRequests: 3,
       })
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
       transaction_hash,
     } = body;
 
-    console.log("[record-claim] Request received:", {
+    console.log("[record-claim-og-nft] Request received:", {
       twitter_handle,
       twitter_user_id,
       wallet_address,
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
     // SECURITY: Verify user is authenticated and matches Twitter account
     const auth = await verifyAuthAndTwitter(request, twitter_user_id);
     if (!auth.authenticated) {
-      console.error("[record-claim] Auth failed:", {
+      console.error("[record-claim-og-nft] Auth failed:", {
         error: auth.error,
         twitter_user_id,
         twitter_handle,
@@ -173,7 +173,7 @@ export async function POST(request: Request) {
       .single();
 
     if (eligibleError || !eligibleData) {
-      console.error("[record-claim] Handle not eligible:", {
+      console.error("[record-claim-og-nft] Handle not eligible:", {
         normalizedHandle,
         eligibleError: eligibleError?.message,
         eligibleErrorCode: eligibleError?.code,
@@ -184,9 +184,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if already claimed (has token_id)
+    // Check if already claimed (has token_id) - USE MEGAFI_OG_CLAIMS TABLE
     const { data: existingClaim } = await supabase
-      .from("og_nft_claims")
+      .from("megafi_og_claims")
       .select("id, wallet_address, token_id")
       .ilike("twitter_handle", normalizedHandle)
       .single();
@@ -204,7 +204,7 @@ export async function POST(request: Request) {
       const mintingWallet = wallet_address.toLowerCase();
 
       if (savedWallet !== mintingWallet) {
-        console.error("[record-claim] Wallet mismatch:", {
+        console.error("[record-claim-og-nft] Wallet mismatch:", {
           normalizedHandle,
           savedWallet,
           mintingWallet,
@@ -229,7 +229,7 @@ export async function POST(request: Request) {
       // Only include status if we're updating (it may not exist in schema)
       // Supabase will ignore unknown columns, but to be safe we'll try without first
       const { data, error } = await supabase
-        .from("og_nft_claims")
+        .from("megafi_og_claims")
         .update(updateData)
         .eq("twitter_handle", normalizedHandle)
         .select()
@@ -239,7 +239,7 @@ export async function POST(request: Request) {
       if (error && error.code === "42703") {
         // Column doesn't exist error - retry without status
         const { data: retryData, error: retryError } = await supabase
-          .from("og_nft_claims")
+          .from("megafi_og_claims")
           .update({
             token_id,
             transaction_hash,
@@ -306,7 +306,7 @@ export async function POST(request: Request) {
 
     // Record new claim (shouldn't happen if whitelisting worked correctly, but handle it)
     const { data, error } = await supabase
-      .from("og_nft_claims")
+      .from("megafi_og_claims")
       .insert([
         {
           twitter_handle: normalizedHandle,

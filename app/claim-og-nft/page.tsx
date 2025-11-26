@@ -834,7 +834,7 @@ export default function ClaimOGNFT() {
         throw new Error("Authentication required");
       }
 
-      const response = await fetch("/api/claim/record-claim", {
+      const response = await fetch("/api/claim/record-claim-og-nft", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
