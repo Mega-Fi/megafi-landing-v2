@@ -1168,9 +1168,9 @@ export default function ClaimOGNFT() {
                         </h3>
                         <ul className="text-sm text-gray-400/70 space-y-1">
                           <li>• Exclusive OG supporter status</li>
-                          <li>• 1.25x points multiplier on all MegaFi products</li>
-                          <li>• 9.5% fee rebates on all MegaFi products</li>
-                          <li>• Limited to 279 MegaETH OGs</li>
+                          <li>• 1.5x multiplier on all MegaFi products</li>
+                          <li>• 100% fee rebates on all MegaFi products</li>
+                          <li>• Limited to 75 MegaFi OGs</li>
                           <li>• ERC-721 NFT on Arbitrum</li>
                         </ul>
                       </div>
