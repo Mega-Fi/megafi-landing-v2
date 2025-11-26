@@ -143,7 +143,8 @@ export default function ClaimOGNFT() {
   const fetchLatestTokenId = async () => {
     setIsLoadingTokenId(true);
     try {
-      const response = await fetch("/api/claim/latest-token");
+      // Use OG NFT endpoint to get token ID from correct contract
+      const response = await fetch("/api/claim/latest-token-og-nft");
       const data = await response.json();
       if (data.success && data.nextTokenId) {
         setNextTokenId(data.nextTokenId);
@@ -636,8 +637,9 @@ export default function ClaimOGNFT() {
   const checkWhitelistStatus = async (walletAddress: string) => {
     try {
       // Silently check whitelist status (no user-facing logs)
+      // Use OG NFT endpoint to check the correct contract
       const response = await fetch(
-        `/api/claim/whitelist-wallet?address=${walletAddress}`
+        `/api/claim/whitelist-wallet-og-nft?address=${walletAddress}`
       );
       const data = await response.json();
 
