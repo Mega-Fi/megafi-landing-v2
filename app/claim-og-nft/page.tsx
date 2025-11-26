@@ -13,14 +13,14 @@ import {
 } from "wagmi";
 import { decodeEventLog } from "viem";
 
-import { MEGAFI_OG_CONTRACT_ADDRESS, MEGAFI_OG_CONTRACT_ABI, NFT_CONTRACT_ABI, OG_NFT_CONTRACT_ADDRESS} from "@/lib/contract-abi";
+import { MEGAFI_OG_CONTRACT_ADDRESS, MEGAFI_OG_CONTRACT_ABI } from "@/lib/contract-abi";
 
 import { currentNetwork } from "@/lib/wagmi-config";
 import { createSupabaseClient } from "@/lib/supabase";
 
 // Use OG NFT contract for this page
-// const NFT_CONTRACT_ADDRESS = MEGAFI_OG_CONTRACT_ADDRESS;
-// const NFT_CONTRACT_ABI = MEGAFI_OG_CONTRACT_ABI;
+const NFT_CONTRACT_ADDRESS = MEGAFI_OG_CONTRACT_ADDRESS;
+const NFT_CONTRACT_ABI = MEGAFI_OG_CONTRACT_ABI;
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -305,7 +305,7 @@ export default function ClaimOGNFT() {
     setIsCheckingHasMinted(true);
     try {
       const result = await publicClient.readContract({
-        address: OG_NFT_CONTRACT_ADDRESS,
+        address: MEGAFI_OG_CONTRACT_ADDRESS,
         abi: NFT_CONTRACT_ABI,
         functionName: "hasMinted",
         args: [walletAddress as `0x${string}`],
@@ -591,7 +591,7 @@ export default function ClaimOGNFT() {
     analytics.track(MIXPANEL_EVENTS.ELIGIBILITY_CHECK_STARTED, {
       twitter_handle: handle,
     });
- 
+
     try {
       const response = await fetch(
         `/api/claim/check-eligibility-og-nft?twitter_handle=${encodeURIComponent(
@@ -644,7 +644,7 @@ export default function ClaimOGNFT() {
       const response = await fetch(
         `/api/claim/whitelist-wallet-og-nft?address=${walletAddress}`
 
-      );       
+      );
       const data = await response.json();
 
       if (data.success && data.whitelisted) {
@@ -791,14 +791,14 @@ export default function ClaimOGNFT() {
       twitter_handle: twitterHandle,
       wallet_address: address,
       network: currentNetwork.name,
-      contract_address: OG_NFT_CONTRACT_ADDRESS,
+      contract_address: MEGAFI_OG_CONTRACT_ADDRESS,
     });
 
     try {
       // Call the mint function on the contract
       // Note: The95Pass contract mint() takes no parameters - it mints to msg.sender
       writeContract({
-        address: OG_NFT_CONTRACT_ADDRESS,
+        address: MEGAFI_OG_CONTRACT_ADDRESS,
         abi: NFT_CONTRACT_ABI,
         functionName: "mint",
         args: [], // No args needed - contract mints to msg.sender
@@ -894,8 +894,7 @@ export default function ClaimOGNFT() {
         setCurrentStep("success"); // Still show success screen
         setMintedTokenId(tokenId || "N/A");
         setError(
-          `Failed to record claim: ${
-            data.error || "Unknown error"
+          `Failed to record claim: ${data.error || "Unknown error"
           }. Your NFT was minted successfully. You can retry recording below.`
         );
         analytics.track(MIXPANEL_EVENTS.CLAIM_RECORD_FAILED, {
@@ -961,7 +960,7 @@ export default function ClaimOGNFT() {
               Home
             </button>
           </div> */}
-          
+
           <div className="flex items-center justify-center min-h-[70vh]">
             <Loader2
               className="animate-spin text-[#FF3A1E]/50"
@@ -1022,11 +1021,11 @@ export default function ClaimOGNFT() {
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white/90 bg-gradient-to-r from-[#FFD700]/80 to-[#FFA500]/80 bg-clip-text text-transparent">
               {/* MegaFi – OG NFT{" "} */}
               <span className="bg-gradient-to-r from-[#FFD700]/80 to-[#FFA500]/80 bg-clip-text text-transparent">
-               MegaFi OG NFT
+                MegaFi OG NFT
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-            For top {OG_NFT_LIMIT} MegaFi early supporters{" "}
+              For top {OG_NFT_LIMIT} MegaFi early supporters{" "}
               {/* <a
                 href="https://x.com/NamikMuduroglu/status/1986055902131315056"
                 target="_blank"
@@ -1037,7 +1036,7 @@ export default function ClaimOGNFT() {
               </a> */}
             </p>
           </div>
-          
+
 
           {/* Progress Steps - Centered */}
           <div className="mb-12 max-w-4xl mx-auto">
@@ -1045,7 +1044,7 @@ export default function ClaimOGNFT() {
               value={[
                 "start",
                 "twitter",
-                 "eligibility",
+                "eligibility",
                 "wallet",
                 "mint",
                 "success",
@@ -1079,22 +1078,20 @@ export default function ClaimOGNFT() {
                       <div className="flex flex-col items-center cursor-default">
                         <StepperIndicator
                           asChild
-                          className={`w-8 h-8 rounded-full flex items-center justify-center mb-1.5 transition-all backdrop-blur-sm ${
-                            status === "complete"
-                              ? "bg-white/90 text-gray-900"
-                              : status === "current"
+                          className={`w-8 h-8 rounded-full flex items-center justify-center mb-1.5 transition-all backdrop-blur-sm ${status === "complete"
+                            ? "bg-white/90 text-gray-900"
+                            : status === "current"
                               ? "bg-white/90 text-gray-900 ring-3 ring-white/20"
                               : "bg-gray-700/40 text-gray-400"
-                          }`}
+                            }`}
                         >
                           <Icon size={label === "Start" ? 30 : 15} />
                         </StepperIndicator>
                         <StepperTitle
-                          className={`text-[10px] md:text-xs font-medium ${
-                            status === "complete" || status === "current"
-                              ? "text-white/80"
-                              : "text-gray-500/60"
-                          }`}
+                          className={`text-[10px] md:text-xs font-medium ${status === "complete" || status === "current"
+                            ? "text-white/80"
+                            : "text-gray-500/60"
+                            }`}
                         >
                           {label}
                         </StepperTitle>
@@ -1102,11 +1099,10 @@ export default function ClaimOGNFT() {
                     </StepperTrigger>
                     {!isLast && (
                       <StepperSeparator
-                        className={`h-0.5 mx-1 ${
-                          status === "complete"
-                            ? "bg-white/60"
-                            : "bg-gray-700/30"
-                        }`}
+                        className={`h-0.5 mx-1 ${status === "complete"
+                          ? "bg-white/60"
+                          : "bg-gray-700/30"
+                          }`}
                       />
                     )}
                   </StepperItem>
@@ -1120,7 +1116,7 @@ export default function ClaimOGNFT() {
             {/* Left column: NFT Card */}
             <div className="order-1">
               <ElectricCard
-                variant="swirl" 
+                variant="swirl"
                 color="yellow"
                 badge="60"
                 // badge={
@@ -1137,7 +1133,7 @@ export default function ClaimOGNFT() {
                 aspectRatio="7 / 10"
               />
             </div>
- 
+
             {/* Right column: Claim form */}
             <div className="w-full lg:w-auto lg:flex-1 max-w-2xl order-2">
               {/* Error Display */}
@@ -1163,7 +1159,7 @@ export default function ClaimOGNFT() {
                       OG NFT
                     </h2>
                     <p className="text-gray-400/70 max-w-xl mx-auto">
-                        An exclusive NFT for the top {OG_NFT_LIMIT} MegaFi early supporters
+                      An exclusive NFT for the top {OG_NFT_LIMIT} MegaFi early supporters
                     </p>
 
                     <div className="space-y-4 text-left max-w-lg mx-auto">
@@ -1579,8 +1575,8 @@ export default function ClaimOGNFT() {
                                   {isMintPending || isConfirming
                                     ? "Processing..."
                                     : isCheckingHasMinted
-                                    ? "Checking..."
-                                    : "Mint NFT"}
+                                      ? "Checking..."
+                                      : "Mint NFT"}
                                 </button>
                               </div>
                             </>
