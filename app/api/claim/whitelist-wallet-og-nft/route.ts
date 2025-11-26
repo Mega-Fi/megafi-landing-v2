@@ -217,7 +217,7 @@ export async function POST(request: Request) {
       let rpcUrl: string | undefined;
 
       if (network === "arbitrum") {
-        rpcUrl = "https://public-arb-mainnet.fastnode.io";
+        rpcUrl = "https://floral-dawn-season.arbitrum-mainnet.quiknode.pro/04a79ce838f80121b551f34e94f15c18977f7132/";
       } else if (network === "base") {
         rpcUrl = "https://mainnet.base.org"; // Public Base RPC
       } else {
@@ -255,7 +255,7 @@ export async function POST(request: Request) {
 
     // Check if already claimed (has token_id)
     const { data: existingClaim } = await supabaseAdmin
-      .from("megafi_og_nft_claims")
+      .from("megafi_og_claims")
       .select("id, wallet_address, token_id")
       .ilike("twitter_handle", normalizedHandle)
       .single();
@@ -324,7 +324,7 @@ export async function POST(request: Request) {
             // Update database to ensure wallet address is saved (may already exist)
             // Check if we already have whitelist_tx_hash - if yes, keep status as whitelisted
             const { data: existingRecord } = await supabaseAdmin
-              .from("megafi_og_nft_claims")
+              .from("megafi_og_claims")
               .select("whitelist_tx_hash, status, whitelisted_at")
               .ilike("twitter_handle", normalizedHandle)
               .single();
@@ -356,7 +356,7 @@ export async function POST(request: Request) {
               updateData.status = "pending_whitelist";
             }
 
-            await supabaseAdmin.from("megafi_og_nft_claims").upsert(updateData, {
+            await supabaseAdmin.from("megafi_og_claims").upsert(updateData, {
               onConflict: "twitter_handle",
               ignoreDuplicates: false,
             });
@@ -382,7 +382,7 @@ export async function POST(request: Request) {
     const apiKey = process.env.WHITELIST_API_KEY || process.env.API_KEY;
 
     // Call the whitelist-server with API key authentication
-    const response = await fetch(`${WHITELIST_SERVER_URL}/api/whitelist-og-nft`, {
+    const response = await fetch(`${WHITELIST_SERVER_URL}/api/whitelist-og`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -407,7 +407,7 @@ export async function POST(request: Request) {
       const errorMessage = data.error || "Failed to prepare wallet";
 
       // Update database with error status
-      await supabaseAdmin.from("megafi_og_nft_claims").upsert(
+      await supabaseAdmin.from("megafi_og_claims").upsert(
         {
           twitter_handle: normalizedHandle,
           twitter_user_id: twitterUserId,
@@ -478,7 +478,7 @@ export async function POST(request: Request) {
 
     // Upsert: Update if exists, insert if new
     const { error: dbError } = await supabaseAdmin
-      .from("megafi_og_nft_claims")
+      .from("megafi_og_claims")
       .upsert(upsertData, {
         onConflict: "twitter_handle",
         ignoreDuplicates: false,

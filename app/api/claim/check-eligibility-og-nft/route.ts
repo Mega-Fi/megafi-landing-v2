@@ -51,7 +51,7 @@ export async function GET(request: Request) {
     // Check if handle has already claimed (only if token_id is set)
     // A record might exist from whitelisting, but that doesn't mean they've claimed yet
     const { data: claimData, error: claimError } = await supabase
-      .from('megafi_og_nft_claims')
+      .from('megafi_og_claims')
       .select('id, token_id, claimed_at')
       .ilike('twitter_handle', normalizedHandle)
       .single();
