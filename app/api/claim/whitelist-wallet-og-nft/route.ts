@@ -298,8 +298,9 @@ export async function POST(request: Request) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
 
+        // Use OG NFT status endpoint
         const statusResponse = await fetch(
-          `${WHITELIST_SERVER_URL}/api/status/${normalizedAddress}`,
+          `${WHITELIST_SERVER_URL}/api/status-og/${normalizedAddress}`,
           {
             method: "GET",
             headers: {
@@ -589,10 +590,11 @@ export async function GET(request: Request) {
       );
     }
 
-    const statusUrl = `${WHITELIST_SERVER_URL}/api/status/${normalizedAddress}`;
+    // Use OG NFT status endpoint
+    const statusUrl = `${WHITELIST_SERVER_URL}/api/status-og/${normalizedAddress}`;
 
     console.log(
-      `[Whitelist API] Checking status for ${normalizedAddress} at ${WHITELIST_SERVER_URL}`
+      `[Whitelist API] Checking OG NFT status for ${normalizedAddress} at ${WHITELIST_SERVER_URL}`
     );
     console.log(`[Whitelist API] Full URL: ${statusUrl}`);
 
