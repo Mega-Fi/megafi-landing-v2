@@ -261,7 +261,7 @@ export const OGNFTBanner = ({
       </svg>
 
       <Link
-        href="/claim-megaeth-nft"
+        href="/nft/og"
         className="banner-link"
         onClick={handleBannerClick}
       > 

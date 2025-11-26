@@ -179,10 +179,13 @@ export default function OGNFTDetailPage() {
                       Awarded to MegaFi OG Supporters
                     </h3>
                     <p className="text-gray-300/80">
-                      <span className="bg-gradient-to-r from-[#FFD700]/80 to-[#FFA500]/80 bg-clip-text text-transparent font-bold">
-                        1.5x Multiplier (lifetime) + Fee Refunds (1 year after launch)
-                      </span>
-                    </p>
+                        {/* <span className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent font-bold"> */}
+                        <span className="bg-gradient-to-r from-[#FFD700]/80 to-[#FFA500]/80 bg-clip-text text-transparent" >
+                          1.5x Multiplier on points + 100% Fee Rebates
+                          {/* here  */}
+                        </span>{" "}
+                        when MegaFi launches!
+                      </p>
                   </div>
 
                   {/* Navigation Buttons */}

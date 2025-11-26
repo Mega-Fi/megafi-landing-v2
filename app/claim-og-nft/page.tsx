@@ -227,7 +227,6 @@ export default function ClaimOGNFT() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.user_metadata);
 
       if (event === "SIGNED_IN" && session?.user) {
         setUser(session.user);
@@ -668,7 +667,7 @@ export default function ClaimOGNFT() {
     setIsWhitelisting(true);
     setError(null);
 
-    try {
+    try { 
       // Get auth token from Supabase session
       const {
         data: { session },
@@ -693,7 +692,7 @@ export default function ClaimOGNFT() {
         body: JSON.stringify({
           wallet_address: walletAddress,
           signature,
-          message,
+          message, 
         }),
       });
 
@@ -1118,7 +1117,7 @@ export default function ClaimOGNFT() {
               <ElectricCard
                 variant="swirl"
                 color="yellow"
-                badge="60"
+                badge={OG_NFT_LIMIT.toString()}
                 // badge={
                 //   mintedTokenId
                 //     ? String(parseInt(mintedTokenId)).padStart(3, "0")
@@ -1235,8 +1234,10 @@ export default function ClaimOGNFT() {
                               Continue
                             </button>
                             <button
-                              onClick={disconnectTwitter}
-                              className="btn-secondary"
+                               onClick={disconnectTwitter}
+                              // className="btn-secondary"
+                              className="relative z-20 mt-4 text-xs text-gray-400/70 hover:text-red-400/70 underline transition-colors"
+
                             >
                               Disconnect & Use Different Account
                             </button>
@@ -1246,7 +1247,7 @@ export default function ClaimOGNFT() {
                             different X account
                           </p>
                         </div>
-                      </>
+                      </> 
                     ) : (
                       <>
                         <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
@@ -1531,7 +1532,7 @@ export default function ClaimOGNFT() {
                               {/* Button positioned outside card to avoid stacking context issues */}
                               <div className="mt-4">
                                 <button
-                                  onClick={disconnectWallet}
+                                  onClick={() => (window.location.href = "/nft/og")}
                                   className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer bg-gradient-to-r from-[#FF3A1E]/80 to-[#FF6B3D]/80 hover:from-[#FF6B3D]/90 hover:to-[#FF3A1E]/90 border-2 border-[#FF6B3D]/50 hover:border-[#FF6B3D]/80"
                                   style={{
                                     position: "relative",
@@ -1711,7 +1712,7 @@ export default function ClaimOGNFT() {
                                 {/* View NFT Link */}
                                 {mintedTokenId && (
                                   <Link
-                                    href={`/nft/${mintedTokenId}`}
+                                    href={`/nft/og/${mintedTokenId}`}
                                     className="text-xs text-emerald-400 hover:text-emerald-300 underline transition-colors text-center"
                                   >
                                     View Your NFT
@@ -1813,7 +1814,7 @@ export default function ClaimOGNFT() {
                       <p className="text-gray-300/80">
                         {/* <span className="bg-gradient-to-r from-[#FF3A1E]/50 to-[#FF6B3D]/50 bg-clip-text text-transparent font-bold"> */}
                         <span className="bg-gradient-to-r from-[#FFD700]/80 to-[#FFA500]/80 bg-clip-text text-transparent" >
-                          1.25x Multiplier on points + 9.5% Fee Rebates
+                          1.5x Multiplier on points + 100% Fee Rebates
                           {/* here  */}
                         </span>{" "}
                         when MegaFi launches!
