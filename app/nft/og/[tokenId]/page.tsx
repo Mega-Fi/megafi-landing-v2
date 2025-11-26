@@ -3,13 +3,20 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, X } from "lucide-react";
 import { ElectricCard } from "@/components/ui/electric-card";
 import { GridBackground } from "@/components/ui/grid-background";
 import { currentNetwork } from "@/lib/wagmi-config";
+import { OG_NFT_LIMIT } from "@/lib/utils";
+import { OG_NFT_CONTRACT_ADDRESS } from "@/lib/contract-abi";
 
 const MAX_TOKEN_ID = 60;
 const CONTRACT_ADDRESS_TBA = "TBA";
+
+const formatAddress = (address: string) => {
+  if (!address) return "";
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}; 
 
 export default function OGNFTDetailPage() {
   const params = useParams();
@@ -30,7 +37,7 @@ export default function OGNFTDetailPage() {
     }
 
     if (parsedId < 1 || parsedId > MAX_TOKEN_ID) {
-      setError(`Invalid Token ID. Must be between 1 and ${MAX_TOKEN_ID}.`);
+      setError(`This token ID exceedes the total number of NTFs that exist`);
       setLoading(false);
       return;
     }
@@ -56,14 +63,35 @@ export default function OGNFTDetailPage() {
   if (error) {
     return (
       <GridBackground variant="black" className="text-white overflow-hidden">
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <p className="text-red-400 text-xl mb-4">{error}</p>
-            <button
-              onClick={() => (window.location.href = "/nft/og")}
-              className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all"
+        <div className="relative z-10 container mx-auto px-4 py-12 max-w-3xl min-h-screen flex flex-col items-center justify-center text-center">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/40 flex items-center justify-center">
+              <X className="text-red-400" size={32} />
+            </div>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white/90">
+            Token ID Not Found
+          </h1>
+          <p className="text-gray-400/80 mb-6 max-w-xl">
+            {error || "The token ID you entered is not valid for this collection."}
+          </p>
+          {/* <p className="text-sm text-gray-500/80 mb-8">
+            Valid token IDs are between <span className="font-semibold">1</span> and{" "}
+            <span className="font-semibold">{MAX_TOKEN_ID}</span>.
+          </p> */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            {/* <button
+              onClick={() => (window.location.href = "/nft-og")}
+              className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#FF3A1E]/80 to-[#FF6B3D]/80 text-white font-semibold shadow-lg hover:from-[#FF6B3D]/90 hover:to-[#FF3A1E]/90 transition-all border border-[#FF6B3D]/60"
             >
               Back to OG Collection
+            </button> */}
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="px-6 py-3 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-white font-semibold border border-gray-700/60 transition-all flex items-center justify-center gap-2"
+            >
+              <ArrowLeft size={16} />
+              Back to Collections page
             </button>
           </div>
         </div>
@@ -91,7 +119,8 @@ export default function OGNFTDetailPage() {
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-              Duration: Nov 1–25 (Scoring), Nov 26 (Announcement)
+            For top {OG_NFT_LIMIT} MegaFi early supporters
+
             </p>
           </div>
 
@@ -105,7 +134,7 @@ export default function OGNFTDetailPage() {
                   color="#FFD700"
                   badge={String(tokenId).padStart(2, "0")}
                   title="MegaFi OG NFT"
-                  description="For early MegaFi supporters"
+                  description={`For top ${OG_NFT_LIMIT} MegaFi early supporters`}
                   centerImage="/favicon.png"
                   width="22rem"
                   aspectRatio="7 / 10"
@@ -132,7 +161,7 @@ export default function OGNFTDetailPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400/70">Contract:</span>
                         <span className="font-mono text-white/80">
-                          {CONTRACT_ADDRESS_TBA}
+                          {formatAddress(OG_NFT_CONTRACT_ADDRESS)}
                         </span>
                       </div>
                     </div>

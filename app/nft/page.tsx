@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { ElectricCard } from "@/components/ui/electric-card";
 import { GridBackground } from "@/components/ui/grid-background";
 import { analytics, MIXPANEL_EVENTS } from "@/lib/mixpanel";
+import { OG_NFT_LIMIT } from "@/lib/utils";
 
 export default function NFTCollectionsPage() {
   useEffect(() => {
@@ -67,9 +68,9 @@ export default function NFTCollectionsPage() {
               <ElectricCard
                 variant="swirl"
                 color="#FFD700"
-                badge="60"
+                badge={OG_NFT_LIMIT.toString()}
                 title="MegaFi OG NFT"
-                description="For early MegaFi supporters"
+                description={`For top ${OG_NFT_LIMIT} MegaFi early supporters`}
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"

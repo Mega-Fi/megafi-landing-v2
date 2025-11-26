@@ -2,18 +2,27 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { ElectricCard } from "@/components/ui/electric-card";
 import { GridBackground } from "@/components/ui/grid-background";
 import { analytics } from "@/lib/mixpanel";
 import { currentNetwork } from "@/lib/wagmi-config";
+import { OG_NFT_LIMIT } from "@/lib/utils";
+import { OG_NFT_CONTRACT_ADDRESS } from "@/lib/contract-abi";
 
 const CONTRACT_ADDRESS_TBA = "TBA";
 
 export default function OGCollectionPage() {
   useEffect(() => {
     analytics.track("Page View - OG Collection");
-  }, []);
+  }, []); 
+
+  // const NFT_CONTRACT_ADDRESS = "0x8Aa43E6110CbE606211d85cbe93d85F5CbD6716E";
+
+  const formatAddress = (address: string) => {
+    if (!address) return "";
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  }; 
 
   return (
     <GridBackground variant="black" className="text-white overflow-hidden">
@@ -47,7 +56,8 @@ export default function OGCollectionPage() {
               </span>
             </h1>
             <p className="text-gray-400/70 text-lg">
-              Duration: Nov 1–25 (Scoring), Nov 26 (Winners Announcement)
+            For top {OG_NFT_LIMIT} MegaFi early supporters
+
             </p>
           </div>
 
@@ -58,9 +68,9 @@ export default function OGCollectionPage() {
               <ElectricCard
                 variant="swirl"
                 color="#FFD700"
-                badge="60"
+                badge={OG_NFT_LIMIT.toString()}
                 title="MegaFi OG NFT"
-                description="For early MegaFi supporters"
+                description={`For top ${OG_NFT_LIMIT} MegaFi early supporters`}
                 centerImage="/favicon.png"
                 width="22rem"
                 aspectRatio="7 / 10"
@@ -70,52 +80,64 @@ export default function OGCollectionPage() {
             {/* Right column: Details */}
             <div className="w-full lg:w-auto lg:flex-1 max-w-2xl order-2">
               <div className="rounded-2xl p-8 md:p-12 space-y-6">
-                {/* Benefits Section */}
-                <div className="og-benefits-card-outer">
-                  <div className="og-benefits-dot"></div>
-                  <div className="og-benefits-card">
-                    <div className="og-benefits-ray"></div>
-                    
-                    <h3 className="og-benefits-title">
-                      Awarded to MegaFi OG Supporters
-                    </h3>
-                    <p className="og-benefits-message">
-                      <span className="og-benefits-highlight">
-                      1.5× Points Multiplier on all products (lifetime)
-                      <br />
-                      100% Fee Rebates on all products for 1 year
-                      <br />
-                      Exclusive & early-access to the next phase of the MegaFi ecosystem
-                      </span>
-                    </p>
+                {/* NFT Details */}
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-bold text-white/80 mb-6">
+                    NFT Details
+                  </h2>
 
-                    {/* Animated borders */}
-                    <div className="og-benefits-line og-benefits-topl"></div>
-                    <div className="og-benefits-line og-benefits-leftl"></div>
-                    <div className="og-benefits-line og-benefits-bottoml"></div>
-                    <div className="og-benefits-line og-benefits-rightl"></div>
+                  <div className="space-y-3 text-left rounded-lg p-6 bg-gray-800/20 border border-gray-700/30">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400/70">Network:</span>
+                      <span className="font-medium text-white/80">
+                        {currentNetwork.name}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400/70">Contract:</span>
+                      <a
+                        href={`${currentNetwork.explorerUrl}/address/${OG_NFT_CONTRACT_ADDRESS}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-gradient-to-r from-[#FFD700]/70 to-[#FFA500]/70 bg-clip-text text-transparent hover:from-[#FFA500]/80 hover:to-[#FFD700]/80 hover:underline flex items-center gap-1 transition-all font-mono"
+                      >
+                        {formatAddress(OG_NFT_CONTRACT_ADDRESS)}
+                        <ExternalLink
+                          size={14}
+                          className="text-[#FFD700]/80"
+                        />
+                      </a>
+                    </div>
                   </div>
                 </div>
 
-                {/* Eligibility Criteria */}
-                <div className="rounded-lg p-6 bg-gray-800/20 border border-gray-700/30 mt-8">
-                  <h3 className="font-bold text-2xl mb-6 text-white/90">
-                    Eligibility Criteria for 50 NFTs
-                  </h3>
-                  <div className="space-y-6 text-gray-400/70">
-                    <div>
-                      <p className="font-semibold text-lg text-white/80 mb-3">
-                        Ranked by Conviction Score
-                      </p>
-                      <div className="space-y-3 text-sm">
-                        <p>From Nov 1–25, 50 community members will be chosen based on conviction, contribution, and engagement across X.</p>
-                        <p>Engagement: Meaningful discussions and activity across X</p>
-                        <p>Contribution: Help shape conversations, build community energy, and spread awareness</p>
-                        <p>Consistency: Show up early, stay active, and lead from the front</p>
-                        <p>Every action builds your Conviction Score.</p>
-                      </div>
-                    </div>
-                    {/* <div className="mt-6 flex justify-center">
+                {/* Benefits Section */}
+                <div className="pass-benefits-card-outer-og">
+                  <div className="pass-benefits-dot-og"></div>
+                  <div className="pass-benefits-card-og">
+                    <div className="pass-benefits-ray-og"></div>
+                    
+                    <h3 className="pass-benefits-title-og">
+                      Awarded to MegaFi OG Supporters
+                    </h3>
+                    <p className="pass-benefits-message-og">
+                      <span className="pass-benefits-highlight-og">
+                        For top {OG_NFT_LIMIT} MegaFi
+                      </span>{" "}
+                      early supporters
+                    </p>
+
+                    {/* Animated borders */}
+                    <div className="pass-benefits-line-og pass-benefits-topl-og"></div>
+                    <div className="pass-benefits-line-og pass-benefits-leftl-og"></div>
+                    <div className="pass-benefits-line-og pass-benefits-bottoml-og"></div>
+                    <div className="pass-benefits-line-og pass-benefits-rightl-og"></div>
+                  </div>
+                </div>
+
+                {/* Claim Now Button */}
+                {/* <div className="mt-6 flex justify-center">
                   <button
                     onClick={() => (window.location.href = "/claim-og-nft")}
                     className="text-white font-semibold transition-all flex items-center justify-center gap-2"
@@ -142,88 +164,12 @@ export default function OGCollectionPage() {
                     Claim Now
                   </button>
                 </div> */}
-                  </div>
-                </div>
               </div>
             </div>
           </div>
 
-          {/* Detailed Criteria Sections */}
-          <div className="mt-16 space-y-6">
 
-            {/* High-Value Activities */}
-            <div className="rounded-lg p-6 bg-gray-800/20 border border-gray-700/30">
-              <h3 className="font-bold text-2xl mb-6 text-white/90">
-                High-Value Activities
-              </h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 text-gray-400/70">
-                <div>
-                  <p className="font-semibold text-lg text-white/80 mb-3">
-                    Original Content (Highest Points)
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
-                    <li>Educational posts explaining MegaFi products (Hedge, Earn, Swap)</li>
-                    <li>Posts about MegaETH speed/technology</li>
-                    <li>Use case examples and strategy guides</li>
-                    <li>Tag @megafi_app and use #MegaFi</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-lg text-white/80 mb-3">
-                    Engagement Actions
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
-                    <li>Quote posts with added commentary and analysis</li>
-                    <li>Thoughtful replies to @megafi_app (not just &quot;gm 🔥&quot;)</li>
-                    <li>Repost official content (quote posts score higher)</li>
-                    <li>Answer community questions helpfully</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-lg text-white/80 mb-3">
-                    Creative Content
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
-                    <li>Infographics, comparisons, memes</li>
-                    <li>Visual explanations of features</li>
-                    <li>Technical deep dives</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Best Practices & Red Flags */}
-            <div className="rounded-lg p-6 bg-gray-800/20 border border-gray-700/30">
-              <h3 className="font-bold text-2xl mb-6 text-white/90">
-                Best Practices & Red Flags
-              </h3>
-              <div className="grid md:grid-cols-2 gap-8 text-gray-400/70">
-                <div>
-                  <p className="font-semibold text-lg text-green-400/90 mb-3">
-                    ✅ DOs
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
-                    <li>Tag @megafi_app or use #MegaFi in every post</li>
-                    <li>Post 1-2 quality posts per day (spread across campaign period)</li>
-                    <li>Mix content types (originals, quotes, replies)</li>
-                    <li>Ask questions to drive engagement</li>
-                    <li>Be original and add value</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-lg text-red-400/90 mb-3">
-                    ❌ DON&apos;Ts
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2 text-sm">
-                    <li>Posting {'>'}10 times in 1 hour (spam)</li>
-                    <li>Copy-pasting content</li>
-                    <li>Buying fake engagement (disqualification)</li>
-                    <li>Generic replies without substance</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
+       
         </div>
 
         {/* Social Footer */}

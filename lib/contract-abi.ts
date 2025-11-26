@@ -13,6 +13,13 @@ export const THE_95_PASS_CONTRACT_ADDRESS =
 
 export const THE_95_PASS_CONTRACT_ABI = the95PassAbi as any;
 
+export const OG_NFT_CONTRACT_ADDRESS =
+  (process.env.NEXT_PUBLIC_OG_NFT_CONTRACT_ADDRESS as `0x${string}`) ||
+  "0x0000000000000000000000000000000000000000";
+
+// Import the full ABI from The95Pass.abi.json
+// Cast to any to avoid TypeScript const assertion error on imported JSON
+
 // ====================================
 // MegaFi OG NFT Contract
 // ====================================
@@ -66,6 +73,8 @@ export function getContractConfig(type: ContractType) {
 // ====================================
 // Contract Features (Both Contracts)
 // ====================================
+
+// Contract Features: 
 // ✅ Whitelist-based minting
 // ✅ One NFT per wallet (enforced by hasMinted mapping)
 // ✅ No parameters needed for mint() - mints to msg.sender
