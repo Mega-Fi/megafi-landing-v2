@@ -261,9 +261,11 @@ export const OGNFTBanner = ({
       </svg>
 
       <Link
-        href="/nft/og"
+        href="https://testnet.megafi.app"
         className="banner-link"
         onClick={handleBannerClick}
+        target="_blank"
+        rel="noopener noreferrer"
       > 
         <div
           className="banner-container"
@@ -291,20 +293,20 @@ export const OGNFTBanner = ({
           <div className="banner-content">
             <div className="banner-badge">
               <Sparkles size={14} />
-              <span>LIMITED</span>
+              <span>LIVE</span>
             </div>
 
             <div className="banner-text">
               <span className="banner-title">
-                Claim Your MegaFi OG NFT
+                MegaFi testnet now live
               </span>
               <span className="banner-subtitle">
-                Top {OG_NFT_LIMIT} MegaFi OGs • 100% Fee Rebates • Exclusive 1.5x Multiplier
+                Try it now and help us improve
               </span>
             </div>
 
             <button className="banner-cta">
-              <span>Claim Now</span>
+              <span>Launch</span>
               <ArrowRight size={16} />
             </button>
           </div>
@@ -440,8 +442,8 @@ export const OGNFTBanner = ({
 
         .banner-card {
           width: 100%;
-          min-width: 900px;
-          max-width: 1200px;
+          min-width: 630px;
+          max-width: 840px;
           height: 80px;
           border-radius: calc(1rem - 2px);
           border: none;
@@ -452,7 +454,7 @@ export const OGNFTBanner = ({
         /* Responsive sizing */
         @media (max-width: 1024px) {
           .banner-card {
-            min-width: 700px;
+            min-width: 490px;
             height: 80px;
           }
         }
