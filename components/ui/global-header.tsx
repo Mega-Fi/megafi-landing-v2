@@ -20,14 +20,14 @@ export type GlobalHeaderProps = {
 };
 
 export function GlobalHeader({
-  logoSrc = '/megafi-logo.png',
+  logoSrc,
   logoAlt = 'MegaFi Logo',
   links,
   accentColor = '#FF3A1E',
 }: GlobalHeaderProps) {
   return (
     <>
-      {logoSrc && (
+      {logoSrc && logoSrc.trim() !== '' && (
         <div className="global-logo-container">
           <Link href="/" className="global-logo-link">
             <Image

@@ -29,8 +29,6 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <GlobalHeader
-            logoSrc="/megafi-logo.png"
-            logoAlt="MegaFi Logo"
             links={{
               twitter: "https://x.com/megafi_app",
               discord: "https://discord.com/invite/EFTrPCREfZ",
