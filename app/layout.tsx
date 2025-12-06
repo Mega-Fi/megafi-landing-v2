@@ -4,6 +4,8 @@ import "./globals.css";
 import { Providers } from "@/lib/providers";
 import { Toaster } from "react-hot-toast";
 import { GlobalHeader } from "@/components/ui/global-header";
+import { Banner } from "@/components/ui/banner";
+import { SocialLinks } from "@/components/ui/social-links";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +30,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
+          <Banner />
           <GlobalHeader
             links={{
               twitter: "https://x.com/megafi_app",
@@ -37,6 +40,12 @@ export default function RootLayout({
             accentColor="#FF3A1E"
           />
           {children}
+          <SocialLinks
+            links={{
+              twitter: "https://x.com/megafi_app",
+              discord: "https://discord.com/invite/EFTrPCREfZ",
+            }}
+          />
           <Toaster
             position="top-center"
             toastOptions={{

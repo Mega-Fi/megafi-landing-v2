@@ -1167,9 +1167,9 @@ main section a:is(:hover, :focus-visible) { text-decoration: underline; }
   right: 1rem !important;
   z-index: 9999 !important;
   display: flex !important;
-  align-items: center !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
   gap: 0.75rem !important;
-  height: 50px !important;
 }
 
 .global-nav-link {
@@ -1183,7 +1183,6 @@ main section a:is(:hover, :focus-visible) { text-decoration: underline; }
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
-  height: 100%;
 }
 
 .global-nav-link svg {
@@ -1204,7 +1203,6 @@ main section a:is(:hover, :focus-visible) { text-decoration: underline; }
     top: 1.5rem !important;
     right: 1.5rem !important;
     gap: 1rem !important;
-    height: 60px !important;
   }
 }
 
@@ -1212,8 +1210,7 @@ main section a:is(:hover, :focus-visible) { text-decoration: underline; }
   .global-nav-links {
     top: 2rem !important;
     right: 2rem !important;
-    gap: 1.5rem !important;
-    height: 70px !important;
+    gap: 1rem !important;
   }
   .global-nav-link-text span {
     display: inline-block;
@@ -1529,4 +1526,166 @@ main section a:is(:hover, :focus-visible) { text-decoration: underline; }
   opacity: 0.1;
   mask-image: linear-gradient(to right, transparent, black, transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, black, transparent);
+}
+
+/* Testnet Banner Continuous Rotation Animations */
+@keyframes banner-rotate-1 {
+  from {
+    transform: translate(-50%, -50%) rotate(60deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(420deg);
+  }
+}
+
+@keyframes banner-rotate-2 {
+  from {
+    transform: translate(-50%, -50%) rotate(82deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(442deg);
+  }
+}
+
+@keyframes banner-rotate-3 {
+  from {
+    transform: translate(-50%, -50%) rotate(83deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(443deg);
+  }
+}
+
+@keyframes banner-rotate-4 {
+  from {
+    transform: translate(-50%, -50%) rotate(70deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(430deg);
+  }
+}
+
+.banner-rotate-1 {
+  animation: banner-rotate-1 4s linear infinite;
+}
+
+.banner-rotate-2 {
+  animation: banner-rotate-2 5s linear infinite;
+}
+
+.banner-rotate-3 {
+  animation: banner-rotate-3 6s linear infinite;
+}
+
+.banner-rotate-4 {
+  animation: banner-rotate-4 7s linear infinite;
+}
+
+/* Apply animations to banner glow layers */
+.banner-glow-1::before {
+  animation: banner-rotate-1 4s linear infinite !important;
+}
+
+.banner-glow-2::before {
+  animation: banner-rotate-2 5s linear infinite !important;
+}
+
+.banner-glow-3::before {
+  animation: banner-rotate-3 6s linear infinite !important;
+}
+
+.banner-glow-4::before {
+  animation: banner-rotate-4 7s linear infinite !important;
+}
+
+/* Glass Button Styles */
+.glass-button-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.glass-button-wrap a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.glass-button {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  outline: none;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.glass-button:active {
+  transform: translateY(0);
+}
+
+.glass-button:focus-visible {
+  outline: 2px solid rgba(255, 58, 30, 0.5);
+  outline-offset: 2px;
+}
+
+.glass-button-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.glass-button-shadow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(255, 58, 30, 0.2) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.glass-button-wrap:hover .glass-button-shadow {
+  opacity: 1;
+}
+
+/* Social Links Bottom Right */
+.social-links-bottom-left {
+  position: fixed !important;
+  bottom: 1rem !important;
+  right: 1rem !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem !important;
+}
+
+@media (min-width: 640px) {
+  .social-links-bottom-left {
+    bottom: 1.5rem !important;
+    right: 1.5rem !important;
+    gap: 1rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .social-links-bottom-left {
+    bottom: 2rem !important;
+    right: 2rem !important;
+    gap: 1rem !important;
+  }
 }
