@@ -6,7 +6,7 @@ import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
 import { analytics, MIXPANEL_EVENTS } from "@/lib/mixpanel";
 
 const timelineData = [
-  {
+  { 
     id: 1,
     title: "Earn",
     date: "Live",
@@ -31,7 +31,7 @@ const timelineData = [
   {
     id: 3,
     title: "Hedge",
-    date: "Coming Soon",
+    date: "Live",
     content: "Protect your gains with perpetuals and options. Real-time liquidation protection powered by MegaETH's sub-second finality.",
     category: "Hedge",
     icon: Shield,
@@ -42,7 +42,7 @@ const timelineData = [
   {
     id: 4,
     title: "Explore",
-    date: "Coming Soon",
+    date: "Live",
     content: "Discover alpha before everyone else. Curated opportunities, trending pools, and emerging protocols — all in one place.",
     category: "Explore",
     icon: Compass,
@@ -53,7 +53,7 @@ const timelineData = [
   {
     id: 5,
     title: "Portfolio",
-    date: "Coming Soon",
+    date: "Live",
     content: "Your entire DeFi life, unified. Track positions, analyze performance, and manage risk across every protocol on MegaETH.",
     category: "Portfolio",
     icon: Briefcase,
@@ -64,7 +64,7 @@ const timelineData = [
   {
     id: 6,
     title: "Leaderboard",
-    date: "Coming Soon",
+    date: "Live",
     content: "Compete for glory. Climb the ranks, earn rewards, and prove you're the best trader on the fastest chain.",
     category: "Leaderboard",
     icon: Trophy,

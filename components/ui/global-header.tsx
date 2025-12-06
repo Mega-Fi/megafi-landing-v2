@@ -27,7 +27,7 @@ export function GlobalHeader({
   accentColor = '#FF3A1E',
 }: GlobalHeaderProps) {
   return (
-    <>
+    <> 
       {logoSrc && logoSrc.trim() !== '' && (
         <div className="global-logo-container">
           <Link href="/" className="global-logo-link">
@@ -36,8 +36,9 @@ export function GlobalHeader({
               alt={logoAlt}
               width={120}
               height={120}
-              className="global-logo"
+              // className="global-logo"
               priority
+              className="h-8 w-auto sm:h-11 sm:w-auto lg:h-11 lg:w-auto hover:opacity-80 transition-opacity drop-shadow-lg"
             />
           </Link>
         </div>

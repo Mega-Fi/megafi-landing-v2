@@ -5,7 +5,7 @@ import { ExternalLink } from 'lucide-react';
 
 export function Banner() {
   return (
-    <div className="fixed top-0 left-0 right-0 z-[10000] flex items-center justify-center px-4 pb-4 pointer-events-none banner-container">
+    <div className="fixed top-0 left-0 right-0 z-[10000] hidden md:flex items-center justify-center px-4 pb-4 pointer-events-none banner-container">
         <div className="relative flex items-center justify-center group pointer-events-auto">
           {/* Multiple glowing layers for depth effect */}
           <div className="banner-glow-1 absolute z-[-1] overflow-hidden h-full w-full max-h-[50px] max-w-[500px] rounded-xl blur-[3px] 

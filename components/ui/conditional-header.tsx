@@ -18,7 +18,7 @@ export function ConditionalHeader() {
     <>
       <Banner />
       <GlobalHeader
-        logoSrc="/megafi-logo.svg"
+        logoSrc="/4.svg"
         links={{
           docs: "https://docs.megafi.app/",
         }}

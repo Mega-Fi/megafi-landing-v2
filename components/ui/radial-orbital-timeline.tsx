@@ -15,7 +15,7 @@ interface TimelineItem {
   icon: React.ElementType;
   relatedIds: number[];
   status: "completed" | "in-progress" | "pending";
-  energy: number;
+  energy: number; 
 }
 
 interface RadialOrbitalTimelineProps {
@@ -37,6 +37,7 @@ export default function RadialOrbitalTimeline({
     y: 0,
   });
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
+  const [radius, setRadius] = useState<number>(110);
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
@@ -121,6 +122,33 @@ export default function RadialOrbitalTimeline({
     };
   }, [autoRotate, viewMode]);
 
+  // Update radius based on screen size
+  useEffect(() => {
+    const updateRadius = () => {
+      if (typeof window !== "undefined") {
+        const width = window.innerWidth;
+        // Use smaller radius on mobile/tablet, larger on desktop
+        if (width < 640) {
+          // Mobile: very close to center
+          setRadius(110);
+        } else if (width < 1024) {
+          // Tablet: medium distance
+          setRadius(180);
+        } else {
+          // Desktop: full distance
+          setRadius(220);
+        }
+      }
+    };
+
+    // Set initial radius
+    updateRadius();
+
+    // Update on window resize
+    window.addEventListener("resize", updateRadius);
+    return () => window.removeEventListener("resize", updateRadius);
+  }, []);
+
   const centerViewOnNode = (nodeId: number) => {
     if (viewMode !== "orbital" || !nodeRefs.current[nodeId]) return;
 
@@ -133,7 +161,6 @@ export default function RadialOrbitalTimeline({
 
   const calculateNodePosition = (index: number, total: number) => {
     const angle = ((index / total) * 360 + rotationAngle) % 360;
-    const radius = 200;
     const radian = (angle * Math.PI) / 180;
 
     const x = radius * Math.cos(radian) + centerOffset.x;
@@ -204,7 +231,13 @@ export default function RadialOrbitalTimeline({
             </div>
           </div>
 
-          <div className="absolute w-96 h-96 rounded-full border border-white/10"></div>
+          <div 
+            className="absolute rounded-full border border-white/10"
+            style={{
+              width: `${radius * 2 + 40}px`,
+              height: `${radius * 2 + 40}px`,
+            }}
+          ></div>
 
           {timelineData.map((item, index) => {
             const position = calculateNodePosition(index, timelineData.length);
@@ -270,8 +303,8 @@ export default function RadialOrbitalTimeline({
 
                 <div
                   className={`
-                  absolute top-12  whitespace-nowrap
-                  text-xs font-semibold tracking-wider
+                  absolute top-12 left-1/2 -translate-x-1/2 whitespace-nowrap
+                  text-xs font-semibold tracking-wider text-center
                   transition-all duration-300
                   ${isExpanded ? "text-white scale-125" : "text-white/70"}
                 `}
@@ -284,7 +317,7 @@ export default function RadialOrbitalTimeline({
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-white/50"></div>
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
-                        <Badge
+                        {/* <Badge
                           className={`px-2 text-xs ${getStatusStyles(
                             item.status
                           )}`}
@@ -294,19 +327,19 @@ export default function RadialOrbitalTimeline({
                             : item.status === "in-progress"
                             ? "IN PROGRESS"
                             : "PENDING"}
-                        </Badge>
+                        </Badge> */}
                         <span className="text-xs font-mono text-white/50">
                           {item.date}
                         </span>
                       </div>
-                      <CardTitle className="text-sm mt-2">
+                      {/* <CardTitle className="text-sm text-white mt-2">
                         {item.title}
-                      </CardTitle>
+                      </CardTitle> */}
                     </CardHeader>
                     <CardContent className="text-xs text-white/80">
                       <p>{item.content}</p>
 
-                      <div className="mt-4 pt-3 border-t border-white/10">
+                      {/* <div className="mt-4 pt-3 border-t border-white/10">
                         <div className="flex justify-between items-center text-xs mb-1">
                           <span className="flex items-center">
                             <Gauge size={10} className="mr-1" />
@@ -320,9 +353,9 @@ export default function RadialOrbitalTimeline({
                             style={{ width: `${item.energy}%` }}
                           ></div>
                         </div>
-                      </div>
+                      </div> */}
 
-                      {item.relatedIds.length > 0 && (
+                      {/* {item.relatedIds.length > 0 && (
                         <div className="mt-4 pt-3 border-t border-white/10">
                           <div className="flex items-center mb-2">
                             <Link size={10} className="text-white/70 mr-1" />
@@ -354,7 +387,7 @@ export default function RadialOrbitalTimeline({
                             })}
                           </div>
                         </div>
-                      )}
+                      )} */}
                     </CardContent>
                   </Card>
                 )}
