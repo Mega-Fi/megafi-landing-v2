@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/lib/providers";
 import { Toaster } from "react-hot-toast";
-import { GlobalHeader } from "@/components/ui/global-header";
+import { ConditionalHeader, ConditionalFooter } from "@/components/ui/conditional-header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,17 +28,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <GlobalHeader
-            logoSrc="/megafi-logo.png"
-            logoAlt="MegaFi Logo"
-            links={{
-              twitter: "https://x.com/megafi_app",
-              discord: "https://discord.com/invite/EFTrPCREfZ",
-              docs: "https://docs.megafi.app/",
-            }}
-            accentColor="#FF3A1E"
-          />
+          <ConditionalHeader />
           {children}
+          <ConditionalFooter />
           <Toaster
             position="top-center"
             toastOptions={{
