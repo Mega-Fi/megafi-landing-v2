@@ -1636,7 +1636,7 @@ main section a:is(:hover, :focus-visible) { text-decoration: underline; }
   animation: banner-rotate-4 7s linear infinite;
 }
 
-/* Banner Container - Aligned with nav links */
+/* Banner Container - Aligned with logo and nav links */
 .banner-container {
   top: 1rem !important;
 }
@@ -1760,4 +1760,32 @@ main section a:is(:hover, :focus-visible) { text-decoration: underline; }
     right: 2rem !important;
     gap: 1rem !important;
   }
+}
+
+/* Orange Border Banner */
+.orange-border::before,
+.orange-border::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  border-radius: 12px;
+  background: linear-gradient(45deg, #FF3A1E, #FF6B3D, #FF8C6B, #FFB399, #FF3A1E, #FF6B3D, #FF8C6B, #FFB399, #FF3A1E, #FF6B3D);
+  background-size: 400%;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  z-index: -1;
+  animation: orange-gradient 20s linear infinite;
+  opacity: 0.7;
+}
+
+.orange-border::after {
+  filter: blur(20px);
+  opacity: 0.5;
+}
+
+@keyframes orange-gradient {
+  0% { background-position: 0 0; }
+  50% { background-position: 400% 0; }
+  100% { background-position: 0 0; }
 }
