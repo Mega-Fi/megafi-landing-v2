@@ -1160,6 +1160,61 @@ main section a:is(:hover, :focus-visible) { text-decoration: underline; }
   }
 }
 
+/* MegaETH Logo Bottom Left */
+.megaeth-logo-bottom-left {
+  position: fixed !important;
+  bottom: 1rem !important;
+  left: 1rem !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.megaeth-logo-link {
+  display: block;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.megaeth-logo-link:hover {
+  opacity: 0.8;
+}
+
+.megaeth-logo {
+  width: auto !important;
+  height: 40px !important;
+  max-width: 120px !important;
+  object-fit: contain !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transition: opacity 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .megaeth-logo-bottom-left {
+    bottom: 1.5rem !important;
+    left: 1.5rem !important;
+  }
+  .megaeth-logo {
+    height: 45px !important;
+    max-width: 140px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .megaeth-logo-bottom-left {
+    bottom: 2rem !important;
+    left: 2rem !important;
+  }
+  .megaeth-logo {
+    height: 50px !important;
+    max-width: 160px !important;
+  }
+}
+
 /* Global Navigation Links */
 .global-nav-links {
   position: absolute !important;
@@ -1579,6 +1634,23 @@ main section a:is(:hover, :focus-visible) { text-decoration: underline; }
 
 .banner-rotate-4 {
   animation: banner-rotate-4 7s linear infinite;
+}
+
+/* Banner Container - Aligned with nav links */
+.banner-container {
+  top: 1rem !important;
+}
+
+@media (min-width: 640px) {
+  .banner-container {
+    top: 1.5rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .banner-container {
+    top: 2rem !important;
+  }
 }
 
 /* Apply animations to banner glow layers */
