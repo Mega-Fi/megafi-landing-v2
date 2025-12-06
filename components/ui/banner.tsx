@@ -17,7 +17,7 @@ export function Banner() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF3A1E] opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF3A1E]"></span>
           </span>
-          <span>Testnet is now live</span>
+          <span>Testnet is now LIVE</span>
           <ExternalLink size={14} className="opacity-70 group-hover:opacity-100 transition-opacity" />
         </a>
       </div>
