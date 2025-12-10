@@ -129,35 +129,6 @@ export default function NinetyFivePassCollectionPage() {
                     <div className="pass-benefits-line pass-benefits-rightl"></div>
                   </div>
                 </div>
-
-                {/* Claim Now Button */}
-                <div className="mt-6 flex justify-center">
-                  <button
-                    onClick={() => (window.location.href = "/claim-megaeth-nft")}
-                    className="text-white font-semibold transition-all flex items-center justify-center gap-2"
-                    style={{
-                      padding: "16px 32px",
-                      borderRadius: "12px",
-                      background: "linear-gradient(135deg, rgba(255, 58, 30, 0.8) 0%, rgba(255, 107, 61, 0.8) 100%)",
-                      boxShadow: "0 0 20px rgba(255, 58, 30, 0.4), 0 0 40px rgba(255, 58, 30, 0.2)",
-                      border: "2px solid rgba(255, 107, 61, 0.5)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "linear-gradient(135deg, rgba(255, 107, 61, 0.9) 0%, rgba(255, 58, 30, 0.9) 100%)";
-                      e.currentTarget.style.boxShadow = "0 0 30px rgba(255, 58, 30, 0.6), 0 0 60px rgba(255, 58, 30, 0.3)";
-                      e.currentTarget.style.borderColor = "rgba(255, 107, 61, 0.8)";
-                      e.currentTarget.style.transform = "translateY(-1px)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "linear-gradient(135deg, rgba(255, 58, 30, 0.8) 0%, rgba(255, 107, 61, 0.8) 100%)";
-                      e.currentTarget.style.boxShadow = "0 0 20px rgba(255, 58, 30, 0.4), 0 0 40px rgba(255, 58, 30, 0.2)";
-                      e.currentTarget.style.borderColor = "rgba(255, 107, 61, 0.5)";
-                      e.currentTarget.style.transform = "translateY(0)";
-                    }}
-                  >
-                    Claim Now
-                  </button>
-                </div>
               </div>
             </div>
           </div>
